@@ -1,0 +1,134 @@
+---
+
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic Page Builder</title>
+    <style>
+      body { font-family: system-ui, Arial; background:#f8fafc; margin:0; }
+      .wrap { max-width: 980px; margin: 40px auto; padding: 0 16px; }
+      .card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px; }
+      label { display:block; font-size:12px; color:#64748b; margin-bottom:6px; }
+      input, textarea {
+        width:100%; border:1px solid #e2e8f0; border-radius:10px;
+        padding:10px 12px; font-size:14px; outline:none;
+      }
+      textarea { min-height: 360px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .btn {
+        background:#2563eb; color:white; border:none; border-radius:10px;
+        padding:10px 14px; font-weight:600; cursor:pointer;
+      }
+      .btn:disabled { opacity:.6; cursor:not-allowed; }
+      .muted { color:#64748b; font-size:13px; }
+      .status { margin-top:12px; font-size:14px; }
+      .ok { color:#16a34a; }
+      .bad { color:#dc2626; }
+      a { color:#2563eb; }
+      .row { display:flex; gap:12px; flex-wrap:wrap; }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <h1>Dynamic Page Builder (MVP)</h1>
+      
+
+      <div class="card">
+        <div class="row">
+          <div style="flex:1; min-width: 260px;">
+            <label>Page Slug (URL)</label>
+            <input id="slug" placeholder="e.g. about-us" />
+            <p class="muted">This will create: <b>/p/&lt;slug&gt;</b></p>
+          </div>
+        </div>
+
+        <div style="margin-top: 12px;">
+          <label>HTML Content</label>
+          <textarea id="content"></textarea>
+        </div>
+
+        <div style="margin-top: 12px; display:flex; gap:10px; align-items:center;">
+          <button class="btn" id="saveBtn">Save Page</button>
+          <!-- Valid slug -->
+        </div>
+
+        <div class="status" id="status"></div>
+      </div>
+    </div>
+
+    <script type="module">
+      const slugEl = /** @type {HTMLInputElement|null} */ (document.getElementById("slug"));
+      const contentEl = /** @type {HTMLTextAreaElement|null} */ (document.getElementById("content"));
+      const saveBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("saveBtn"));
+      const statusEl = /** @type {HTMLDivElement|null} */ (document.getElementById("status"));
+
+      function sanitizeSlug(s) {
+        return (s || "")
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9-]/g, "-")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
+      }
+
+      if (!slugEl || !contentEl || !saveBtn || !statusEl) {
+        console.error("Builder elements not found");
+      } else {
+        // Default HTML sample (safe)
+        contentEl.value =
+`<h2>Hello from dynamic page!</h2>
+<p>This page was created from the browser.</p>`;
+
+        saveBtn.addEventListener("click", async () => {
+          const slug = sanitizeSlug(slugEl.value);
+          const html = contentEl.value;
+
+          statusEl.textContent = "";
+
+          if (!slug) {
+            statusEl.innerHTML = '<span class="bad">Input a Valid slug</span>';
+            return;
+          }
+          if (!html.trim()) {
+            statusEl.innerHTML = '<span class="bad">Input a Valid HTML content</span>';
+            return;
+          }
+
+          saveBtn.disabled = true;
+          const oldText = saveBtn.textContent;
+          saveBtn.textContent = "Saving...";
+
+          try {
+            const res = await fetch("/api/pages/save", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ slug, html }),
+            });
+
+            // Debug-safe: read as text first
+            const text = await res.text();
+            let data;
+            try {
+              data = JSON.parse(text);
+            } catch {
+              throw new Error(`Server returned non-JSON (status ${res.status}): ${text}`);
+            }
+
+            if (!res.ok) throw new Error(data?.error || "Save failed");
+
+            statusEl.innerHTML =
+              `<span class="ok">Saved!</span> Open: <a href="${data.url}" target="_blank">${data.url}</a>`;
+          } catch (err) {
+            statusEl.innerHTML = `<span class="bad">${err?.message || err}</span>`;
+          } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = oldText;
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

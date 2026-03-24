@@ -1,0 +1,65 @@
+[
+  {
+    "slug": "about-us",
+    "type": "html",
+    "html": "<h2>Hello from dynamic page!</h2>\n<p>This page was created from the browser.</p>",
+    "updatedAt": "2026-03-02T09:18:12.697Z",
+    "createdAt": "2026-03-02T09:08:41.412Z"
+  },
+  {
+    "slug": "hi",
+    "type": "html",
+    "html": "<h2>Hello from dynamic page!</h2>\n<p>This page was created from the browser.</p>",
+    "updatedAt": "2026-03-02T09:09:10.571Z",
+    "createdAt": "2026-03-02T09:09:10.571Z"
+  },
+  {
+    "slug": "b",
+    "type": "html",
+    "html": "<h2>Hello from dynamic page!</h2>\n<p>This page was created from the browser.</p>",
+    "updatedAt": "2026-03-12T11:11:58.208Z",
+    "createdAt": "2026-03-12T11:11:58.208Z"
+  },
+  {
+    "slug": "cam",
+    "type": "html",
+    "html": "<h2>Hello Cam!</h2>\n<p>This is my first Dynamic Web Builder.</p>",
+    "updatedAt": "2026-03-12T11:17:04.386Z",
+    "createdAt": "2026-03-12T11:17:04.386Z"
+  },
+  {
+    "slug": "me",
+    "type": "html",
+    "html": "<h2>Hello from dynamic page!</h2>\n<p>This page was created from the browser.</p>",
+    "updatedAt": "2026-03-19T16:55:28.669Z",
+    "createdAt": "2026-03-19T16:55:28.669Z"
+  },
+  {
+    "slug": "ab",
+    "type": "html",
+    "html": "<h2>Hello from dynamic page!</h2>\n<p>This page was created from the browser.</p>",
+    "updatedAt": "2026-03-19T18:12:41.496Z",
+    "createdAt": "2026-03-19T18:12:41.496Z"
+  },
+  {
+    "slug": "he",
+    "type": "html",
+    "html": "<div style=\"font-family:sans-serif;\">\n\n  <div style=\"background:black; color:white; padding:10px;\">\n    <h2>My Website</h2>\n  </div>\n\n  <div style=\"padding:20px;\">\n    <h1>Home</h1>\n    <p>Welcome to the homepage</p>\n  </div>\n\n</div>",
+    "updatedAt": "2026-03-19T18:20:20.596Z",
+    "createdAt": "2026-03-19T18:18:15.948Z"
+  },
+  {
+    "slug": "g",
+    "type": "html",
+    "html": "<div style=\"text-align:center; font-family:sans-serif;\">\n  <h1>Welcome 🚀</h1>\n  <p>Create pages instantly using our builder</p>\n\n  <a href=\"https://www.youtube.com/\" style=\"padding:10px 20px; background:black; color:white; text-decoration:none;\">\n    Get Started\n  </a>\n</div>",
+    "updatedAt": "2026-03-20T08:59:56.230Z",
+    "createdAt": "2026-03-20T08:38:12.465Z"
+  },
+  {
+    "slug": "about-me",
+    "type": "html",
+    "html": "<div id = \"mydiv\"> Hello World </div>\n\n<script> document.getElementById(\"mydiv\").onclick = function() {\n         alert(\"Clicked\");\n}\n</script>",
+    "updatedAt": "2026-03-20T17:39:40.411Z",
+    "createdAt": "2026-03-20T17:33:16.105Z"
+  }
+]
