@@ -65,8 +65,8 @@
   {
     "slug": "about-da-b",
     "type": "html",
-    "html": "<h2>Hello from dynamic page!</h2>\n<p>This page was created from the browser.!!@0)))</p>",
-    "updatedAt": "2026-03-25T11:35:39.795Z",
+    "html": "<h2>Hello from dynamic page!</h2>\n<p>This page was created from the browser.!!@0)))</p>\n<p>New Update</p>",
+    "updatedAt": "2026-03-25T19:38:39.856Z",
     "createdAt": "2026-03-25T11:35:39.795Z"
   }
 ]

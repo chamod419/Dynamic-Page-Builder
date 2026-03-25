@@ -19,9 +19,18 @@
       }
       label { display:block; font-size:12px; color:#64748b; margin-bottom:6px; }
       input, textarea {
-        width:100%; border:1px solid #e2e8f0; border-radius:10px;
-        padding:10px 12px; font-size:14px; outline:none;
+        width:100%;
+        border:1px solid #e2e8f0;
+        border-radius:10px;
+        padding:10px 12px;
+        font-size:14px;
+        outline:none;
         box-sizing:border-box;
+      }
+      input[readonly] {
+        background:#f1f5f9;
+        color:#475569;
+        cursor:not-allowed;
       }
       textarea {
         min-height: 420px;
@@ -29,10 +38,19 @@
         resize: vertical;
       }
       .btn {
-        background:#2563eb; color:white; border:none; border-radius:10px;
-        padding:10px 14px; font-weight:600; cursor:pointer;
+        background:#2563eb;
+        color:white;
+        border:none;
+        border-radius:10px;
+        padding:10px 14px;
+        font-weight:600;
+        cursor:pointer;
       }
       .btn:disabled { opacity:.6; cursor:not-allowed; }
+      .btn-secondary {
+        background:#e2e8f0;
+        color:#0f172a;
+      }
       .muted { color:#64748b; font-size:13px; }
       .status { margin-top:12px; font-size:14px; }
       .ok { color:#16a34a; }
@@ -61,6 +79,63 @@
         font-size:14px;
         font-weight:700;
       }
+      .editor-top {
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-bottom:10px;
+      }
+      .pages-list {
+        display:flex;
+        flex-direction:column;
+        gap:12px;
+        margin-top:12px;
+      }
+      .page-item {
+        border:1px solid #e2e8f0;
+        border-radius:12px;
+        padding:14px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:12px;
+        flex-wrap:wrap;
+      }
+      .page-actions {
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+      }
+      .small-btn {
+        border:none;
+        border-radius:8px;
+        padding:8px 12px;
+        font-size:13px;
+        cursor:pointer;
+        font-weight:600;
+      }
+      .edit-btn {
+        background:#2563eb;
+        color:white;
+      }
+      .open-btn {
+        background:#e2e8f0;
+        color:#0f172a;
+        text-decoration:none;
+        display:inline-flex;
+        align-items:center;
+      }
+      .pill {
+        display:inline-block;
+        font-size:12px;
+        padding:4px 8px;
+        border-radius:999px;
+        background:#dbeafe;
+        color:#1d4ed8;
+        font-weight:600;
+      }
 
       @media (max-width: 900px) {
         .grid {
@@ -81,7 +156,16 @@
         <div class="grid">
           <!-- Left side: editor -->
           <div>
-            <p class="section-title">Page Editor</p>
+            <div class="editor-top">
+              <div>
+                <p class="section-title">Page Editor</p>
+                <p class="muted" id="editorMode">Create a new page</p>
+              </div>
+
+              <button class="btn btn-secondary" id="newPageBtn" type="button">
+                Create New Page
+              </button>
+            </div>
 
             <div>
               <label>Page Slug (URL)</label>
@@ -95,7 +179,7 @@
             </div>
 
             <div style="margin-top: 12px; display:flex; gap:10px; align-items:center;">
-              <button class="btn" id="saveBtn">Save Page</button>
+              <button class="btn" id="saveBtn" type="button">Save Page</button>
             </div>
 
             <div class="status" id="status"></div>
@@ -120,6 +204,15 @@
           </div>
         </div>
       </div>
+
+      <div class="card" style="margin-top:16px;">
+        <p class="section-title">Saved Pages</p>
+        <p class="muted">Click Edit to load a saved page into the editor.</p>
+
+        <div id="pagesList" class="pages-list">
+          <div class="muted">Loading pages...</div>
+        </div>
+      </div>
     </div>
 
     <script type="module">
@@ -129,6 +222,16 @@
       const statusEl = /** @type {HTMLDivElement|null} */ (document.getElementById("status"));
       const previewFrame = /** @type {HTMLIFrameElement|null} */ (document.getElementById("previewFrame"));
       const pathPreviewEl = /** @type {HTMLSpanElement|null} */ (document.getElementById("pathPreview"));
+      const pagesListEl = /** @type {HTMLDivElement|null} */ (document.getElementById("pagesList"));
+      const editorModeEl = /** @type {HTMLParagraphElement|null} */ (document.getElementById("editorMode"));
+      const newPageBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("newPageBtn"));
+
+      const defaultHtml =
+`<h2>Hello from dynamic page!</h2>
+<p>This page was created from the browser.</p>`;
+
+      /** @type {Array<{slug:string, html:string, createdAt?:string, updatedAt?:string}>} */
+      let cachedPages = [];
 
       function sanitizeSlug(s) {
         return (s || "")
@@ -137,6 +240,24 @@
           .replace(/[^a-z0-9-]/g, "-")
           .replace(/-+/g, "-")
           .replace(/^-|-$/g, "");
+      }
+
+      function escapeHtml(value) {
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function formatDate(value) {
+        if (!value) return "-";
+        try {
+          return new Date(value).toLocaleString();
+        } catch {
+          return value;
+        }
       }
 
       function buildPreviewDocument(html, slug) {
@@ -201,14 +322,103 @@
         previewFrame.srcdoc = buildPreviewDocument(html, slug);
       }
 
-      if (!slugEl || !contentEl || !saveBtn || !statusEl || !previewFrame || !pathPreviewEl) {
+      function resetEditor() {
+        if (!slugEl || !contentEl || !editorModeEl || !saveBtn || !statusEl) return;
+
+        slugEl.readOnly = false;
+        slugEl.value = "";
+        contentEl.value = defaultHtml;
+        editorModeEl.textContent = "Create a new page";
+        saveBtn.textContent = "Save Page";
+        statusEl.textContent = "";
+        renderPreview();
+      }
+
+      function startEdit(page) {
+        if (!slugEl || !contentEl || !editorModeEl || !saveBtn || !statusEl) return;
+
+        slugEl.value = page.slug;
+        slugEl.readOnly = true;
+        contentEl.value = page.html || "";
+        editorModeEl.innerHTML = `Editing page: <span class="pill">${escapeHtml(page.slug)}</span>`;
+        saveBtn.textContent = "Update Page";
+        statusEl.textContent = "";
+        renderPreview();
+      }
+
+      function renderPagesList() {
+        if (!pagesListEl) return;
+
+        if (!cachedPages.length) {
+          pagesListEl.innerHTML = '<div class="muted">No saved pages yet.</div>';
+          return;
+        }
+
+        pagesListEl.innerHTML = cachedPages.map((page) => `
+          <div class="page-item">
+            <div>
+              <div style="font-weight:700; font-size:15px;">/p/${escapeHtml(page.slug)}</div>
+              <div class="muted" style="margin-top:6px;">
+                Updated: ${escapeHtml(formatDate(page.updatedAt || page.createdAt))}
+              </div>
+            </div>
+
+            <div class="page-actions">
+              <a class="small-btn open-btn" href="/p/${encodeURIComponent(page.slug)}" target="_blank">Open</a>
+              <button
+                class="small-btn edit-btn"
+                type="button"
+                data-edit-slug="${escapeHtml(page.slug)}"
+              >
+                Edit
+              </button>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      async function loadPages() {
+        if (!pagesListEl) return;
+
+        pagesListEl.innerHTML = '<div class="muted">Loading pages...</div>';
+
+        try {
+          const res = await fetch("/api/pages/list");
+          const text = await res.text();
+
+          let data;
+          try {
+            data = JSON.parse(text);
+          } catch {
+            throw new Error(`Server returned non-JSON (status ${res.status}): ${text}`);
+          }
+
+          if (!res.ok) throw new Error(data?.error || "Failed to load pages");
+
+          cachedPages = Array.isArray(data?.pages) ? data.pages : [];
+          renderPagesList();
+        } catch (err) {
+          pagesListEl.innerHTML = `<div class="bad">${err?.message || err}</div>`;
+        }
+      }
+
+      if (
+        !slugEl ||
+        !contentEl ||
+        !saveBtn ||
+        !statusEl ||
+        !previewFrame ||
+        !pathPreviewEl ||
+        !pagesListEl ||
+        !editorModeEl ||
+        !newPageBtn
+      ) {
         console.error("Builder elements not found");
       } else {
-        contentEl.value =
-`<h2>Hello from dynamic page!</h2>
-<p>This page was created from the browser.</p>`;
+        contentEl.value = defaultHtml;
 
         renderPreview();
+        loadPages();
 
         slugEl.addEventListener("input", () => {
           renderPreview();
@@ -216,6 +426,25 @@
 
         contentEl.addEventListener("input", () => {
           renderPreview();
+        });
+
+        newPageBtn.addEventListener("click", () => {
+          resetEditor();
+        });
+
+        pagesListEl.addEventListener("click", (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+
+          const editBtn = target.closest("[data-edit-slug]");
+          if (!editBtn) return;
+
+          const slug = editBtn.getAttribute("data-edit-slug");
+          const page = cachedPages.find((item) => item.slug === slug);
+
+          if (page) {
+            startEdit(page);
+          }
         });
 
         saveBtn.addEventListener("click", async () => {
@@ -258,6 +487,8 @@
 
             statusEl.innerHTML =
               `<span class="ok">Saved!</span> Open: <a href="${data.url}" target="_blank">${data.url}</a>`;
+
+            await loadPages();
           } catch (err) {
             statusEl.innerHTML = `<span class="bad">${err?.message || err}</span>`;
           } finally {
