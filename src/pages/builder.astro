@@ -9,14 +9,25 @@
     <title>Dynamic Page Builder</title>
     <style>
       body { font-family: system-ui, Arial; background:#f8fafc; margin:0; }
-      .wrap { max-width: 980px; margin: 40px auto; padding: 0 16px; }
+      .wrap { max-width: 1200px; margin: 40px auto; padding: 0 16px; }
       .card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px; }
+      .grid {
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap:16px;
+        align-items:start;
+      }
       label { display:block; font-size:12px; color:#64748b; margin-bottom:6px; }
       input, textarea {
         width:100%; border:1px solid #e2e8f0; border-radius:10px;
         padding:10px 12px; font-size:14px; outline:none;
+        box-sizing:border-box;
       }
-      textarea { min-height: 360px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      textarea {
+        min-height: 420px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        resize: vertical;
+      }
       .btn {
         background:#2563eb; color:white; border:none; border-radius:10px;
         padding:10px 14px; font-weight:600; cursor:pointer;
@@ -27,35 +38,87 @@
       .ok { color:#16a34a; }
       .bad { color:#dc2626; }
       a { color:#2563eb; }
-      .row { display:flex; gap:12px; flex-wrap:wrap; }
+      .preview-card {
+        border:1px solid #e2e8f0;
+        border-radius:12px;
+        overflow:hidden;
+        background:#fff;
+      }
+      .preview-head {
+        padding:12px 14px;
+        border-bottom:1px solid #e2e8f0;
+        background:#f8fafc;
+      }
+      .preview-frame {
+        width:100%;
+        height:520px;
+        border:0;
+        display:block;
+        background:white;
+      }
+      .section-title {
+        margin:0 0 6px 0;
+        font-size:14px;
+        font-weight:700;
+      }
+
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .preview-frame {
+          height:420px;
+        }
+      }
     </style>
   </head>
 
   <body>
     <div class="wrap">
       <h1>Dynamic Page Builder (MVP)</h1>
-      
 
       <div class="card">
-        <div class="row">
-          <div style="flex:1; min-width: 260px;">
-            <label>Page Slug (URL)</label>
-            <input id="slug" placeholder="e.g. about-us" />
-            <p class="muted">This will create: <b>/p/&lt;slug&gt;</b></p>
+        <div class="grid">
+          <!-- Left side: editor -->
+          <div>
+            <p class="section-title">Page Editor</p>
+
+            <div>
+              <label>Page Slug (URL)</label>
+              <input id="slug" placeholder="e.g. about-us" />
+              <p class="muted">This will create: <b id="pathPreview">/p/&lt;slug&gt;</b></p>
+            </div>
+
+            <div style="margin-top: 12px;">
+              <label>HTML Content</label>
+              <textarea id="content"></textarea>
+            </div>
+
+            <div style="margin-top: 12px; display:flex; gap:10px; align-items:center;">
+              <button class="btn" id="saveBtn">Save Page</button>
+            </div>
+
+            <div class="status" id="status"></div>
+          </div>
+
+          <!-- Right side: live preview -->
+          <div>
+            <p class="section-title">Live Preview</p>
+
+            <div class="preview-card">
+              <div class="preview-head">
+                <div class="muted">Preview updates while typing</div>
+              </div>
+
+              <iframe
+                id="previewFrame"
+                class="preview-frame"
+                title="Live preview"
+                sandbox=""
+              ></iframe>
+            </div>
           </div>
         </div>
-
-        <div style="margin-top: 12px;">
-          <label>HTML Content</label>
-          <textarea id="content"></textarea>
-        </div>
-
-        <div style="margin-top: 12px; display:flex; gap:10px; align-items:center;">
-          <button class="btn" id="saveBtn">Save Page</button>
-          <!-- Valid slug -->
-        </div>
-
-        <div class="status" id="status"></div>
       </div>
     </div>
 
@@ -64,6 +127,8 @@
       const contentEl = /** @type {HTMLTextAreaElement|null} */ (document.getElementById("content"));
       const saveBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("saveBtn"));
       const statusEl = /** @type {HTMLDivElement|null} */ (document.getElementById("status"));
+      const previewFrame = /** @type {HTMLIFrameElement|null} */ (document.getElementById("previewFrame"));
+      const pathPreviewEl = /** @type {HTMLSpanElement|null} */ (document.getElementById("pathPreview"));
 
       function sanitizeSlug(s) {
         return (s || "")
@@ -74,13 +139,84 @@
           .replace(/^-|-$/g, "");
       }
 
-      if (!slugEl || !contentEl || !saveBtn || !statusEl) {
+      function buildPreviewDocument(html, slug) {
+        const pageTitle = slug ? `/p/${slug}` : "Live Preview";
+
+        return `
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${pageTitle}</title>
+    <style>
+      body {
+        font-family: system-ui, Arial, sans-serif;
+        margin: 0;
+        background: #ffffff;
+        color: #0f172a;
+      }
+      .page-wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 24px 16px;
+      }
+      .preview-banner {
+        font-size: 12px;
+        color: #64748b;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #e2e8f0;
+      }
+      .empty {
+        color: #64748b;
+        font-size: 14px;
+        padding: 24px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 12px;
+        background: #f8fafc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrap">
+      <div class="preview-banner">${pageTitle}</div>
+      ${
+        html.trim()
+          ? html
+          : `<div class="empty">Start typing HTML on the left side to see a live preview.</div>`
+      }
+    </div>
+  </body>
+</html>`;
+      }
+
+      function renderPreview() {
+        if (!slugEl || !contentEl || !previewFrame || !pathPreviewEl) return;
+
+        const slug = sanitizeSlug(slugEl.value);
+        const html = contentEl.value;
+
+        pathPreviewEl.textContent = slug ? `/p/${slug}` : "/p/<slug>";
+        previewFrame.srcdoc = buildPreviewDocument(html, slug);
+      }
+
+      if (!slugEl || !contentEl || !saveBtn || !statusEl || !previewFrame || !pathPreviewEl) {
         console.error("Builder elements not found");
       } else {
-        // Default HTML sample (safe)
         contentEl.value =
 `<h2>Hello from dynamic page!</h2>
 <p>This page was created from the browser.</p>`;
+
+        renderPreview();
+
+        slugEl.addEventListener("input", () => {
+          renderPreview();
+        });
+
+        contentEl.addEventListener("input", () => {
+          renderPreview();
+        });
 
         saveBtn.addEventListener("click", async () => {
           const slug = sanitizeSlug(slugEl.value);
@@ -89,11 +225,12 @@
           statusEl.textContent = "";
 
           if (!slug) {
-            statusEl.innerHTML = '<span class="bad">Input a Valid slug</span>';
+            statusEl.innerHTML = '<span class="bad">Input a valid slug</span>';
             return;
           }
+
           if (!html.trim()) {
-            statusEl.innerHTML = '<span class="bad">Input a Valid HTML content</span>';
+            statusEl.innerHTML = '<span class="bad">Input valid HTML content</span>';
             return;
           }
 
@@ -108,9 +245,9 @@
               body: JSON.stringify({ slug, html }),
             });
 
-            // Debug-safe: read as text first
             const text = await res.text();
             let data;
+
             try {
               data = JSON.parse(text);
             } catch {

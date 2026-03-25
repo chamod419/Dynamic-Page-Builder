@@ -61,5 +61,12 @@
     "html": "<div id = \"mydiv\"> Hello World </div>\n\n<script> document.getElementById(\"mydiv\").onclick = function() {\n         alert(\"Clicked\");\n}\n</script>",
     "updatedAt": "2026-03-20T17:39:40.411Z",
     "createdAt": "2026-03-20T17:33:16.105Z"
+  },
+  {
+    "slug": "about-da-b",
+    "type": "html",
+    "html": "<h2>Hello from dynamic page!</h2>\n<p>This page was created from the browser.!!@0)))</p>",
+    "updatedAt": "2026-03-25T11:35:39.795Z",
+    "createdAt": "2026-03-25T11:35:39.795Z"
   }
 ]
