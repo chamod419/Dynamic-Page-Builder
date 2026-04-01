@@ -8,238 +8,565 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dynamic Page Builder</title>
     <style>
-      body { font-family: system-ui, Arial; background:#f8fafc; margin:0; }
-      .wrap { max-width: 1200px; margin: 40px auto; padding: 0 16px; }
-      .card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px; }
-      .grid {
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-        gap:16px;
-        align-items:start;
-      }
-      label { display:block; font-size:12px; color:#64748b; margin-bottom:6px; }
-      input, textarea {
-        width:100%;
-        border:1px solid #e2e8f0;
-        border-radius:10px;
-        padding:10px 12px;
-        font-size:14px;
-        outline:none;
-        box-sizing:border-box;
-      }
-      input[readonly] {
-        background:#f1f5f9;
-        color:#475569;
-        cursor:not-allowed;
-      }
-      textarea {
-        min-height: 420px;
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        resize: vertical;
-      }
-      .btn {
-        background:#2563eb;
-        color:white;
-        border:none;
-        border-radius:10px;
-        padding:10px 14px;
-        font-weight:600;
-        cursor:pointer;
-      }
-      .btn:disabled { opacity:.6; cursor:not-allowed; }
-      .btn-secondary {
-        background:#e2e8f0;
-        color:#0f172a;
-      }
-      .muted { color:#64748b; font-size:13px; }
-      .status { margin-top:12px; font-size:14px; }
-      .ok { color:#16a34a; }
-      .bad { color:#dc2626; }
-      a { color:#2563eb; }
-      .preview-card {
-        border:1px solid #e2e8f0;
-        border-radius:12px;
-        overflow:hidden;
-        background:#fff;
-      }
-      .preview-head {
-        padding:12px 14px;
-        border-bottom:1px solid #e2e8f0;
-        background:#f8fafc;
-      }
-      .preview-frame {
-        width:100%;
-        height:520px;
-        border:0;
-        display:block;
-        background:white;
-      }
-      .section-title {
-        margin:0 0 6px 0;
-        font-size:14px;
-        font-weight:700;
-      }
-      .editor-top {
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap:12px;
-        flex-wrap:wrap;
-        margin-bottom:10px;
-      }
-      .pages-list {
-        display:flex;
-        flex-direction:column;
-        gap:12px;
-        margin-top:12px;
-      }
-      .page-item {
-        border:1px solid #e2e8f0;
-        border-radius:12px;
-        padding:14px;
-        display:flex;
-        justify-content:space-between;
-        align-items:flex-start;
-        gap:12px;
-        flex-wrap:wrap;
-      }
-      .page-actions {
-        display:flex;
-        gap:8px;
-        flex-wrap:wrap;
-      }
-      .small-btn {
-        border:none;
-        border-radius:8px;
-        padding:8px 12px;
-        font-size:13px;
-        cursor:pointer;
-        font-weight:600;
-      }
-      .edit-btn {
-        background:#2563eb;
-        color:white;
-      }
-      .open-btn {
-        background:#e2e8f0;
-        color:#0f172a;
-        text-decoration:none;
-        display:inline-flex;
-        align-items:center;
-      }
-      .pill {
-        display:inline-block;
-        font-size:12px;
-        padding:4px 8px;
-        border-radius:999px;
-        background:#dbeafe;
-        color:#1d4ed8;
-        font-weight:600;
+      :root {
+        --bg: #1e1e1e;
+        --panel: #252526;
+        --panel-2: #2d2d30;
+        --panel-3: #333333;
+        --border: #3c3c3c;
+        --text: #cccccc;
+        --muted: #8b8b8b;
+        --accent: #0e639c;
+        --accent-2: #1177bb;
+        --success: #4ec9b0;
+        --danger: #f48771;
+        --active: #094771;
+        --hover: #2a2d2e;
       }
 
-      @media (max-width: 900px) {
-        .grid {
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: system-ui, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .topbar {
+        height: 48px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        border-bottom: 1px solid var(--border);
+        background: #181818;
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      .app-shell {
+        display: grid;
+        grid-template-columns: 340px minmax(0, 1fr) minmax(0, 1fr);
+        min-height: calc(100vh - 48px);
+      }
+
+      .panel {
+        min-width: 0;
+        border-right: 1px solid var(--border);
+        background: var(--panel);
+      }
+
+      .panel:last-child {
+        border-right: none;
+      }
+
+      .panel-head {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 0 12px;
+        border-bottom: 1px solid var(--border);
+        background: #181818;
+      }
+
+      .panel-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .section-card {
+        margin: 10px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        background: #202020;
+      }
+
+      .section-head {
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 0 10px;
+        border-bottom: 1px solid var(--border);
+        background: #1a1a1a;
+      }
+
+      .section-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .section-body {
+        padding: 10px;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .icon-btn {
+        border: 1px solid var(--border);
+        background: var(--panel-2);
+        color: var(--text);
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .icon-btn:hover {
+        background: var(--panel-3);
+      }
+
+      .icon-btn:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+      }
+
+      .project-list,
+      .tree-root {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .project-item {
+        width: 100%;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--text);
+        text-align: left;
+        padding: 10px 12px;
+        cursor: pointer;
+      }
+
+      .project-item:hover {
+        background: var(--hover);
+      }
+
+      .project-item.active {
+        background: var(--active);
+        border-color: #0e639c;
+      }
+
+      .project-name {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .project-meta {
+        display: block;
+        margin-top: 4px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .explorer-context {
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #202020;
+      }
+
+      .explorer-context strong {
+        display: block;
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+
+      .explorer-context .muted {
+        font-size: 12px;
+      }
+
+      .tree-children {
+        margin-left: 16px;
+      }
+
+      .tree-row {
+        width: 100%;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .tree-row:hover {
+        background: var(--hover);
+      }
+
+      .tree-row.file-active {
+        background: var(--active);
+        border-color: #0e639c;
+      }
+
+      .tree-row.folder-active {
+        background: #2a2d2e;
+        border-color: #4d4d4d;
+      }
+
+      .tree-arrow {
+        width: 12px;
+        flex: 0 0 12px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .tree-icon {
+        width: 16px;
+        flex: 0 0 16px;
+        text-align: center;
+      }
+
+      .tree-label-wrap {
+        min-width: 0;
+      }
+
+      .tree-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .tree-meta {
+        display: block;
+        margin-top: 2px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .editor-body,
+      .preview-body {
+        padding: 16px;
+      }
+
+      .mode-text {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0 0 14px 0;
+      }
+
+      label {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #1e1e1e;
+        color: var(--text);
+        padding: 10px 12px;
+        outline: none;
+      }
+
+      input[readonly] {
+        background: #1b1b1b;
+        color: #bcbcbc;
+      }
+
+      textarea {
+        min-height: 520px;
+        resize: vertical;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+
+      textarea:disabled {
+        opacity: .7;
+        cursor: not-allowed;
+      }
+
+      .muted {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .editor-actions {
+        margin-top: 12px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 8px;
+        background: var(--accent);
+        color: white;
+        padding: 10px 14px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .btn:hover {
+        background: var(--accent-2);
+      }
+
+      .btn:disabled {
+        opacity: .6;
+        cursor: not-allowed;
+      }
+
+      .status {
+        margin-top: 12px;
+        font-size: 14px;
+      }
+
+      .ok { color: var(--success); }
+      .bad { color: var(--danger); }
+
+      .preview-frame {
+        width: 100%;
+        height: calc(100vh - 118px);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: white;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: #0e639c;
+        color: white;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .empty-text {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 1160px) {
+        .app-shell {
+          grid-template-columns: 320px minmax(0, 1fr);
+        }
+
+        .preview-panel {
+          grid-column: 1 / -1;
+          border-top: 1px solid var(--border);
+        }
+
+        .preview-frame {
+          height: 420px;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .app-shell {
           grid-template-columns: 1fr;
         }
+
+        .panel {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+
         .preview-frame {
-          height:420px;
+          height: 360px;
         }
       }
     </style>
   </head>
 
   <body>
-    <div class="wrap">
-      <h1>Dynamic Page Builder (MVP)</h1>
+    <div class="topbar">Dynamic Page Builder</div>
 
-      <div class="card">
-        <div class="grid">
-          <!-- Left side: editor -->
-          <div>
-            <div class="editor-top">
-              <div>
-                <p class="section-title">Page Editor</p>
-                <p class="muted" id="editorMode">Create a new page</p>
-              </div>
+    <div class="app-shell">
+      <aside class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Workspace</div>
+        </div>
 
-              <button class="btn btn-secondary" id="newPageBtn" type="button">
-                Create New Page
-              </button>
+        <div class="section-card">
+          <div class="section-head">
+            <div class="section-title">Projects</div>
+
+            <div class="toolbar">
+              <button id="newProjectBtn" class="icon-btn" type="button">+ Project</button>
+              <button id="renameProjectBtn" class="icon-btn" type="button">Rename</button>
+              <button id="deleteProjectBtn" class="icon-btn" type="button">Delete</button>
+              <button id="refreshProjectsBtn" class="icon-btn" type="button">Refresh</button>
             </div>
-
-            <div>
-              <label>Page Slug (URL)</label>
-              <input id="slug" placeholder="e.g. about-us" />
-              <p class="muted">This will create: <b id="pathPreview">/p/&lt;slug&gt;</b></p>
-            </div>
-
-            <div style="margin-top: 12px;">
-              <label>HTML Content</label>
-              <textarea id="content"></textarea>
-            </div>
-
-            <div style="margin-top: 12px; display:flex; gap:10px; align-items:center;">
-              <button class="btn" id="saveBtn" type="button">Save Page</button>
-            </div>
-
-            <div class="status" id="status"></div>
           </div>
 
-          <!-- Right side: live preview -->
-          <div>
-            <p class="section-title">Live Preview</p>
-
-            <div class="preview-card">
-              <div class="preview-head">
-                <div class="muted">Preview updates while typing</div>
-              </div>
-
-              <iframe
-                id="previewFrame"
-                class="preview-frame"
-                title="Live preview"
-                sandbox=""
-              ></iframe>
+          <div class="section-body">
+            <div id="projectsList" class="project-list">
+              <div class="empty-text">Loading projects...</div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="card" style="margin-top:16px;">
-        <p class="section-title">Saved Pages</p>
-        <p class="muted">Click Edit to load a saved page into the editor.</p>
+        <div class="section-card">
+          <div class="section-head">
+            <div class="section-title">Explorer</div>
 
-        <div id="pagesList" class="pages-list">
-          <div class="muted">Loading pages...</div>
+            <div class="toolbar">
+              <button id="newFileBtn" class="icon-btn" type="button">+ File</button>
+              <button id="newFolderBtn" class="icon-btn" type="button">+ Folder</button>
+              <button id="renameBtn" class="icon-btn" type="button">Rename</button>
+              <button id="deleteBtn" class="icon-btn" type="button">Delete</button>
+              <button id="refreshBtn" class="icon-btn" type="button">Refresh</button>
+            </div>
+          </div>
+
+          <div class="section-body">
+            <div class="explorer-context">
+              <strong>Selected Project</strong>
+              <div id="selectedProjectText" class="muted">No project selected</div>
+            </div>
+
+            <div class="explorer-context">
+              <strong>Selected Folder</strong>
+              <div id="selectedFolderText" class="muted">Root</div>
+            </div>
+
+            <div id="nodesTree" class="tree-root">
+              <div class="empty-text">Loading files...</div>
+            </div>
+          </div>
         </div>
-      </div>
+      </aside>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Editor</div>
+        </div>
+
+        <div class="editor-body">
+          <p id="editorMode" class="mode-text">Select a project and then choose a file to edit.</p>
+
+          <div>
+            <label>Selected Path</label>
+            <input id="selectedPathInput" readonly />
+          </div>
+
+          <div style="margin-top: 14px;">
+            <label>File Content</label>
+            <textarea id="content" disabled></textarea>
+          </div>
+
+          <div class="editor-actions">
+            <button id="saveBtn" class="btn" type="button" disabled>Save File</button>
+            <span id="fileTypeBadge" class="badge" style="display:none;"></span>
+          </div>
+
+          <div id="publishedUrlRow" class="muted" style="margin-top:10px; display:none;">
+            Published URL:
+            <a
+              id="publishedUrlLink"
+              href="#"
+              target="_blank"
+              style="color:#93c5fd; text-decoration:none;"
+            ></a>
+          </div>
+
+          <div id="status" class="status"></div>
+        </div>
+      </section>
+
+      <section class="panel preview-panel">
+        <div class="panel-head">
+          <div class="panel-title">Preview</div>
+        </div>
+
+        <div class="preview-body">
+          <iframe
+            id="previewFrame"
+            class="preview-frame"
+            title="Live preview"
+            sandbox="allow-scripts"
+          ></iframe>
+        </div>
+      </section>
     </div>
 
     <script type="module">
-      const slugEl = /** @type {HTMLInputElement|null} */ (document.getElementById("slug"));
+      const projectsListEl = /** @type {HTMLDivElement|null} */ (document.getElementById("projectsList"));
+      const nodesTreeEl = /** @type {HTMLDivElement|null} */ (document.getElementById("nodesTree"));
+      const selectedProjectTextEl = /** @type {HTMLDivElement|null} */ (document.getElementById("selectedProjectText"));
+      const selectedFolderTextEl = /** @type {HTMLDivElement|null} */ (document.getElementById("selectedFolderText"));
+      const selectedPathInputEl = /** @type {HTMLInputElement|null} */ (document.getElementById("selectedPathInput"));
       const contentEl = /** @type {HTMLTextAreaElement|null} */ (document.getElementById("content"));
       const saveBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("saveBtn"));
       const statusEl = /** @type {HTMLDivElement|null} */ (document.getElementById("status"));
-      const previewFrame = /** @type {HTMLIFrameElement|null} */ (document.getElementById("previewFrame"));
-      const pathPreviewEl = /** @type {HTMLSpanElement|null} */ (document.getElementById("pathPreview"));
-      const pagesListEl = /** @type {HTMLDivElement|null} */ (document.getElementById("pagesList"));
       const editorModeEl = /** @type {HTMLParagraphElement|null} */ (document.getElementById("editorMode"));
-      const newPageBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("newPageBtn"));
+      const fileTypeBadgeEl = /** @type {HTMLSpanElement|null} */ (document.getElementById("fileTypeBadge"));
+      const previewFrame = /** @type {HTMLIFrameElement|null} */ (document.getElementById("previewFrame"));
+      const newProjectBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("newProjectBtn"));
+      const renameProjectBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("renameProjectBtn"));
+      const deleteProjectBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("deleteProjectBtn"));
+      const refreshProjectsBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("refreshProjectsBtn"));
+      const newFileBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("newFileBtn"));
+      const newFolderBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("newFolderBtn"));
+      const renameBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("renameBtn"));
+      const deleteBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("deleteBtn"));
+      const refreshBtn = /** @type {HTMLButtonElement|null} */ (document.getElementById("refreshBtn"));
+      const publishedUrlRowEl = /** @type {HTMLDivElement|null} */ (document.getElementById("publishedUrlRow"));
+      const publishedUrlLinkEl = /** @type {HTMLAnchorElement|null} */ (document.getElementById("publishedUrlLink"));
 
-      const defaultHtml =
-`<h2>Hello from dynamic page!</h2>
-<p>This page was created from the browser.</p>`;
+      /** @type {Array<any>} */
+      let cachedProjects = [];
 
-      /** @type {Array<{slug:string, html:string, createdAt?:string, updatedAt?:string}>} */
-      let cachedPages = [];
+      /** @type {Array<any>} */
+      let cachedNodes = [];
 
-      function sanitizeSlug(s) {
-        return (s || "")
+      /** @type {string} */
+      let selectedProjectId = "";
+
+      /** @type {string} */
+      let selectedProjectRoot = "";
+
+      /** @type {string} */
+      let selectedFolderPath = "";
+
+      /** @type {string} */
+      let selectedFilePath = "";
+
+      /** @type {Set<string>} */
+      const collapsedFolders = new Set();
+
+      function sanitizeNodePart(input) {
+        const value = String(input || "")
           .trim()
           .toLowerCase()
-          .replace(/[^a-z0-9-]/g, "-")
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9._-]/g, "-")
           .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "");
+          .replace(/^\.+|\.+$/g, "")
+          .replace(/^[-_]+|[-_]+$/g, "");
+
+        if (value === "." || value === "..") return "";
+        return value;
       }
 
       function escapeHtml(value) {
@@ -251,17 +578,437 @@
           .replace(/'/g, "&#39;");
       }
 
-      function formatDate(value) {
-        if (!value) return "-";
-        try {
-          return new Date(value).toLocaleString();
-        } catch {
-          return value;
+      function detectFileType(fileName, fallback) {
+        const ext = String(fileName || "").split(".").pop()?.toLowerCase();
+
+        if (ext === "html") return "html";
+        if (ext === "css") return "css";
+        if (ext === "js") return "js";
+
+        if (fallback === "html" || fallback === "css" || fallback === "js" || fallback === "txt") {
+          return fallback;
+        }
+
+        return "txt";
+      }
+
+      function isPathInsideProject(nodePath) {
+        if (!selectedProjectRoot || !nodePath) return false;
+        return nodePath === selectedProjectRoot || nodePath.startsWith(`${selectedProjectRoot}/`);
+      }
+
+      function getProjectById(projectId) {
+        return cachedProjects.find((project) => project.id === projectId);
+      }
+
+      function getNodeByPath(nodePath) {
+        return cachedNodes.find((node) => node.path === nodePath);
+      }
+
+      function getVisibleNodes() {
+        if (!selectedProjectRoot) return [];
+        return cachedNodes.filter((node) => isPathInsideProject(node.path));
+      }
+
+      function getChildren(parentPath) {
+        return getVisibleNodes().filter((node) => node.parentPath === parentPath);
+      }
+
+      function sortChildren(children) {
+        return [...children].sort((a, b) => {
+          if (a.kind !== b.kind) return a.kind === "folder" ? -1 : 1;
+          return a.name.localeCompare(b.name);
+        });
+      }
+
+      function expandAncestors(nodePath) {
+        const parts = String(nodePath || "").split("/").filter(Boolean);
+        let current = "";
+
+        for (const part of parts.slice(0, -1)) {
+          current = current ? `${current}/${part}` : part;
+          collapsedFolders.delete(current);
         }
       }
 
-      function buildPreviewDocument(html, slug) {
-        const pageTitle = slug ? `/p/${slug}` : "Live Preview";
+      function getActionTarget() {
+        if (selectedFilePath) {
+          return getNodeByPath(selectedFilePath) || null;
+        }
+
+        if (selectedFolderPath && selectedFolderPath !== selectedProjectRoot) {
+          return getNodeByPath(selectedFolderPath) || null;
+        }
+
+        return null;
+      }
+
+      function updateActionButtons() {
+        const hasProject = Boolean(selectedProjectRoot);
+        const actionTarget = getActionTarget();
+
+        if (newFileBtn) newFileBtn.disabled = !hasProject;
+        if (newFolderBtn) newFolderBtn.disabled = !hasProject;
+        if (renameBtn) renameBtn.disabled = !actionTarget;
+        if (deleteBtn) deleteBtn.disabled = !actionTarget;
+        if (renameProjectBtn) renameProjectBtn.disabled = !hasProject;
+        if (deleteProjectBtn) deleteProjectBtn.disabled = !hasProject;
+
+        if (selectedProjectTextEl) {
+          const project = getProjectById(selectedProjectId);
+          selectedProjectTextEl.textContent = project
+            ? `${project.name} (${project.rootPath})`
+            : "No project selected";
+        }
+
+        if (selectedFolderTextEl) {
+          selectedFolderTextEl.textContent = selectedFolderPath || selectedProjectRoot || "Root";
+        }
+      }
+
+      function renderProjectsList() {
+        if (!projectsListEl) return;
+
+        if (!cachedProjects.length) {
+          projectsListEl.innerHTML = '<div class="empty-text">No projects yet.</div>';
+          return;
+        }
+
+        projectsListEl.innerHTML = cachedProjects.map((project) => {
+          const activeClass = project.id === selectedProjectId ? "active" : "";
+
+          return `
+            <button
+              class="project-item ${activeClass}"
+              type="button"
+              data-project-id="${escapeHtml(project.id)}"
+            >
+              <span class="project-name">${escapeHtml(project.name)}</span>
+              <span class="project-meta">${escapeHtml(project.rootPath)}</span>
+            </button>
+          `;
+        }).join("");
+      }
+
+      function renderTree(parentPath, depth = 0) {
+        const children = sortChildren(getChildren(parentPath));
+
+        return children.map((node) => {
+          if (node.kind === "folder") {
+            const isCollapsed = collapsedFolders.has(node.path);
+            const folderActiveClass = node.path === selectedFolderPath && !selectedFilePath ? "folder-active" : "";
+
+            return `
+              <div class="tree-node">
+                <button
+                  class="tree-row ${folderActiveClass}"
+                  type="button"
+                  data-folder-path="${escapeHtml(node.path)}"
+                  style="padding-left:${10 + depth * 16}px;"
+                >
+                  <span class="tree-arrow">${isCollapsed ? "▸" : "▾"}</span>
+                  <span class="tree-icon">📁</span>
+                  <span class="tree-label-wrap">
+                    <span class="tree-label">${escapeHtml(node.name)}</span>
+                    <span class="tree-meta">folder</span>
+                  </span>
+                </button>
+                ${
+                  isCollapsed
+                    ? ""
+                    : `<div class="tree-children">${renderTree(node.path, depth + 1)}</div>`
+                }
+              </div>
+            `;
+          }
+
+          const fileActiveClass = node.path === selectedFilePath ? "file-active" : "";
+
+          return `
+            <button
+              class="tree-row ${fileActiveClass}"
+              type="button"
+              data-file-path="${escapeHtml(node.path)}"
+              style="padding-left:${10 + depth * 16}px;"
+            >
+              <span class="tree-arrow"></span>
+              <span class="tree-icon">📄</span>
+              <span class="tree-label-wrap">
+                <span class="tree-label">${escapeHtml(node.name)}</span>
+                <span class="tree-meta">${escapeHtml(node.fileType || "file")}</span>
+              </span>
+            </button>
+          `;
+        }).join("");
+      }
+
+      function renderExplorer() {
+        if (!nodesTreeEl) return;
+
+        updateActionButtons();
+
+        if (!selectedProjectRoot) {
+          nodesTreeEl.innerHTML = '<div class="empty-text">Create or select a project first.</div>';
+          return;
+        }
+
+        const visibleNodes = getVisibleNodes();
+        const projectChildren = visibleNodes.filter((node) => node.parentPath === selectedProjectRoot);
+
+        if (!projectChildren.length) {
+          nodesTreeEl.innerHTML = '<div class="empty-text">No files or folders in this project yet.</div>';
+          return;
+        }
+
+        nodesTreeEl.innerHTML = renderTree(selectedProjectRoot, 0);
+      }
+
+      function clearEditor() {
+        if (!selectedPathInputEl || !contentEl || !saveBtn || !fileTypeBadgeEl || !editorModeEl) return;
+
+        selectedFilePath = "";
+        selectedPathInputEl.value = selectedFolderPath || selectedProjectRoot || "";
+        contentEl.value = "";
+        contentEl.disabled = true;
+        saveBtn.disabled = true;
+        fileTypeBadgeEl.style.display = "none";
+
+        if (selectedFolderPath) {
+          editorModeEl.innerHTML = `Folder selected: <span class="badge">${escapeHtml(selectedFolderPath)}</span>`;
+        } else if (selectedProjectRoot) {
+          editorModeEl.innerHTML = `Project selected: <span class="badge">${escapeHtml(selectedProjectRoot)}</span>`;
+        } else {
+          editorModeEl.textContent = "Select a project and then choose a file to edit.";
+        }
+      }
+
+      function openFile(node) {
+        if (!selectedPathInputEl || !contentEl || !saveBtn || !fileTypeBadgeEl || !editorModeEl) return;
+
+        selectedFilePath = node.path;
+        selectedFolderPath = node.parentPath || selectedProjectRoot;
+
+        expandAncestors(node.path);
+
+        selectedPathInputEl.value = node.path;
+        contentEl.disabled = false;
+        contentEl.value = node.content || "";
+        saveBtn.disabled = false;
+
+        const fileType = detectFileType(node.name, node.fileType);
+        fileTypeBadgeEl.textContent = fileType.toUpperCase();
+        fileTypeBadgeEl.style.display = "inline-block";
+
+        editorModeEl.innerHTML = `Editing <span class="badge">${escapeHtml(node.path)}</span>`;
+        statusEl.textContent = "";
+
+        renderExplorer();
+        renderPreview();
+      }
+
+      function selectFolder(folderPath) {
+        selectedFolderPath = folderPath;
+        selectedFilePath = "";
+
+        if (folderPath && folderPath !== selectedProjectRoot) {
+          if (collapsedFolders.has(folderPath)) {
+            collapsedFolders.delete(folderPath);
+          } else {
+            collapsedFolders.add(folderPath);
+          }
+        }
+
+        clearEditor();
+        renderExplorer();
+        renderPreview();
+      }
+
+      function selectProject(project) {
+        selectedProjectId = project.id;
+        selectedProjectRoot = project.rootPath;
+        selectedFolderPath = project.rootPath;
+        selectedFilePath = "";
+        statusEl.textContent = "";
+
+        collapsedFolders.clear();
+        collapsedFolders.delete(project.rootPath);
+
+        renderProjectsList();
+        clearEditor();
+        renderExplorer();
+        renderPreview();
+      }
+
+      function getWorkingContent(node) {
+        if (!node) return "";
+        if (selectedFilePath && node.path === selectedFilePath && contentEl) {
+          return contentEl.value;
+        }
+        return String(node.content || "");
+      }
+
+      function getCurrentPreviewFolderPath() {
+        if (selectedFilePath) {
+          const fileNode = getNodeByPath(selectedFilePath);
+          return fileNode?.parentPath || selectedProjectRoot || "";
+        }
+
+        return selectedFolderPath || selectedProjectRoot || "";
+      }
+
+      function getFolderChain(projectRoot, folderPath) {
+        if (!projectRoot || !folderPath) return [];
+        if (!(folderPath === projectRoot || folderPath.startsWith(`${projectRoot}/`))) {
+          return [];
+        }
+
+        const rootParts = projectRoot.split("/").filter(Boolean);
+        const folderParts = folderPath.split("/").filter(Boolean);
+
+        const chain = [];
+        for (let i = rootParts.length; i <= folderParts.length; i++) {
+          chain.push(folderParts.slice(0, i).join("/"));
+        }
+
+        return chain;
+      }
+
+      function collectAssetNodesForPreview(previewFolderPath) {
+        const chain = getFolderChain(selectedProjectRoot, previewFolderPath);
+        const seen = new Set();
+        const cssNodes = [];
+        const jsNodes = [];
+
+        for (const folderPath of chain) {
+          const folderFiles = cachedNodes.filter(
+            (node) => node.kind === "file" && node.parentPath === folderPath
+          );
+
+          const candidates =
+            folderPath === previewFolderPath
+              ? folderFiles.filter((node) => {
+                  const type = detectFileType(node.name, node.fileType);
+                  return type === "css" || type === "js";
+                })
+              : folderFiles.filter(
+                  (node) => node.name === "style.css" || node.name === "script.js"
+                );
+
+          for (const node of candidates) {
+            if (seen.has(node.path)) continue;
+            seen.add(node.path);
+
+            const type = detectFileType(node.name, node.fileType);
+            if (type === "css") cssNodes.push(node);
+            if (type === "js") jsNodes.push(node);
+          }
+        }
+
+        return { cssNodes, jsNodes };
+      }
+
+      function getPublishedUrl() {
+        if (!selectedProjectRoot) return "";
+
+        if (selectedFilePath) {
+          const node = getNodeByPath(selectedFilePath);
+
+          if (node && detectFileType(node.name, node.fileType) === "html") {
+            if (node.name === "index.html") {
+              return `/site/${node.parentPath || selectedProjectRoot}`;
+            }
+
+            return `/site/${node.path.replace(/\.html$/i, "")}`;
+          }
+
+          const fallbackFolder = node?.parentPath || selectedFolderPath || selectedProjectRoot;
+          return fallbackFolder ? `/site/${fallbackFolder}` : "";
+        }
+
+        const folderPath = selectedFolderPath || selectedProjectRoot;
+        return folderPath ? `/site/${folderPath}` : "";
+      }
+
+      function updatePublishedLink() {
+        if (!publishedUrlRowEl || !publishedUrlLinkEl) return;
+
+        const url = getPublishedUrl();
+
+        if (!url) {
+          publishedUrlRowEl.style.display = "none";
+          publishedUrlLinkEl.href = "#";
+          publishedUrlLinkEl.textContent = "";
+          return;
+        }
+
+        publishedUrlRowEl.style.display = "block";
+        publishedUrlLinkEl.href = url;
+        publishedUrlLinkEl.textContent = url;
+      }
+
+      function buildPreviewDocument() {
+        const previewFolderPath = getCurrentPreviewFolderPath();
+        const folderFiles = cachedNodes.filter(
+          (node) => node.kind === "file" && node.parentPath === previewFolderPath
+        );
+
+        const selectedFileNode = selectedFilePath ? getNodeByPath(selectedFilePath) : null;
+
+        let htmlNode = null;
+
+        if (selectedFileNode && detectFileType(selectedFileNode.name, selectedFileNode.fileType) === "html") {
+          htmlNode = selectedFileNode;
+        } else {
+          htmlNode =
+            folderFiles.find((node) => detectFileType(node.name, node.fileType) === "html" && node.name === "index.html") ||
+            folderFiles.find((node) => detectFileType(node.name, node.fileType) === "html") ||
+            null;
+        }
+
+        const { cssNodes, jsNodes } = collectAssetNodesForPreview(previewFolderPath);
+
+        const htmlContent = htmlNode ? getWorkingContent(htmlNode) : "";
+        const cssContent = cssNodes.map((node) => getWorkingContent(node)).join("\n\n");
+        const jsContent = jsNodes.map((node) => getWorkingContent(node)).join("\n\n");
+
+        const title = previewFolderPath || selectedProjectRoot || "Preview";
+        const baseHref = previewFolderPath ? `/site/${previewFolderPath}/` : "/site/";
+
+        if (!htmlContent.trim()) {
+          return `
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>${title}</title>
+    <style>
+      body {
+        font-family: system-ui, Arial, sans-serif;
+        padding: 24px;
+        color: #0f172a;
+      }
+      .empty {
+        padding: 20px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 12px;
+        background: #f8fafc;
+        color: #64748b;
+      }
+      code {
+        background: #e2e8f0;
+        padding: 2px 6px;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="empty">
+      No HTML file found in this folder.<br />
+      Create something like <code>index.html</code> inside <code>${previewFolderPath || "root"}</code>.
+    </div>
+  </body>
+</html>`;
+        }
 
         return `
 <!DOCTYPE html>
@@ -269,232 +1016,550 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${pageTitle}</title>
-    <style>
-      body {
-        font-family: system-ui, Arial, sans-serif;
-        margin: 0;
-        background: #ffffff;
-        color: #0f172a;
-      }
-      .page-wrap {
-        max-width: 980px;
-        margin: 0 auto;
-        padding: 24px 16px;
-      }
-      .preview-banner {
-        font-size: 12px;
-        color: #64748b;
-        margin-bottom: 16px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid #e2e8f0;
-      }
-      .empty {
-        color: #64748b;
-        font-size: 14px;
-        padding: 24px;
-        border: 1px dashed #cbd5e1;
-        border-radius: 12px;
-        background: #f8fafc;
-      }
-    </style>
+    <title>${title}</title>
+    <base href="${baseHref}" />
+    <style>${cssContent}</style>
   </head>
   <body>
-    <div class="page-wrap">
-      <div class="preview-banner">${pageTitle}</div>
-      ${
-        html.trim()
-          ? html
-          : `<div class="empty">Start typing HTML on the left side to see a live preview.</div>`
-      }
-    </div>
+    ${htmlContent}
+    <script>${jsContent.replace(/<\/script/gi, "<\\/script")}<\/script>
   </body>
 </html>`;
       }
 
       function renderPreview() {
-        if (!slugEl || !contentEl || !previewFrame || !pathPreviewEl) return;
-
-        const slug = sanitizeSlug(slugEl.value);
-        const html = contentEl.value;
-
-        pathPreviewEl.textContent = slug ? `/p/${slug}` : "/p/<slug>";
-        previewFrame.srcdoc = buildPreviewDocument(html, slug);
+        if (!previewFrame) return;
+        previewFrame.srcdoc = buildPreviewDocument();
+        updatePublishedLink();
       }
 
-      function resetEditor() {
-        if (!slugEl || !contentEl || !editorModeEl || !saveBtn || !statusEl) return;
+      async function fetchJson(url, options) {
+        const res = await fetch(url, options);
+        const text = await res.text();
 
-        slugEl.readOnly = false;
-        slugEl.value = "";
-        contentEl.value = defaultHtml;
-        editorModeEl.textContent = "Create a new page";
-        saveBtn.textContent = "Save Page";
-        statusEl.textContent = "";
-        renderPreview();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error(`Server returned non-JSON (status ${res.status}): ${text}`);
+        }
+
+        if (!res.ok) {
+          throw new Error(data?.error || "Request failed");
+        }
+
+        return data;
       }
 
-      function startEdit(page) {
-        if (!slugEl || !contentEl || !editorModeEl || !saveBtn || !statusEl) return;
+      async function loadProjects() {
+        if (!projectsListEl) return;
 
-        slugEl.value = page.slug;
-        slugEl.readOnly = true;
-        contentEl.value = page.html || "";
-        editorModeEl.innerHTML = `Editing page: <span class="pill">${escapeHtml(page.slug)}</span>`;
-        saveBtn.textContent = "Update Page";
-        statusEl.textContent = "";
-        renderPreview();
+        projectsListEl.innerHTML = '<div class="empty-text">Loading projects...</div>';
+
+        try {
+          const data = await fetchJson("/api/projects/list");
+          cachedProjects = Array.isArray(data?.projects) ? data.projects : [];
+
+          const selectedProject = cachedProjects.find((project) => project.id === selectedProjectId);
+
+          if (!selectedProject && cachedProjects.length) {
+            const firstProject = cachedProjects[0];
+            selectedProjectId = firstProject.id;
+            selectedProjectRoot = firstProject.rootPath;
+            selectedFolderPath = firstProject.rootPath;
+            selectedFilePath = "";
+          }
+
+          if (!cachedProjects.length) {
+            selectedProjectId = "";
+            selectedProjectRoot = "";
+            selectedFolderPath = "";
+            selectedFilePath = "";
+          }
+
+          renderProjectsList();
+          updateActionButtons();
+        } catch (err) {
+          projectsListEl.innerHTML = `<div class="bad">${err?.message || err}</div>`;
+        }
       }
 
-      function renderPagesList() {
-        if (!pagesListEl) return;
+      async function loadNodes() {
+        if (!nodesTreeEl) return;
 
-        if (!cachedPages.length) {
-          pagesListEl.innerHTML = '<div class="muted">No saved pages yet.</div>';
+        nodesTreeEl.innerHTML = '<div class="empty-text">Loading files...</div>';
+
+        try {
+          const data = await fetchJson("/api/nodes/list");
+          cachedNodes = Array.isArray(data?.nodes) ? data.nodes : [];
+
+          if (selectedProjectRoot) {
+            const projectRootExists = cachedNodes.some(
+              (node) => node.kind === "folder" && node.path === selectedProjectRoot
+            );
+
+            if (!projectRootExists) {
+              selectedProjectId = "";
+              selectedProjectRoot = "";
+              selectedFolderPath = "";
+              selectedFilePath = "";
+            }
+          }
+
+          if (selectedFilePath) {
+            const currentFile = getNodeByPath(selectedFilePath);
+            if (!currentFile || !isPathInsideProject(currentFile.path)) {
+              selectedFilePath = "";
+            }
+          }
+
+          if (selectedFolderPath) {
+            const currentFolder = getNodeByPath(selectedFolderPath);
+            const validFolder =
+              selectedFolderPath === selectedProjectRoot ||
+              (currentFolder && currentFolder.kind === "folder" && isPathInsideProject(currentFolder.path));
+
+            if (!validFolder) {
+              selectedFolderPath = selectedProjectRoot || "";
+            }
+          }
+
+          renderExplorer();
+
+          if (selectedFilePath) {
+            const currentFile = getNodeByPath(selectedFilePath);
+            if (currentFile) {
+              openFile(currentFile);
+            } else {
+              clearEditor();
+              renderPreview();
+            }
+          } else {
+            clearEditor();
+            renderPreview();
+          }
+        } catch (err) {
+          nodesTreeEl.innerHTML = `<div class="bad">${err?.message || err}</div>`;
+        }
+      }
+
+      async function refreshWorkspace() {
+        await loadProjects();
+        await loadNodes();
+      }
+
+      async function createProjectFromPrompt() {
+        const name = window.prompt("Create new project\n\nProject name:");
+
+        if (!name) return;
+
+        try {
+          const data = await fetchJson("/api/projects/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name }),
+          });
+
+          const project = data?.project;
+
+          if (project?.id) {
+            selectedProjectId = project.id;
+            selectedProjectRoot = project.rootPath;
+            selectedFolderPath = project.rootPath;
+            selectedFilePath = "";
+          }
+
+          statusEl.innerHTML = `<span class="ok">Project created successfully.</span>`;
+          await refreshWorkspace();
+        } catch (err) {
+          statusEl.innerHTML = `<span class="bad">${err?.message || err}</span>`;
+        }
+      }
+
+      async function renameSelectedProjectFromPrompt() {
+        if (!selectedProjectId) {
+          statusEl.innerHTML = '<span class="bad">Select a project first.</span>';
           return;
         }
 
-        pagesListEl.innerHTML = cachedPages.map((page) => `
-          <div class="page-item">
-            <div>
-              <div style="font-weight:700; font-size:15px;">/p/${escapeHtml(page.slug)}</div>
-              <div class="muted" style="margin-top:6px;">
-                Updated: ${escapeHtml(formatDate(page.updatedAt || page.createdAt))}
-              </div>
-            </div>
+        const currentProject = getProjectById(selectedProjectId);
+        const currentName = currentProject?.name || selectedProjectId;
 
-            <div class="page-actions">
-              <a class="small-btn open-btn" href="/p/${encodeURIComponent(page.slug)}" target="_blank">Open</a>
-              <button
-                class="small-btn edit-btn"
-                type="button"
-                data-edit-slug="${escapeHtml(page.slug)}"
-              >
-                Edit
-              </button>
-            </div>
-          </div>
-        `).join("");
-      }
+        const newName = window.prompt(
+          `Rename project\n\nCurrent name: ${currentName}\nNew name:`,
+          currentName
+        );
 
-      async function loadPages() {
-        if (!pagesListEl) return;
-
-        pagesListEl.innerHTML = '<div class="muted">Loading pages...</div>';
+        if (!newName || newName === currentName) return;
 
         try {
-          const res = await fetch("/api/pages/list");
-          const text = await res.text();
+          const data = await fetchJson("/api/projects/rename", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              projectId: selectedProjectId,
+              newName,
+            }),
+          });
 
-          let data;
-          try {
-            data = JSON.parse(text);
-          } catch {
-            throw new Error(`Server returned non-JSON (status ${res.status}): ${text}`);
+          const project = data?.project;
+
+          if (project?.id) {
+            selectedProjectId = project.id;
+            selectedProjectRoot = project.rootPath;
+            selectedFolderPath = project.rootPath;
+            selectedFilePath = "";
           }
 
-          if (!res.ok) throw new Error(data?.error || "Failed to load pages");
+          collapsedFolders.clear();
 
-          cachedPages = Array.isArray(data?.pages) ? data.pages : [];
-          renderPagesList();
+          statusEl.innerHTML = `<span class="ok">Project renamed successfully.</span>`;
+          await refreshWorkspace();
         } catch (err) {
-          pagesListEl.innerHTML = `<div class="bad">${err?.message || err}</div>`;
+          statusEl.innerHTML = `<span class="bad">${err?.message || err}</span>`;
+        }
+      }
+
+      async function deleteSelectedProject() {
+        if (!selectedProjectId) {
+          statusEl.innerHTML = '<span class="bad">Select a project first.</span>';
+          return;
+        }
+
+        const currentProject = getProjectById(selectedProjectId);
+        const projectLabel = currentProject?.name || selectedProjectId;
+
+        const confirmed = window.confirm(
+          `Delete this project?\n\n${projectLabel}\n\nAll files and folders inside it will be removed.`
+        );
+
+        if (!confirmed) return;
+
+        try {
+          await fetchJson("/api/projects/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              projectId: selectedProjectId,
+            }),
+          });
+
+          selectedProjectId = "";
+          selectedProjectRoot = "";
+          selectedFolderPath = "";
+          selectedFilePath = "";
+          collapsedFolders.clear();
+
+          statusEl.innerHTML = `<span class="ok">Project deleted successfully.</span>`;
+          await refreshWorkspace();
+        } catch (err) {
+          statusEl.innerHTML = `<span class="bad">${err?.message || err}</span>`;
+        }
+      }
+
+      async function createFolderFromPrompt() {
+        if (!selectedProjectRoot) {
+          statusEl.innerHTML = '<span class="bad">Create or select a project first.</span>';
+          return;
+        }
+
+        const baseFolder = selectedFolderPath || selectedProjectRoot;
+        const name = window.prompt(`Create new folder inside "${baseFolder}"\n\nFolder name:`);
+
+        if (!name) return;
+
+        try {
+          const data = await fetchJson("/api/nodes/create-folder", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              parentPath: baseFolder,
+              name,
+            }),
+          });
+
+          const node = data?.node;
+          if (node?.path) {
+            selectedFolderPath = node.path;
+            selectedFilePath = "";
+            collapsedFolders.delete(node.path);
+          }
+
+          statusEl.innerHTML = `<span class="ok">Folder created successfully.</span>`;
+          await loadNodes();
+        } catch (err) {
+          statusEl.innerHTML = `<span class="bad">${err?.message || err}</span>`;
+        }
+      }
+
+      async function createFileFromPrompt() {
+        if (!selectedProjectRoot) {
+          statusEl.innerHTML = '<span class="bad">Create or select a project first.</span>';
+          return;
+        }
+
+        const baseFolder = selectedFolderPath || selectedProjectRoot;
+        const name = window.prompt(`Create new file inside "${baseFolder}"\n\nFile name (example: index.html or style.css):`);
+
+        if (!name) return;
+
+        try {
+          const data = await fetchJson("/api/nodes/create-file", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              parentPath: baseFolder,
+              name,
+            }),
+          });
+
+          const node = data?.node;
+          statusEl.innerHTML = `<span class="ok">File created successfully.</span>`;
+          await loadNodes();
+
+          if (node?.path) {
+            const createdNode = getNodeByPath(node.path);
+            if (createdNode) {
+              openFile(createdNode);
+            }
+          }
+        } catch (err) {
+          statusEl.innerHTML = `<span class="bad">${err?.message || err}</span>`;
+        }
+      }
+
+      async function renameSelectedNodeFromPrompt() {
+        const target = getActionTarget();
+
+        if (!target) {
+          statusEl.innerHTML = '<span class="bad">Select a file or folder to rename.</span>';
+          return;
+        }
+
+        const label = target.kind === "folder" ? "folder" : "file";
+        const newName = window.prompt(`Rename ${label}\n\nCurrent name: ${target.name}\nNew name:`, target.name);
+
+        if (!newName || newName === target.name) return;
+
+        try {
+          const data = await fetchJson("/api/nodes/rename", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              path: target.path,
+              newName,
+            }),
+          });
+
+          const renamedNode = data?.node;
+          collapsedFolders.clear();
+
+          if (renamedNode?.kind === "file") {
+            selectedFilePath = renamedNode.path;
+            selectedFolderPath = renamedNode.parentPath || selectedProjectRoot;
+          } else if (renamedNode?.kind === "folder") {
+            selectedFilePath = "";
+            selectedFolderPath = renamedNode.path;
+          }
+
+          statusEl.innerHTML = `<span class="ok">${label} renamed successfully.</span>`;
+          await loadNodes();
+
+          if (renamedNode?.kind === "file") {
+            const freshNode = getNodeByPath(renamedNode.path);
+            if (freshNode) {
+              openFile(freshNode);
+            }
+          } else {
+            clearEditor();
+            renderExplorer();
+            renderPreview();
+          }
+        } catch (err) {
+          statusEl.innerHTML = `<span class="bad">${err?.message || err}</span>`;
+        }
+      }
+
+      async function deleteSelectedNode() {
+        const target = getActionTarget();
+
+        if (!target) {
+          statusEl.innerHTML = '<span class="bad">Select a file or folder to delete.</span>';
+          return;
+        }
+
+        const label = target.kind === "folder" ? "folder" : "file";
+        const confirmed = window.confirm(`Delete this ${label}?\n\n${target.path}`);
+
+        if (!confirmed) return;
+
+        try {
+          await fetchJson("/api/nodes/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              path: target.path,
+            }),
+          });
+
+          selectedFilePath = "";
+          selectedFolderPath = target.parentPath || selectedProjectRoot;
+          collapsedFolders.clear();
+
+          statusEl.innerHTML = `<span class="ok">${label} deleted successfully.</span>`;
+          await loadNodes();
+          clearEditor();
+          renderExplorer();
+          renderPreview();
+        } catch (err) {
+          statusEl.innerHTML = `<span class="bad">${err?.message || err}</span>`;
+        }
+      }
+
+      async function saveCurrentFile() {
+        if (!selectedFilePath || !contentEl || !saveBtn) return;
+
+        saveBtn.disabled = true;
+        const oldText = saveBtn.textContent;
+        saveBtn.textContent = "Saving...";
+
+        try {
+          await fetchJson("/api/nodes/save-file", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              path: selectedFilePath,
+              content: contentEl.value,
+            }),
+          });
+
+          const publishedUrl = getPublishedUrl();
+
+          statusEl.innerHTML = publishedUrl
+            ? `<span class="ok">File saved successfully.</span> <a href="${publishedUrl}" target="_blank" style="color:#93c5fd; text-decoration:none;">Open published page</a>`
+            : `<span class="ok">File saved successfully.</span>`;
+
+          await loadNodes();
+          renderPreview();
+        } catch (err) {
+          statusEl.innerHTML = `<span class="bad">${err?.message || err}</span>`;
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.textContent = oldText;
         }
       }
 
       if (
-        !slugEl ||
+        !projectsListEl ||
+        !nodesTreeEl ||
+        !selectedProjectTextEl ||
+        !selectedFolderTextEl ||
+        !selectedPathInputEl ||
         !contentEl ||
         !saveBtn ||
         !statusEl ||
-        !previewFrame ||
-        !pathPreviewEl ||
-        !pagesListEl ||
         !editorModeEl ||
-        !newPageBtn
+        !fileTypeBadgeEl ||
+        !previewFrame ||
+        !newProjectBtn ||
+        !renameProjectBtn ||
+        !deleteProjectBtn ||
+        !refreshProjectsBtn ||
+        !newFileBtn ||
+        !newFolderBtn ||
+        !renameBtn ||
+        !deleteBtn ||
+        !refreshBtn ||
+        !publishedUrlRowEl ||
+        !publishedUrlLinkEl
       ) {
         console.error("Builder elements not found");
       } else {
-        contentEl.value = defaultHtml;
-
+        clearEditor();
         renderPreview();
-        loadPages();
+        refreshWorkspace();
 
-        slugEl.addEventListener("input", () => {
-          renderPreview();
+        projectsListEl.addEventListener("click", (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+
+          const projectBtn = target.closest("[data-project-id]");
+          if (!(projectBtn instanceof HTMLElement)) return;
+
+          const projectId = projectBtn.getAttribute("data-project-id");
+          const project = projectId ? getProjectById(projectId) : null;
+
+          if (project) {
+            selectProject(project);
+          }
+        });
+
+        nodesTreeEl.addEventListener("click", (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+
+          const folderBtn = target.closest("[data-folder-path]");
+          if (folderBtn instanceof HTMLElement) {
+            const folderPath = folderBtn.getAttribute("data-folder-path");
+            if (folderPath) {
+              selectFolder(folderPath);
+            }
+            return;
+          }
+
+          const fileBtn = target.closest("[data-file-path]");
+          if (!(fileBtn instanceof HTMLElement)) return;
+
+          const filePath = fileBtn.getAttribute("data-file-path");
+          const node = filePath ? getNodeByPath(filePath) : null;
+
+          if (node) {
+            openFile(node);
+          }
+        });
+
+        newProjectBtn.addEventListener("click", () => {
+          createProjectFromPrompt();
+        });
+
+        renameProjectBtn.addEventListener("click", () => {
+          renameSelectedProjectFromPrompt();
+        });
+
+        deleteProjectBtn.addEventListener("click", () => {
+          deleteSelectedProject();
+        });
+
+        refreshProjectsBtn.addEventListener("click", () => {
+          refreshWorkspace();
+        });
+
+        newFolderBtn.addEventListener("click", () => {
+          createFolderFromPrompt();
+        });
+
+        newFileBtn.addEventListener("click", () => {
+          createFileFromPrompt();
+        });
+
+        renameBtn.addEventListener("click", () => {
+          renameSelectedNodeFromPrompt();
+        });
+
+        deleteBtn.addEventListener("click", () => {
+          deleteSelectedNode();
+        });
+
+        refreshBtn.addEventListener("click", () => {
+          refreshWorkspace();
         });
 
         contentEl.addEventListener("input", () => {
           renderPreview();
         });
 
-        newPageBtn.addEventListener("click", () => {
-          resetEditor();
-        });
-
-        pagesListEl.addEventListener("click", (event) => {
-          const target = event.target;
-          if (!(target instanceof HTMLElement)) return;
-
-          const editBtn = target.closest("[data-edit-slug]");
-          if (!editBtn) return;
-
-          const slug = editBtn.getAttribute("data-edit-slug");
-          const page = cachedPages.find((item) => item.slug === slug);
-
-          if (page) {
-            startEdit(page);
-          }
-        });
-
-        saveBtn.addEventListener("click", async () => {
-          const slug = sanitizeSlug(slugEl.value);
-          const html = contentEl.value;
-
-          statusEl.textContent = "";
-
-          if (!slug) {
-            statusEl.innerHTML = '<span class="bad">Input a valid slug</span>';
-            return;
-          }
-
-          if (!html.trim()) {
-            statusEl.innerHTML = '<span class="bad">Input valid HTML content</span>';
-            return;
-          }
-
-          saveBtn.disabled = true;
-          const oldText = saveBtn.textContent;
-          saveBtn.textContent = "Saving...";
-
-          try {
-            const res = await fetch("/api/pages/save", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ slug, html }),
-            });
-
-            const text = await res.text();
-            let data;
-
-            try {
-              data = JSON.parse(text);
-            } catch {
-              throw new Error(`Server returned non-JSON (status ${res.status}): ${text}`);
-            }
-
-            if (!res.ok) throw new Error(data?.error || "Save failed");
-
-            statusEl.innerHTML =
-              `<span class="ok">Saved!</span> Open: <a href="${data.url}" target="_blank">${data.url}</a>`;
-
-            await loadPages();
-          } catch (err) {
-            statusEl.innerHTML = `<span class="bad">${err?.message || err}</span>`;
-          } finally {
-            saveBtn.disabled = false;
-            saveBtn.textContent = oldText;
-          }
+        saveBtn.addEventListener("click", () => {
+          saveCurrentFile();
         });
       }
     </script>

@@ -1,0 +1,92 @@
+---
+export const prerender = false;
+
+import fs from "fs/promises";
+import path from "path";
+
+const dataPath = path.join(process.cwd(), "data", "pages.json");
+
+function sanitizeSegment(input: string) {
+  return (input || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function sanitizePath(input: string) {
+  return String(input || "")
+    .split("/")
+    .map((part) => sanitizeSegment(part))
+    .filter(Boolean)
+    .join("/");
+}
+
+const rawParam = String(Astro.params.path || "");
+const currentPath = sanitizePath(rawParam);
+
+let pages: any[] = [];
+try {
+  const raw = await fs.readFile(dataPath, "utf-8");
+  pages = JSON.parse(raw);
+} catch {
+  pages = [];
+}
+
+const normalizedPages = pages.map((page: any) => {
+  const pagePath = sanitizePath(page?.path || page?.slug || "");
+  const parts = pagePath.split("/").filter(Boolean);
+
+  return {
+    ...page,
+    path: pagePath,
+    name: page?.name || parts[parts.length - 1] || "",
+  };
+});
+
+const page = normalizedPages.find((item: any) => item.path === currentPath);
+
+if (!page) Astro.response.status = 404;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{page ? page.path : "Page Not Found"}</title>
+    <style>
+      body { font-family: system-ui, Arial; background:#f8fafc; margin:0; }
+      .wrap { max-width: 980px; margin: 40px auto; padding: 0 16px; }
+      .card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px; }
+      .muted { color:#64748b; }
+      a { color:#2563eb; }
+      .path-badge {
+        display:inline-block;
+        margin-bottom:14px;
+        padding:6px 10px;
+        background:#eff6ff;
+        color:#1d4ed8;
+        border-radius:999px;
+        font-size:12px;
+        font-weight:700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      {page ? (
+        <div class="card">
+          <div class="path-badge">/p/{page.path}</div>
+          <div set:html={page.html}></div>
+        </div>
+      ) : (
+        <div class="card">
+          <h1>404 - Page not found</h1>
+          <p class="muted">No saved page found for: <b>{currentPath}</b></p>
+          <p>Go to <a href="/builder">/builder</a> and create it.</p>
+        </div>
+      )}
+    </div>
+  </body>
+</html>

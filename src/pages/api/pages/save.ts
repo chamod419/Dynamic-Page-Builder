@@ -13,13 +13,30 @@ const json = (obj: any, status = 200) =>
     headers: { "Content-Type": "application/json" },
   });
 
-function sanitizeSlug(input: string) {
+function sanitizeSegment(input: string) {
   return (input || "")
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
+}
+
+function sanitizePath(input: string) {
+  return String(input || "")
+    .split("/")
+    .map((part) => sanitizeSegment(part))
+    .filter(Boolean)
+    .join("/");
+}
+
+function getPageName(pagePath: string) {
+  const parts = pagePath.split("/").filter(Boolean);
+  return parts[parts.length - 1] || "";
+}
+
+function normalizeExistingPath(page: any) {
+  return sanitizePath(page?.path || page?.slug || "");
 }
 
 async function ensureStore() {
@@ -50,7 +67,8 @@ async function writePages(pages: any[]) {
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const bodyText = await request.text(); 
+    const bodyText = await request.text();
+
     let body: any;
     try {
       body = JSON.parse(bodyText || "{}");
@@ -58,24 +76,44 @@ export const POST: APIRoute = async ({ request }) => {
       return json({ error: "Invalid JSON body", bodyText }, 400);
     }
 
-    const slug = sanitizeSlug(body.slug);
+    const pagePath = sanitizePath(body.path || body.slug || "");
     const html = String(body.html || "").trim();
 
-    if (!slug) return json({ error: "Invalid slug" }, 400);
+    if (!pagePath) return json({ error: "Invalid path" }, 400);
     if (!html) return json({ error: "HTML is required" }, 400);
 
     const pages = await readPages();
     const now = new Date().toISOString();
+    const pageName = getPageName(pagePath);
 
-    const idx = pages.findIndex((p: any) => p.slug === slug);
-    const obj = { slug, type: "html", html, updatedAt: now };
+    const idx = pages.findIndex((page: any) => normalizeExistingPath(page) === pagePath);
 
-    if (idx >= 0) pages[idx] = { ...pages[idx], ...obj };
-    else pages.push({ ...obj, createdAt: now });
+    const obj = {
+      path: pagePath,
+      name: pageName,
+      slug: pageName,
+      type: "html",
+      html,
+      updatedAt: now,
+    };
+
+    if (idx >= 0) {
+      pages[idx] = { ...pages[idx], ...obj };
+    } else {
+      pages.push({ ...obj, createdAt: now });
+    }
 
     await writePages(pages);
 
-    return json({ ok: true, url: `/p/${slug}`, savedTo: dataPath }, 200);
+    return json(
+      {
+        ok: true,
+        url: `/p/${pagePath}`,
+        savedTo: dataPath,
+        path: pagePath,
+      },
+      200
+    );
   } catch (e: any) {
     return json({ error: e?.message || "Server error", stack: e?.stack }, 500);
   }

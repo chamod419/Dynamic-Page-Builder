@@ -68,5 +68,50 @@
     "html": "<h2>Hello from dynamic page!</h2>\n<p>This page was created from the browser.!!@0)))</p>\n<p>New Update</p>",
     "updatedAt": "2026-03-25T19:38:39.856Z",
     "createdAt": "2026-03-25T11:35:39.795Z"
+  },
+  {
+    "path": "pages/company/team",
+    "name": "team",
+    "slug": "team",
+    "type": "html",
+    "html": "<h1>Our Team</h1>\n<ul>\n   <li> Chamod - Developer</li>\n   <li>Nimal - Designer</li>\n   <li>Kasun - Project Manager</li>\n</ul>",
+    "updatedAt": "2026-04-01T05:57:50.137Z",
+    "createdAt": "2026-04-01T05:43:36.884Z"
+  },
+  {
+    "path": "pages/company/adout",
+    "name": "adout",
+    "slug": "adout",
+    "type": "html",
+    "html": "<h1>About Our Company</h1>\n<p>We build software solutions for modern businesses.</p>\n\n<h2>Our Mission</h2>\n<p>To deliver high quality digital products.</p>\n\n<h2>Our Vision</h2>\n<p>To become a trusted technology partner worldwide.</p>",
+    "updatedAt": "2026-04-01T05:55:45.857Z",
+    "createdAt": "2026-04-01T05:48:57.003Z"
+  },
+  {
+    "path": "pages/company/contact",
+    "name": "contact",
+    "slug": "contact",
+    "type": "html",
+    "html": "<h1>Contact Us</h1>\n<p>Email: info@example.com</p>\n<p>Phone: +94 71 234 5678</p>\n<p>Address: Colombo, Sri Lanka</p>",
+    "updatedAt": "2026-04-01T05:58:40.984Z",
+    "createdAt": "2026-04-01T05:58:40.984Z"
+  },
+  {
+    "path": "pages/company/services",
+    "name": "services",
+    "slug": "services",
+    "type": "html",
+    "html": "<h1>Our Services</h1>\n\n<div style=\"display:flex; gap:20px; flex-wrap:wrap;\">\n  <div style=\"border:1px solid #ccc; padding:15px; width:250px; border-radius:8px;\">\n    <h2>Web Development</h2>\n    <p>Modern and responsive websites.</p>\n  </div>\n\n  <div style=\"border:1px solid #ccc; padding:15px; width:250px; border-radius:8px;\">\n    <h2>Mobile Apps</h2>\n    <p>Android and iOS application development.</p>\n  </div>\n\n  <div style=\"border:1px solid #ccc; padding:15px; width:250px; border-radius:8px;\">\n    <h2>UI/UX Design</h2>\n    <p>Clean and user-friendly interface design.</p>\n  </div>\n</div>",
+    "updatedAt": "2026-04-01T06:34:41.059Z",
+    "createdAt": "2026-04-01T06:34:41.059Z"
+  },
+  {
+    "path": "pages",
+    "name": "pages",
+    "slug": "pages",
+    "type": "html",
+    "html": "<h1>Navigation Example</h1>\n\n<a href=\"/p/pages/company/adout\">Go to About Page</a><br><br>\n<a href=\"/p/pages/company/team\">Go to Team Page</a><br><br>\n<a href=\"https://google.com\" target=\"_blank\">Open Google</a>",
+    "updatedAt": "2026-04-01T06:39:05.223Z",
+    "createdAt": "2026-04-01T06:38:23.422Z"
   }
 ]
