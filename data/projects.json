@@ -1,5 +1,12 @@
 [
   {
+    "id": "test",
+    "name": "Test",
+    "rootPath": "test",
+    "createdAt": "2026-04-01T15:48:04.250Z",
+    "updatedAt": "2026-04-01T15:48:04.250Z"
+  },
+  {
     "id": "nova-digital",
     "name": "nova-digital",
     "rootPath": "nova-digital",
