@@ -1,5 +1,51 @@
 [
   {
+    "path": "demo-site",
+    "name": "demo-site",
+    "parentPath": "",
+    "kind": "folder",
+    "createdAt": "2026-04-05T14:04:56.963Z",
+    "updatedAt": "2026-04-05T14:04:56.963Z"
+  },
+  {
+    "path": "demo-site/about",
+    "name": "about",
+    "parentPath": "demo-site",
+    "kind": "folder",
+    "createdAt": "2026-04-05T14:12:49.058Z",
+    "updatedAt": "2026-04-05T14:12:49.058Z"
+  },
+  {
+    "path": "demo-site/about/index.html",
+    "name": "index.html",
+    "parentPath": "demo-site/about",
+    "kind": "file",
+    "fileType": "html",
+    "content": "<div class=\"page\">\n  <h1>About Page</h1>\n  <p>This is the about page of the demo project.</p>\n  <a href=\"/site/demo-site\">Back to Home </a>\n</div>",
+    "createdAt": "2026-04-05T14:13:01.337Z",
+    "updatedAt": "2026-04-05T14:14:57.884Z"
+  },
+  {
+    "path": "demo-site/index.html",
+    "name": "index.html",
+    "parentPath": "demo-site",
+    "kind": "file",
+    "fileType": "html",
+    "content": "<div class=\"page\">\n  <h1>Welocm to my Demo Site</h1>\n  <p>This page was crating my Dinamic Page Builder.</p>\n  <a href=\"/site/demo-site/about\">Go to about Page</a>\n</div>",
+    "createdAt": "2026-04-05T14:05:03.655Z",
+    "updatedAt": "2026-04-05T14:08:26.742Z"
+  },
+  {
+    "path": "demo-site/style.css",
+    "name": "style.css",
+    "parentPath": "demo-site",
+    "kind": "file",
+    "fileType": "css",
+    "content": "body {\n  font-family: Arial, sans-serif;\n  margin: 0;\n  background: #f4f7fd;\n}\n\n.page {\n  max-width: 800px;\n  margin: 60px auto;\n  background: white;\n  pading: 30px;\n  border-radius: 12px;\n  box-shadow: 0 8px 24px rgba(0,0,0,0.08);\n}",
+    "createdAt": "2026-04-05T14:08:34.845Z",
+    "updatedAt": "2026-04-05T14:12:39.540Z"
+  },
+  {
     "path": "first-project",
     "name": "first-project",
     "parentPath": "",
@@ -74,6 +120,34 @@
     "content": ":root {\n  --bg: #f8fafc;\n  --surface: #ffffff;\n  --surface-2: #e2e8f0;\n  --text: #0f172a;\n  --muted: #475569;\n  --primary: #2563eb;\n  --primary-dark: #1d4ed8;\n  --success: #16a34a;\n  --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);\n  --radius: 18px;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  scroll-behavior: smooth;\n}\n\nbody {\n  margin: 0;\n  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);\n  color: var(--text);\n  font-family: system-ui, Arial, sans-serif;\n}\n\na {\n  color: inherit;\n  text-decoration: none;\n}\n\n.site-shell {\n  min-height: 100vh;\n}\n\n.topbar {\n  max-width: 1150px;\n  margin: 0 auto;\n  padding: 20px 18px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n  flex-wrap: wrap;\n}\n\n.brand {\n  font-size: 1.1rem;\n  font-weight: 800;\n}\n\n.nav {\n  display: flex;\n  gap: 16px;\n  flex-wrap: wrap;\n}\n\n.nav a {\n  color: var(--muted);\n  font-weight: 600;\n}\n\n.nav a:hover {\n  color: var(--primary);\n}\n\n.hero,\n.section {\n  max-width: 1150px;\n  margin: 0 auto;\n  padding: 28px 18px;\n}\n\n.hero {\n  display: grid;\n  grid-template-columns: 1.4fr 1fr;\n  gap: 24px;\n  align-items: center;\n  padding-top: 24px;\n}\n\n.badge,\n.section-tag {\n  display: inline-block;\n  padding: 6px 12px;\n  border-radius: 999px;\n  background: #dbeafe;\n  color: var(--primary-dark);\n  font-weight: 700;\n  font-size: 0.85rem;\n}\n\n.hero-content h1 {\n  margin: 14px 0 14px;\n  font-size: clamp(2rem, 4vw, 3.4rem);\n  line-height: 1.15;\n}\n\n.hero-content p {\n  margin: 0;\n  color: var(--muted);\n  max-width: 680px;\n  line-height: 1.7;\n}\n\n.hero-actions {\n  display: flex;\n  gap: 12px;\n  flex-wrap: wrap;\n  margin-top: 22px;\n}\n\n.primary-btn,\n.secondary-btn {\n  border: none;\n  border-radius: 12px;\n  padding: 12px 18px;\n  font-weight: 700;\n  cursor: pointer;\n  font-size: 0.95rem;\n}\n\n.primary-btn {\n  background: var(--primary);\n  color: white;\n}\n\n.primary-btn:hover {\n  background: var(--primary-dark);\n}\n\n.secondary-btn {\n  background: white;\n  color: var(--text);\n  border: 1px solid var(--surface-2);\n}\n\n.hero-card,\n.card,\n.about-box,\n.contact-form {\n  background: var(--surface);\n  border: 1px solid #e5e7eb;\n  border-radius: var(--radius);\n  box-shadow: var(--shadow);\n}\n\n.hero-card {\n  padding: 22px;\n}\n\n.hero-card h3 {\n  margin-top: 0;\n}\n\n.hero-card ul {\n  margin: 12px 0 0;\n  padding-left: 18px;\n  color: var(--muted);\n  line-height: 1.8;\n}\n\n.section-head {\n  margin-bottom: 18px;\n}\n\n.section-head h2 {\n  margin: 12px 0 0;\n  font-size: 2rem;\n}\n\n.cards {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 18px;\n}\n\n.card {\n  padding: 20px;\n}\n\n.card h3 {\n  margin-top: 0;\n}\n\n.card p {\n  margin-bottom: 0;\n  color: var(--muted);\n  line-height: 1.7;\n}\n\n.about-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 18px;\n}\n\n.about-box {\n  padding: 20px;\n}\n\n.about-box p {\n  color: var(--muted);\n  line-height: 1.7;\n}\n\n.highlight-box {\n  background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);\n}\n\n.contact-form {\n  padding: 22px;\n}\n\n.field-row {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 14px;\n}\n\n.field {\n  margin-bottom: 14px;\n}\n\n.field label {\n  display: block;\n  margin-bottom: 6px;\n  font-weight: 600;\n}\n\n.field input,\n.field textarea {\n  width: 100%;\n  border: 1px solid #cbd5e1;\n  border-radius: 12px;\n  padding: 12px 14px;\n  font: inherit;\n  outline: none;\n}\n\n.field input:focus,\n.field textarea:focus {\n  border-color: var(--primary);\n}\n\n.footer-text {\n  margin-top: 18px;\n  color: var(--muted);\n  text-align: center;\n}\n\n@media (max-width: 900px) {\n  .hero,\n  .cards,\n  .about-grid,\n  .field-row {\n    grid-template-columns: 1fr;\n  }\n}",
     "createdAt": "2026-04-01T06:41:50.789Z",
     "updatedAt": "2026-04-01T07:40:22.261Z"
+  },
+  {
+    "path": "fist-one",
+    "name": "fist-one",
+    "parentPath": "",
+    "kind": "folder",
+    "createdAt": "2026-04-24T16:56:16.420Z",
+    "updatedAt": "2026-04-24T16:56:16.420Z"
+  },
+  {
+    "path": "fist-one/index.html",
+    "name": "index.html",
+    "parentPath": "fist-one",
+    "kind": "file",
+    "fileType": "html",
+    "content": "<div class=\"page\">\n  <h1>Today Test</h1>\n  <p>Start editing this HTML file.</p>\n  <button onclick=\"alert('Hellow')\">Click Me</button>\n</div>",
+    "createdAt": "2026-04-24T16:56:28.585Z",
+    "updatedAt": "2026-04-24T17:02:25.705Z"
+  },
+  {
+    "path": "fist-one/script.js",
+    "name": "script.js",
+    "parentPath": "fist-one",
+    "kind": "file",
+    "fileType": "js",
+    "content": "console.log(\"Today Test Project\");",
+    "createdAt": "2026-04-24T16:59:45.474Z",
+    "updatedAt": "2026-04-24T17:00:19.050Z"
   },
   {
     "path": "nova-digital",
