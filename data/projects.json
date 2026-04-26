@@ -1,8 +1,25 @@
 [
   {
+    "id": "vue-test",
+    "name": "vue-test",
+    "rootPath": "vue-test",
+    "type": "vue-vite",
+    "createdAt": "2026-04-26T16:13:11.897Z",
+    "updatedAt": "2026-04-26T16:13:11.897Z"
+  },
+  {
+    "id": "react-test",
+    "name": "react-test",
+    "rootPath": "react-test",
+    "type": "react-vite",
+    "createdAt": "2026-04-26T16:12:47.808Z",
+    "updatedAt": "2026-04-26T16:12:47.808Z"
+  },
+  {
     "id": "fist-one",
     "name": "Fist one",
     "rootPath": "fist-one",
+    "type": "html-site",
     "createdAt": "2026-04-24T16:56:16.433Z",
     "updatedAt": "2026-04-24T16:56:16.433Z"
   },
@@ -10,6 +27,7 @@
     "id": "demo-site",
     "name": "demo site",
     "rootPath": "demo-site",
+    "type": "html-site",
     "createdAt": "2026-04-05T14:04:56.973Z",
     "updatedAt": "2026-04-05T14:04:56.973Z"
   },
@@ -17,6 +35,7 @@
     "id": "test",
     "name": "Test",
     "rootPath": "test",
+    "type": "html-site",
     "createdAt": "2026-04-01T15:48:04.250Z",
     "updatedAt": "2026-04-01T15:48:04.250Z"
   },
@@ -24,6 +43,7 @@
     "id": "nova-digital",
     "name": "nova-digital",
     "rootPath": "nova-digital",
+    "type": "html-site",
     "createdAt": "2026-04-01T09:20:26.575Z",
     "updatedAt": "2026-04-01T09:20:26.575Z"
   }

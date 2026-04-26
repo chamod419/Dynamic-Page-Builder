@@ -22,6 +22,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     const project = await createProject({
       name: body.name || "",
+      type: body.type || "html-site",
     });
 
     return json(
