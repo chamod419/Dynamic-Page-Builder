@@ -2385,43 +2385,418 @@ function getReactEntryNode() {
   ]);
 }
 
-function getReactSourceBundle() {
-  const appNode = getReactAppNode();
-  const entryNode = getReactEntryNode();
-  const sourceNodes = getProjectFilesByType(["js", "jsx", "ts", "tsx"]);
+function getReactPreviewModuleNodes() {
+  return getProjectFilesByType(["js", "jsx", "ts", "tsx"]).filter((node) => {
+    const normalizedName = String(node.name || "").toLowerCase();
+    const normalizedPath = String(node.path || "").toLowerCase();
 
-  const helperNodes = sourceNodes.filter((node) => {
-    if (entryNode && node.path === entryNode.path) return false;
-    if (appNode && node.path === appNode.path) return false;
-    return !String(node.name || "").toLowerCase().includes("config");
+    if (normalizedName.includes("config")) return false;
+    if (normalizedPath.endsWith("vite.config.js")) return false;
+    if (normalizedPath.endsWith("vite.config.ts")) return false;
+
+    return true;
   });
+}
+
+function getNodeDirectoryPath(nodePath) {
+  const value = String(nodePath || "");
+  const lastSlashIndex = value.lastIndexOf("/");
+  return lastSlashIndex >= 0 ? value.slice(0, lastSlashIndex) : "";
+}
+
+function normalizeBuilderPath(pathValue) {
+  const parts = String(pathValue || "")
+    .split("/")
+    .filter(Boolean);
+
+  const stack = [];
+
+  for (const part of parts) {
+    if (part === ".") continue;
+    if (part === "..") {
+      stack.pop();
+      continue;
+    }
+
+    stack.push(part);
+  }
+
+  return stack.join("/");
+}
+
+function getReactModuleId(node) {
+  return normalizeBuilderPath(node?.path || "");
+}
+
+function isRelativeImportSpecifier(specifier) {
+  return String(specifier || "").startsWith("./") || String(specifier || "").startsWith("../");
+}
+
+function isStyleImportSpecifier(specifier) {
+  return /\.(css|scss|less)$/i.test(String(specifier || ""));
+}
+
+function resolveReactImportNode(fromNode, specifier) {
+  const rawSpecifier = String(specifier || "").trim();
+
+  if (!rawSpecifier) return null;
+  if (isStyleImportSpecifier(rawSpecifier)) return null;
+
+  let basePath = "";
+
+  if (isRelativeImportSpecifier(rawSpecifier)) {
+    basePath = normalizeBuilderPath(`${getNodeDirectoryPath(fromNode.path)}/${rawSpecifier}`);
+  } else if (rawSpecifier.startsWith("/src/")) {
+    basePath = normalizeBuilderPath(`${selectedProjectRoot}${rawSpecifier}`);
+  } else if (rawSpecifier.startsWith("src/")) {
+    basePath = normalizeBuilderPath(`${selectedProjectRoot}/${rawSpecifier}`);
+  } else if (rawSpecifier.startsWith("@/")) {
+    basePath = normalizeBuilderPath(`${selectedProjectRoot}/src/${rawSpecifier.slice(2)}`);
+  } else {
+    return null;
+  }
+
+  const candidates = [
+    basePath,
+    `${basePath}.jsx`,
+    `${basePath}.tsx`,
+    `${basePath}.js`,
+    `${basePath}.ts`,
+    `${basePath}/index.jsx`,
+    `${basePath}/index.tsx`,
+    `${basePath}/index.js`,
+    `${basePath}/index.ts`,
+  ];
+
+  return cachedNodes.find((node) => {
+    if (node.kind !== "file") return false;
+    if (!isPathInsideProject(node.path)) return false;
+    return candidates.includes(normalizeBuilderPath(node.path));
+  }) || null;
+}
+
+function parseNamedImportBindings(namedClause) {
+  return String(namedClause || "")
+    .replace(/^\{/, "")
+    .replace(/\}$/, "")
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => {
+      const [imported, local] = part.split(/\s+as\s+/i).map((item) => item.trim());
+      return {
+        imported,
+        local: local || imported,
+      };
+    });
+}
+
+function buildReactNamedDestructure(moduleExpression, namedClause) {
+  const bindings = parseNamedImportBindings(namedClause);
+
+  if (!bindings.length) return "";
+
+  const destructure = bindings
+    .map((binding) => {
+      if (binding.imported === binding.local) return binding.imported;
+      return `${binding.imported}: ${binding.local}`;
+    })
+    .join(", ");
+
+  return `const { ${destructure} } = ${moduleExpression};`;
+}
+
+function buildReactExternalImportReplacement(importClause, specifier) {
+  const clause = String(importClause || "").trim();
+  const source = String(specifier || "").trim();
+
+  if (!clause) return "";
+
+  if (source === "react") {
+    if (clause.startsWith("{")) {
+      return buildReactNamedDestructure("React", clause);
+    }
+
+    if (clause.startsWith("* as ")) {
+      const namespaceName = clause.replace(/^\*\s+as\s+/i, "").trim();
+      return namespaceName && namespaceName !== "React" ? `const ${namespaceName} = React;` : "";
+    }
+
+    const defaultAndNamed = clause.match(/^([A-Za-z_$][\w$]*)(\s*,\s*(\{[\s\S]*\}))?$/);
+
+    if (defaultAndNamed) {
+      const defaultName = defaultAndNamed[1];
+      const namedClause = defaultAndNamed[3] || "";
+      const lines = [];
+
+      if (defaultName && defaultName !== "React") {
+        lines.push(`const ${defaultName} = React;`);
+      }
+
+      if (namedClause) {
+        lines.push(buildReactNamedDestructure("React", namedClause));
+      }
+
+      return lines.filter(Boolean).join("\n");
+    }
+
+    return "";
+  }
+
+  if (source === "react-dom" || source === "react-dom/client") {
+    if (clause.startsWith("{")) {
+      const normalizedClause = clause.replace(/\bcreateRoot\b/g, "createRoot");
+      return buildReactNamedDestructure("ReactDOM", normalizedClause);
+    }
+
+    if (clause.startsWith("* as ")) {
+      const namespaceName = clause.replace(/^\*\s+as\s+/i, "").trim();
+      return namespaceName && namespaceName !== "ReactDOM" ? `const ${namespaceName} = ReactDOM;` : "";
+    }
+
+    const defaultAndNamed = clause.match(/^([A-Za-z_$][\w$]*)(\s*,\s*(\{[\s\S]*\}))?$/);
+
+    if (defaultAndNamed) {
+      const defaultName = defaultAndNamed[1];
+      const namedClause = defaultAndNamed[3] || "";
+      const lines = [];
+
+      if (defaultName && defaultName !== "ReactDOM") {
+        lines.push(`const ${defaultName} = ReactDOM;`);
+      }
+
+      if (namedClause) {
+        lines.push(buildReactNamedDestructure("ReactDOM", namedClause));
+      }
+
+      return lines.filter(Boolean).join("\n");
+    }
+
+    return "";
+  }
+
+  return `throw new Error(${JSON.stringify(`External package import '${source}' is not available in the browser preview yet.`)});`;
+}
+
+function buildReactLocalImportReplacement(importClause, resolvedNode) {
+  if (!resolvedNode) return "";
+
+  const clause = String(importClause || "").trim();
+  const moduleId = getReactModuleId(resolvedNode);
+  const requireExpression = `__builderRequire(${JSON.stringify(moduleId)})`;
+
+  if (!clause) {
+    return `${requireExpression};`;
+  }
+
+  if (clause.startsWith("{")) {
+    return buildReactNamedDestructure(requireExpression, clause);
+  }
+
+  if (clause.startsWith("* as ")) {
+    const namespaceName = clause.replace(/^\*\s+as\s+/i, "").trim();
+    return namespaceName ? `const ${namespaceName} = ${requireExpression};` : "";
+  }
+
+  const defaultAndNamed = clause.match(/^([A-Za-z_$][\w$]*)(\s*,\s*(\{[\s\S]*\}))?$/);
+
+  if (!defaultAndNamed) return "";
+
+  const defaultName = defaultAndNamed[1];
+  const namedClause = defaultAndNamed[3] || "";
+  const lines = [];
+
+  if (defaultName) {
+    lines.push(`const ${defaultName} = ${requireExpression}.default;`);
+  }
+
+  if (namedClause) {
+    lines.push(buildReactNamedDestructure(requireExpression, namedClause));
+  }
+
+  return lines.filter(Boolean).join("\n");
+}
+
+function transformReactImports(source, fromNode) {
+  let output = String(source || "");
+
+  output = output.replace(/^\s*import\s+([\s\S]*?)\s+from\s+["']([^"']+)["'];?\s*$/gm, (_match, importClause, specifier) => {
+    const normalizedSpecifier = String(specifier || "").trim();
+
+    if (isStyleImportSpecifier(normalizedSpecifier)) {
+      return `/* CSS import ${normalizedSpecifier} handled by preview stylesheet collector */`;
+    }
+
+    if (isRelativeImportSpecifier(normalizedSpecifier) || normalizedSpecifier.startsWith("/") || normalizedSpecifier.startsWith("src/") || normalizedSpecifier.startsWith("@/")) {
+      const resolvedNode = resolveReactImportNode(fromNode, normalizedSpecifier);
+
+      if (!resolvedNode) {
+        return `throw new Error(${JSON.stringify(`Could not resolve local import '${normalizedSpecifier}' from '${fromNode.path}'.`)});`;
+      }
+
+      return buildReactLocalImportReplacement(importClause, resolvedNode);
+    }
+
+    return buildReactExternalImportReplacement(importClause, normalizedSpecifier);
+  });
+
+  output = output.replace(/^\s*import\s+["']([^"']+)["'];?\s*$/gm, (_match, specifier) => {
+    const normalizedSpecifier = String(specifier || "").trim();
+
+    if (isStyleImportSpecifier(normalizedSpecifier)) {
+      return `/* CSS import ${normalizedSpecifier} handled by preview stylesheet collector */`;
+    }
+
+    if (isRelativeImportSpecifier(normalizedSpecifier) || normalizedSpecifier.startsWith("/") || normalizedSpecifier.startsWith("src/") || normalizedSpecifier.startsWith("@/")) {
+      const resolvedNode = resolveReactImportNode(fromNode, normalizedSpecifier);
+      return resolvedNode ? `__builderRequire(${JSON.stringify(getReactModuleId(resolvedNode))});` : "";
+    }
+
+    return `/* External side-effect import ${normalizedSpecifier} ignored by preview */`;
+  });
+
+  return output;
+}
+
+function transformReactExports(source) {
+  let output = String(source || "");
+  const exportAssignments = [];
+
+  output = output.replace(/export\s+default\s+function\s+([A-Za-z_$][\w$]*)\s*\(/g, (_match, name) => {
+    exportAssignments.push(`exports.default = ${name};`);
+    return `function ${name}(`;
+  });
+
+  output = output.replace(/export\s+default\s+class\s+([A-Za-z_$][\w$]*)\s*/g, (_match, name) => {
+    exportAssignments.push(`exports.default = ${name};`);
+    return `class ${name} `;
+  });
+
+  output = output.replace(/export\s+default\s+function\s*\(/g, () => {
+    exportAssignments.push("exports.default = __builderDefaultExport;");
+    return "const __builderDefaultExport = function (";
+  });
+
+  output = output.replace(/export\s+default\s+class\s*/g, () => {
+    exportAssignments.push("exports.default = __builderDefaultExport;");
+    return "const __builderDefaultExport = class ";
+  });
+
+  output = output.replace(/^\s*export\s+default\s+([^;]+);?\s*$/gm, (_match, expression) => {
+    return `exports.default = ${expression.trim()};`;
+  });
+
+  output = output.replace(/export\s+function\s+([A-Za-z_$][\w$]*)\s*\(/g, (_match, name) => {
+    exportAssignments.push(`exports.${name} = ${name};`);
+    return `function ${name}(`;
+  });
+
+  output = output.replace(/export\s+const\s+([A-Za-z_$][\w$]*)\s*=/g, (_match, name) => {
+    exportAssignments.push(`exports.${name} = ${name};`);
+    return `const ${name} =`;
+  });
+
+  output = output.replace(/export\s+let\s+([A-Za-z_$][\w$]*)\s*=/g, (_match, name) => {
+    exportAssignments.push(`exports.${name} = ${name};`);
+    return `let ${name} =`;
+  });
+
+  output = output.replace(/export\s+var\s+([A-Za-z_$][\w$]*)\s*=/g, (_match, name) => {
+    exportAssignments.push(`exports.${name} = ${name};`);
+    return `var ${name} =`;
+  });
+
+  output = output.replace(/^\s*export\s+\{([^}]+)\};?\s*$/gm, (_match, exportList) => {
+    return String(exportList || "")
+      .split(",")
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map((part) => {
+        const [local, exported] = part.split(/\s+as\s+/i).map((item) => item.trim());
+        return `exports.${exported || local} = ${local};`;
+      })
+      .join("\n");
+  });
+
+  if (exportAssignments.length) {
+    output += `\n\n${[...new Set(exportAssignments)].join("\n")}`;
+  }
+
+  return output;
+}
+
+function transformReactPreviewModuleSource(node) {
+  const rawSource = getWorkingContent(node);
+  const withoutImports = transformReactImports(rawSource, node);
+  return transformReactExports(withoutImports);
+}
+
+function getReactSourceBundle() {
+  const sourceNodes = getReactPreviewModuleNodes();
+  const entryNode = getReactEntryNode();
+  const appNode = getReactAppNode();
 
   const pieces = [];
 
-  for (const node of helperNodes) {
-    pieces.push(`\n/* ${node.path} */\n${stripModuleImportsAndExports(stripMainCssImports(getWorkingContent(node)))}`);
+  pieces.push(`
+const __builderFactories = Object.create(null);
+const __builderModuleCache = Object.create(null);
+
+function __builderDefine(moduleId, factory) {
+  __builderFactories[moduleId] = factory;
+}
+
+function __builderRequire(moduleId) {
+  if (__builderModuleCache[moduleId]) {
+    return __builderModuleCache[moduleId].exports;
   }
 
-  if (appNode) {
-    pieces.push(`\n/* ${appNode.path} */\n${stripModuleImportsAndExports(stripMainCssImports(getWorkingContent(appNode)))}`);
+  const factory = __builderFactories[moduleId];
+
+  if (!factory) {
+    throw new Error("React preview module not found: " + moduleId);
   }
 
-  const entrySource = entryNode
-    ? stripModuleImportsAndExports(stripMainCssImports(getWorkingContent(entryNode)))
-    : "";
+  const module = { exports: {} };
+  __builderModuleCache[moduleId] = module;
+  factory(module.exports, module);
+  return module.exports;
+}
+`);
 
-  const entryLooksRenderable = /createRoot|ReactDOM\.render|\.render\s*\(/.test(entrySource);
+  for (const node of sourceNodes) {
+    const moduleId = getReactModuleId(node);
+    const transformedSource = transformReactPreviewModuleSource(node);
+
+    pieces.push(`
+__builderDefine(${JSON.stringify(moduleId)}, function (exports, module) {
+const React = window.React;
+const ReactDOM = window.ReactDOM;
+
+${transformedSource}
+});`);
+  }
+
+  const entryModuleId = entryNode ? getReactModuleId(entryNode) : "";
+  const appModuleId = appNode ? getReactModuleId(appNode) : "";
 
   pieces.push(`
-/* Builder React bootstrap */
 const __builderRootElement = document.getElementById("root") || document.getElementById("app");
-const createRoot = ReactDOM.createRoot;
 
-${entryLooksRenderable ? entrySource : `
-if (typeof App !== "undefined" && __builderRootElement) {
-  createRoot(__builderRootElement).render(<App />);
+if (${JSON.stringify(entryModuleId)}) {
+  __builderRequire(${JSON.stringify(entryModuleId)});
+} else if (${JSON.stringify(appModuleId)} && __builderRootElement) {
+  const AppModule = __builderRequire(${JSON.stringify(appModuleId)});
+  const App = AppModule.default || AppModule.App;
+
+  if (!App) {
+    throw new Error("App component was found, but it does not export a default component.");
+  }
+
+  ReactDOM.createRoot(__builderRootElement).render(<App />);
+} else {
+  throw new Error("React preview needs src/main.jsx or src/App.jsx.");
 }
-`}
 
 document.documentElement.setAttribute("data-builder-preview-ready", "react");`);
 
@@ -2445,7 +2820,7 @@ ${getPreviewRuntimeErrorScript("React")}
 <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"><\/script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"><\/script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"><\/script>
-<script type="text/babel" data-presets="env,react">
+<script type="text/babel" data-presets="env,react,typescript">
 try {
 ${safeScriptContent(reactSource)}
 } catch (error) {

@@ -1,5 +1,13 @@
 [
   {
+    "id": "react-demo",
+    "name": "react-demo",
+    "rootPath": "react-demo",
+    "type": "react-vite",
+    "createdAt": "2026-04-27T09:20:21.722Z",
+    "updatedAt": "2026-04-27T09:20:42.185Z"
+  },
+  {
     "id": "vue-test",
     "name": "vue-test",
     "rootPath": "vue-test",
