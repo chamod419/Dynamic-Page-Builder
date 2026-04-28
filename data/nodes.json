@@ -311,7 +311,7 @@
     "fileType": "txt",
     "content": "export default function Header() {\n  return (\n    <main className=\"page\">\n      <section className=\"hero\">\n        <p className=\"eyebrow\">React + Vite</p>\n        <h1>Header Component</h1>\n        <p>\n          This header is coming from a separate component file. The preview is now\n          using multi-file React composition.\n        </p>\n\n        <div className=\"actions\">\n          <button>Get Started</button>\n          <button className=\"secondary\">View Project</button>\n        </div>\n      </section>\n    </main>\n  );\n}",
     "createdAt": "2026-04-27T09:39:11.498Z",
-    "updatedAt": "2026-04-27T10:43:28.005Z"
+    "updatedAt": "2026-04-28T03:36:19.781Z"
   },
   {
     "path": "react-demo/src/index.css",

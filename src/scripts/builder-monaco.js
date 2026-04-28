@@ -290,6 +290,145 @@ function injectVsCodePolishStyles() {
       color: #75beff !important;
     }
 
+
+    .explorer-context {
+      display: none !important;
+    }
+
+    .section-card:has(#nodesTree) .section-body {
+      padding-top: 10px !important;
+    }
+
+    .project-dropdown {
+      position: relative !important;
+      width: 100% !important;
+    }
+
+    .section-card.project-dropdown-open,
+    .section-card:has(.project-dropdown.open) {
+      overflow: visible !important;
+      position: relative !important;
+      z-index: 120 !important;
+    }
+
+    .workspace-scroll:has(.project-dropdown.open) {
+      overflow: visible !important;
+    }
+
+    .project-picker-trigger {
+      width: 100% !important;
+      min-height: 48px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 10px !important;
+      padding: 10px 12px !important;
+      border: 1px solid #333333 !important;
+      border-radius: 8px !important;
+      background: #252526 !important;
+      color: #d4d4d4 !important;
+      cursor: pointer !important;
+      text-align: left !important;
+      transition: background 0.12s ease, border-color 0.12s ease !important;
+    }
+
+    .project-picker-trigger:hover {
+      background: #2a2d2e !important;
+      border-color: #007acc !important;
+    }
+
+    .project-picker-trigger-main {
+      min-width: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+    }
+
+    .project-picker-text {
+      min-width: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 2px !important;
+    }
+
+    .project-picker-name {
+      color: #ffffff !important;
+      font-size: 13px !important;
+      font-weight: 800 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+
+    .project-picker-meta {
+      color: #9ca3af !important;
+      font-size: 11px !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+
+    .project-picker-arrow {
+      width: 18px !important;
+      flex: 0 0 18px !important;
+      color: #c5c5c5 !important;
+      font-size: 12px !important;
+      display: inline-flex !important;
+      justify-content: center !important;
+      transition: transform 0.12s ease !important;
+    }
+
+    .project-dropdown.open .project-picker-arrow {
+      transform: rotate(180deg) !important;
+    }
+
+    .project-menu {
+      display: none !important;
+      position: absolute !important;
+      z-index: 50 !important;
+      left: 0 !important;
+      right: 0 !important;
+      top: calc(100% + 6px) !important;
+      max-height: 300px !important;
+      overflow: auto !important;
+      padding: 6px !important;
+      border: 1px solid #3c3c3c !important;
+      border-radius: 8px !important;
+      background: #252526 !important;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.42) !important;
+    }
+
+    .project-dropdown.open .project-menu {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 2px !important;
+    }
+
+    .project-menu::-webkit-scrollbar {
+      width: 10px !important;
+    }
+
+    .project-menu::-webkit-scrollbar-track {
+      background: #1e1e1e !important;
+    }
+
+    .project-menu::-webkit-scrollbar-thumb {
+      background: #555 !important;
+      border-radius: 999px !important;
+      border: 2px solid #1e1e1e !important;
+    }
+
+    .project-menu .project-item {
+      padding: 9px 10px !important;
+      border-radius: 6px !important;
+    }
+
+    .project-menu .project-item.active {
+      background: #04395e !important;
+      border-color: rgba(0, 122, 204, 0.7) !important;
+    }
+
+
     .project-item,
     .tree-row {
       background: transparent !important;
@@ -1669,7 +1808,13 @@ function renderProjectsList() {
     return;
   }
 
-  projectsListEl.innerHTML = cachedProjects
+  const selectedProject =
+    cachedProjects.find((project) => project.id === selectedProjectId) || cachedProjects[0];
+
+  const selectedTypeClass = getProjectTypeClass(selectedProject.type);
+  const selectedProjectIconText = getProjectIconText(selectedProject.type);
+
+  const projectOptions = cachedProjects
     .map((project) => {
       const activeClass = project.id === selectedProjectId ? "active" : "";
       const typeClass = getProjectTypeClass(project.type);
@@ -1693,6 +1838,30 @@ function renderProjectsList() {
       `;
     })
     .join("");
+
+  projectsListEl.innerHTML = `
+    <div class="project-dropdown" data-project-dropdown>
+      <button
+        class="project-picker-trigger"
+        type="button"
+        data-project-dropdown-toggle
+        aria-label="Select project"
+      >
+        <span class="project-picker-trigger-main">
+          <span class="project-icon ${selectedTypeClass}" aria-hidden="true">${escapeHtml(selectedProjectIconText)}</span>
+          <span class="project-picker-text">
+            <span class="project-picker-name">${escapeHtml(selectedProject.name)}</span>
+            <span class="project-picker-meta">${escapeHtml(selectedProject.rootPath)} • ${escapeHtml(getProjectTypeLabel(selectedProject.type))}</span>
+          </span>
+        </span>
+        <span class="project-picker-arrow" aria-hidden="true">▾</span>
+      </button>
+
+      <div class="project-menu" data-project-menu>
+        ${projectOptions}
+      </div>
+    </div>
+  `;
 }
 
 function getDefaultFolderNameForCurrentContext() {
@@ -1803,8 +1972,8 @@ function renderInlineCreateRow(parentPath, depth = 0) {
     : { kind: "file", name: fileName, fileType: inferFileTypeFromName(fileName, "html") };
 
   const helperText = isFolder
-    ? "Enter creates folder • Esc cancels"
-    : "Extension decides template automatically • Enter creates file";
+    // ? "Enter creates folder • Esc cancels"
+    // : "Extension decides template automatically • Enter creates file";
 
   return `
     <div class="inline-create-wrap" data-inline-create="${escapeAttribute(inlineCreateMode)}">
@@ -1822,10 +1991,7 @@ function renderInlineCreateRow(parentPath, depth = 0) {
         />
       </div>
       <div class="inline-create-helper">
-        <span>
-          <span class="inline-create-kbd">Enter</span> create
-          <span class="inline-create-kbd">Esc</span> cancel
-        </span>
+        
         <span class="${inlineCreateError ? "inline-create-error" : ""}">
           ${escapeHtml(inlineCreateError || helperText)}
         </span>
@@ -5081,6 +5247,25 @@ function bindEvents() {
 
     if (!(target instanceof HTMLElement)) return;
 
+    const dropdown = target.closest("[data-project-dropdown]");
+
+    if (target.closest("[data-project-dropdown-toggle]")) {
+      if (dropdown instanceof HTMLElement) {
+        const shouldOpen = !dropdown.classList.contains("open");
+
+        document
+          .querySelectorAll("[data-project-dropdown].open")
+          .forEach((openDropdown) => {
+            openDropdown.classList.remove("open");
+            openDropdown.closest(".section-card")?.classList.remove("project-dropdown-open");
+          });
+
+        dropdown.classList.toggle("open", shouldOpen);
+        dropdown.closest(".section-card")?.classList.toggle("project-dropdown-open", shouldOpen);
+      }
+      return;
+    }
+
     const projectBtn = target.closest("[data-project-id]");
 
     if (!(projectBtn instanceof HTMLElement)) return;
@@ -5090,7 +5275,26 @@ function bindEvents() {
 
     if (project) {
       selectProject(project);
+
+      if (dropdown instanceof HTMLElement) {
+        dropdown.classList.remove("open");
+        dropdown.closest(".section-card")?.classList.remove("project-dropdown-open");
+      }
     }
+  });
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+
+    if (!(target instanceof HTMLElement)) return;
+    if (target.closest("[data-project-dropdown]")) return;
+
+    document
+      .querySelectorAll("[data-project-dropdown].open")
+      .forEach((dropdown) => {
+        dropdown.classList.remove("open");
+        dropdown.closest(".section-card")?.classList.remove("project-dropdown-open");
+      });
   });
 
   nodesTreeEl?.addEventListener("click", (event) => {
