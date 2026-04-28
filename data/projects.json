@@ -1,5 +1,13 @@
 [
   {
+    "id": "3rd-project-test",
+    "name": "3rd project test",
+    "rootPath": "3rd-project-test",
+    "type": "react-vite",
+    "createdAt": "2026-04-28T09:46:04.433Z",
+    "updatedAt": "2026-04-28T09:46:04.433Z"
+  },
+  {
     "id": "react-demo",
     "name": "react-demo",
     "rootPath": "react-demo",
