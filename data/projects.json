@@ -1,5 +1,21 @@
 [
   {
+    "id": "my-vue-project",
+    "name": "my-vue-project",
+    "rootPath": "my-vue-project",
+    "type": "vue-vite",
+    "createdAt": "2026-04-29T08:38:23.558Z",
+    "updatedAt": "2026-04-29T08:38:23.558Z"
+  },
+  {
+    "id": "my-react-project",
+    "name": "my-react project",
+    "rootPath": "my-react-project",
+    "type": "react-vite",
+    "createdAt": "2026-04-29T08:16:51.090Z",
+    "updatedAt": "2026-04-29T08:16:51.090Z"
+  },
+  {
     "id": "3rd-project-test",
     "name": "3rd project test",
     "rootPath": "3rd-project-test",

@@ -160,11 +160,11 @@ function getMonacoLanguage(fileName, fallback) {
   if (fileType === "html") return "builder-html";
   if (fileType === "css") return "builder-css";
   if (fileType === "js") return "builder-js";
-
   if (fileType === "jsx" || fileType === "tsx") return "builder-jsx";
-
   if (fileType === "ts") return "builder-js";
-  if (fileType === "vue") return "html";
+
+  if (fileType === "vue") return "builder-vue-lite";
+
   if (fileType === "json") return "json";
   if (fileType === "md") return "markdown";
   if (fileType === "astro") return "builder-html";
@@ -752,10 +752,26 @@ function setupBuilderCustomLanguages() {
   if (!monacoApi) return;
 
   const existingLanguages = monacoApi.languages.getLanguages();
-  const hasBuilderHtml = existingLanguages.some((language) => language.id === "builder-html");
-  const hasBuilderJsx = existingLanguages.some((language) => language.id === "builder-jsx");
-  const hasBuilderCss = existingLanguages.some((language) => language.id === "builder-css");
-  const hasBuilderJs = existingLanguages.some((language) => language.id === "builder-js");
+
+  const hasBuilderHtml = existingLanguages.some(
+    (language) => language.id === "builder-html"
+  );
+
+  const hasBuilderCss = existingLanguages.some(
+    (language) => language.id === "builder-css"
+  );
+
+  const hasBuilderJs = existingLanguages.some(
+    (language) => language.id === "builder-js"
+  );
+
+  const hasBuilderJsx = existingLanguages.some(
+    (language) => language.id === "builder-jsx"
+  );
+
+  const hasBuilderVueLite = existingLanguages.some(
+    (language) => language.id === "builder-vue-lite"
+  );
 
   if (!hasBuilderHtml) {
     monacoApi.languages.register({
@@ -794,19 +810,18 @@ function setupBuilderCustomLanguages() {
           [/<!DOCTYPE[^>]*>/i, "metatag"],
           [/<!--/, "comment", "@comment"],
 
-          // HTML tags
           [/(<\/?)([a-zA-Z][\w:-]*)/, ["delimiter.angle", "tag.html"]],
           [/\/?>/, "delimiter.angle"],
 
-          // HTML attributes
-          [/\b(class|className|id|src|href|alt|title|type|name|value|placeholder|content|charset|rel|target|lang|style)\b(?=\s*=)/, "attribute.name"],
+          [
+            /\b(class|className|id|src|href|alt|title|type|name|value|placeholder|content|charset|rel|target|lang|style)\b(?=\s*=)/,
+            "attribute.name",
+          ],
           [/\b([a-zA-Z_:][\w:.-]*)\b(?=\s*=)/, "attribute.name"],
 
-          // attribute/string values
           [/"/, "attribute.value", "@attrDouble"],
           [/'/, "attribute.value", "@attrSingle"],
 
-          // text
           [/[^<"'=\s]+/, ""],
           [/\s+/, "white"],
           [/[=]/, "delimiter"],
@@ -838,7 +853,7 @@ function setupBuilderCustomLanguages() {
       aliases: ["Builder CSS", "CSS"],
       mimetypes: ["text/css"],
     });
-  
+
     monacoApi.languages.setLanguageConfiguration("builder-css", {
       comments: {
         blockComment: ["/*", "*/"],
@@ -856,22 +871,11 @@ function setupBuilderCustomLanguages() {
         { open: "'", close: "'" },
       ],
     });
-  
+
     monacoApi.languages.setMonarchTokensProvider("builder-css", {
       defaultToken: "",
       tokenPostfix: ".css",
-  
-      keywords: [
-        "@media",
-        "@keyframes",
-        "@import",
-        "@font-face",
-        "@supports",
-        "@container",
-        "@layer",
-        "@apply",
-      ],
-  
+
       properties: [
         "color",
         "background",
@@ -909,68 +913,63 @@ function setupBuilderCustomLanguages() {
         "z-index",
         "cursor",
       ],
-  
+
       tokenizer: {
         root: [
           [/\/\*/, "comment", "@comment"],
-  
-          // CSS variables: --primary, --bg
+
           [/--[a-zA-Z0-9-_]+(?=\s*:)/, "css.variable"],
-  
-          // Selectors
+
           [/[.#][a-zA-Z_][\w-]*/, "css.selector"],
           [/[a-zA-Z][\w-]*(?=\s*\{)/, "css.selector"],
-  
-          // At rules
+
           [/@[a-zA-Z-]+/, "css.keyword"],
-  
-          // Properties before :
-          [/[a-zA-Z-]+(?=\s*:)/, {
-            cases: {
-              "@properties": "css.property",
-              "@default": "css.property",
+
+          [
+            /[a-zA-Z-]+(?=\s*:)/,
+            {
+              cases: {
+                "@properties": "css.property",
+                "@default": "css.property",
+              },
             },
-          }],
-  
-          // Hex colors
+          ],
+
           [/#([0-9a-fA-F]{3,8})\b/, "css.hex"],
-  
-          // Numbers with units
           [/\b\d+(\.\d+)?(px|rem|em|vh|vw|%|s|ms|deg)?\b/, "css.number"],
-  
-          // CSS functions
-          [/\b(rgb|rgba|hsl|hsla|linear-gradient|radial-gradient|calc|clamp|min|max|var|url|translate|scale|rotate)\b(?=\()/, "css.function"],
-  
-          // Important
+
+          [
+            /\b(rgb|rgba|hsl|hsla|linear-gradient|radial-gradient|calc|clamp|min|max|var|url|translate|scale|rotate)\b(?=\()/,
+            "css.function",
+          ],
+
           [/!important\b/, "css.important"],
-  
-          // Strings
+
           [/"([^"\\]|\\.)*$/, "string.invalid"],
           [/'([^'\\]|\\.)*$/, "string.invalid"],
           [/"/, "string", "@stringDouble"],
           [/'/, "string", "@stringSingle"],
-  
-          // Brackets and punctuation
+
           [/[{}]/, "delimiter.bracket"],
           [/[()[\]]/, "delimiter.parenthesis"],
           [/[;:,.]/, "delimiter"],
-  
+
           [/\s+/, "white"],
           [/[a-zA-Z_][\w-]*/, "identifier"],
         ],
-  
+
         stringDouble: [
           [/[^\\"]+/, "string"],
           [/\\./, "string.escape"],
           [/"/, "string", "@pop"],
         ],
-  
+
         stringSingle: [
           [/[^\\']+/, "string"],
           [/\\./, "string.escape"],
           [/'/, "string", "@pop"],
         ],
-  
+
         comment: [
           [/[^\/*]+/, "comment"],
           [/\*\//, "comment", "@pop"],
@@ -987,7 +986,7 @@ function setupBuilderCustomLanguages() {
       aliases: ["Builder JavaScript", "JavaScript"],
       mimetypes: ["text/javascript"],
     });
-  
+
     monacoApi.languages.setLanguageConfiguration("builder-js", {
       comments: {
         lineComment: "//",
@@ -1006,20 +1005,12 @@ function setupBuilderCustomLanguages() {
         { open: "'", close: "'" },
         { open: "`", close: "`" },
       ],
-      surroundingPairs: [
-        { open: "{", close: "}" },
-        { open: "[", close: "]" },
-        { open: "(", close: ")" },
-        { open: '"', close: '"' },
-        { open: "'", close: "'" },
-        { open: "`", close: "`" },
-      ],
     });
-  
+
     monacoApi.languages.setMonarchTokensProvider("builder-js", {
       defaultToken: "",
       tokenPostfix: ".js",
-  
+
       keywords: [
         "import",
         "from",
@@ -1060,7 +1051,7 @@ function setupBuilderCustomLanguages() {
         "of",
         "as",
       ],
-  
+
       frameworkNames: [
         "defineConfig",
         "react",
@@ -1074,7 +1065,7 @@ function setupBuilderCustomLanguages() {
         "THREE",
         "motion",
       ],
-  
+
       operators: [
         "=",
         ">",
@@ -1101,73 +1092,304 @@ function setupBuilderCustomLanguages() {
         "|",
         "^",
         "%",
-        "<<",
-        ">>",
-        ">>>",
         "+=",
         "-=",
         "*=",
         "/=",
-        "&=",
-        "|=",
-        "^=",
-        "%=",
-        "<<=",
-        ">>=",
-        ">>>=",
         "=>",
-        "...",
+      ],
+
+      symbols: /[=><!~?:&|+\-*\/\^%]+/,
+
+      tokenizer: {
+        root: [
+          [/\b(import|from|export|default)\b/, "keyword.import"],
+
+          [
+            /[a-zA-Z_$][\w$]*/,
+            {
+              cases: {
+                "@keywords": "keyword",
+                "@frameworkNames": "type.react",
+                "@default": "identifier",
+              },
+            },
+          ],
+
+          [/\b([A-Z][A-Za-z0-9_$]*)\b(?=\s*\()/, "function.component"],
+          [/\b([a-zA-Z_$][\w$]*)\b(?=\s*\()/, "function"],
+          [/\b([a-zA-Z_$][\w$]*)\b(?=\s*:)/, "property"],
+
+          [/\d*\.\d+([eE][\-+]?\d+)?/, "number.float"],
+          [/0[xX][0-9a-fA-F]+/, "number.hex"],
+          [/\d+/, "number"],
+
+          [/"([^"\\]|\\.)*$/, "string.invalid"],
+          [/'([^'\\]|\\.)*$/, "string.invalid"],
+          [/"/, "string", "@stringDouble"],
+          [/'/, "string", "@stringSingle"],
+          [/`/, "string.template", "@stringBacktick"],
+
+          [/\/\*/, "comment", "@comment"],
+          [/\/\/.*$/, "comment"],
+
+          [/[{}]/, "delimiter.bracket"],
+          [/[()[\]]/, "delimiter.parenthesis"],
+
+          [
+            /@symbols/,
+            {
+              cases: {
+                "@operators": "operator",
+                "@default": "",
+              },
+            },
+          ],
+
+          [/[;,.]/, "delimiter"],
+          [/\s+/, "white"],
+        ],
+
+        stringDouble: [
+          [/[^\\"]+/, "string"],
+          [/\\./, "string.escape"],
+          [/"/, "string", "@pop"],
+        ],
+
+        stringSingle: [
+          [/[^\\']+/, "string"],
+          [/\\./, "string.escape"],
+          [/'/, "string", "@pop"],
+        ],
+
+        stringBacktick: [
+          [/\$\{/, "delimiter.bracket", "@bracketCounting"],
+          [/[^\\`$]+/, "string.template"],
+          [/\\./, "string.escape"],
+          [/`/, "string.template", "@pop"],
+        ],
+
+        bracketCounting: [
+          [/\{/, "delimiter.bracket", "@bracketCounting"],
+          [/\}/, "delimiter.bracket", "@pop"],
+          { include: "root" },
+        ],
+
+        comment: [
+          [/[^\/*]+/, "comment"],
+          [/\*\//, "comment", "@pop"],
+          [/[\/*]/, "comment"],
+        ],
+      },
+    });
+  }
+
+  if (!hasBuilderVueLite) {
+    monacoApi.languages.register({
+      id: "builder-vue-lite",
+      extensions: [".vue"],
+      aliases: ["Builder Vue Lite", "Vue"],
+      mimetypes: ["text/x-vue"],
+    });
+  
+    monacoApi.languages.setLanguageConfiguration("builder-vue-lite", {
+      comments: {
+        lineComment: "//",
+        blockComment: ["/*", "*/"],
+      },
+      brackets: [
+        ["<", ">"],
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+      ],
+      autoClosingPairs: [
+        { open: "<", close: ">" },
+        { open: "{", close: "}" },
+        { open: "[", close: "]" },
+        { open: "(", close: ")" },
+        { open: '"', close: '"' },
+        { open: "'", close: "'" },
+        { open: "`", close: "`" },
+      ],
+    });
+  
+    monacoApi.languages.setMonarchTokensProvider("builder-vue-lite", {
+      defaultToken: "",
+      tokenPostfix: ".vue",
+  
+      keywords: [
+        "import",
+        "from",
+        "export",
+        "default",
+        "const",
+        "let",
+        "var",
+        "function",
+        "return",
+        "if",
+        "else",
+        "for",
+        "while",
+        "true",
+        "false",
+        "null",
+        "undefined",
+        "defineProps",
+        "defineEmits",
+        "ref",
+        "reactive",
+        "computed",
+        "watch",
+        "onMounted",
+        "onUnmounted",
       ],
   
-      symbols: /[=><!~?:&|+\-*\/\^%]+/,
+      vueGlobals: [
+        "template",
+        "script",
+        "style",
+        "setup",
+        "scoped",
+        "props",
+        "emit",
+        "v-if",
+        "v-for",
+        "v-model",
+      ],
+  
+      operators: [
+        "=",
+        ">",
+        "<",
+        "!",
+        "?",
+        ":",
+        "==",
+        "===",
+        "!=",
+        "!==",
+        "&&",
+        "||",
+        "+",
+        "-",
+        "*",
+        "/",
+        "=>",
+      ],
+  
+      symbols: /[=><!?:&|+\-*\/]+/,
   
       tokenizer: {
         root: [
-          // imports / exports
+          [/<!--/, "comment", "@htmlComment"],
+  
+          // Vue SFC main blocks
+          [/(<\/?)(template|script|style)\b/, ["delimiter.angle", "vue.section"]],
+  
+          // Vue component tags
+          [/(<\/?)([A-Z][\w-]*)/, ["delimiter.angle", "tag.vue.component"]],
+  
+          // HTML tags
+          [/(<\/?)([a-z][\w-]*)/, ["delimiter.angle", "tag.html"]],
+  
+          // Tag close
+          [/\/?>/, "delimiter.angle"],
+  
+          // Vue directives: v-if, v-for, v-model
+          [
+            /\b(v-if|v-else|v-else-if|v-for|v-show|v-model|v-bind|v-on|v-slot|v-html|v-text)\b/,
+            "vue.directive",
+          ],
+  
+          // Vue shorthand directives: :key, :project, @click, @submit.prevent
+          [/[:@][a-zA-Z][\w:.-]*/, "vue.directive"],
+  
+          // HTML/Vue attributes
+          [
+            /\b(class|id|src|href|alt|type|name|value|placeholder|style|ref|key|setup|scoped)\b(?=\s*=|\s|>|$)/,
+            "attribute.name",
+          ],
+          [/\b([a-zA-Z_$][\w$-]*)\b(?=\s*=)/, "attribute.name"],
+  
+          // Vue mustache: {{ value }}
+          [/\{\{/, "delimiter.bracket", "@mustache"],
+  
+          // JS import/export
           [/\b(import|from|export|default)\b/, "keyword.import"],
   
-          // keywords and framework names
-          [/[a-zA-Z_$][\w$]*/, {
-            cases: {
-              "@keywords": "keyword",
-              "@frameworkNames": "type.react",
-              "@default": "identifier",
-            },
-          }],
-  
-          // function calls
+          // Function calls
           [/\b([A-Z][A-Za-z0-9_$]*)\b(?=\s*\()/, "function.component"],
           [/\b([a-zA-Z_$][\w$]*)\b(?=\s*\()/, "function"],
   
-          // object property before colon
-          [/\b([a-zA-Z_$][\w$]*)\b(?=\s*:)/, "property"],
+          // JS identifiers
+          [
+            /[a-zA-Z_$][\w$]*/,
+            {
+              cases: {
+                "@keywords": "keyword",
+                "@vueGlobals": "type.vue",
+                "@default": "identifier",
+              },
+            },
+          ],
   
-          // numbers
+          // CSS inside style block
+          [/[.#][a-zA-Z_][\w-]*/, "css.selector"],
+          [/--[a-zA-Z0-9-_]+(?=\s*:)/, "css.variable"],
+          [/[a-zA-Z-]+(?=\s*:)/, "css.property"],
+          [/#([0-9a-fA-F]{3,8})\b/, "css.hex"],
+          [/\b\d+(\.\d+)?(px|rem|em|vh|vw|%|s|ms|deg)?\b/, "css.number"],
+  
+          // Numbers
           [/\d*\.\d+([eE][\-+]?\d+)?/, "number.float"],
           [/0[xX][0-9a-fA-F]+/, "number.hex"],
           [/\d+/, "number"],
   
-          // strings
+          // Strings
           [/"([^"\\]|\\.)*$/, "string.invalid"],
           [/'([^'\\]|\\.)*$/, "string.invalid"],
           [/"/, "string", "@stringDouble"],
           [/'/, "string", "@stringSingle"],
           [/`/, "string.template", "@stringBacktick"],
   
-          // comments
+          // JS comments
           [/\/\*/, "comment", "@comment"],
           [/\/\/.*$/, "comment"],
   
-          // brackets / operators
+          // Brackets/operators
           [/[{}]/, "delimiter.bracket"],
           [/[()[\]]/, "delimiter.parenthesis"],
-          [/@symbols/, {
-            cases: {
-              "@operators": "operator",
-              "@default": "",
+          [
+            /@symbols/,
+            {
+              cases: {
+                "@operators": "operator",
+                "@default": "",
+              },
             },
-          }],
+          ],
   
+          [/[;,.]/, "delimiter"],
+          [/\s+/, "white"],
+        ],
+  
+        mustache: [
+          [/\}\}/, "delimiter.bracket", "@pop"],
+          [
+            /[a-zA-Z_$][\w$]*/,
+            {
+              cases: {
+                "@keywords": "keyword",
+                "@default": "identifier",
+              },
+            },
+          ],
+          [/"([^"\\]|\\.)*"/, "string"],
+          [/'([^'\\]|\\.)*'/, "string"],
+          [/\d+/, "number"],
+          [/[{}()[\]]/, "delimiter.bracket"],
           [/[;,.]/, "delimiter"],
           [/\s+/, "white"],
         ],
@@ -1195,6 +1417,12 @@ function setupBuilderCustomLanguages() {
           [/\{/, "delimiter.bracket", "@bracketCounting"],
           [/\}/, "delimiter.bracket", "@pop"],
           { include: "root" },
+        ],
+  
+        htmlComment: [
+          [/[^-]+/, "comment"],
+          [/-->/, "comment", "@pop"],
+          [/-/, "comment"],
         ],
   
         comment: [
@@ -1208,264 +1436,223 @@ function setupBuilderCustomLanguages() {
   
     if (!hasBuilderJsx) {
       monacoApi.languages.register({
-      id: "builder-jsx",
-      extensions: [".jsx", ".tsx"],
-      aliases: ["Builder JSX", "React JSX", "JSX", "TSX"],
-      mimetypes: ["text/jsx"],
-    });
-
-    monacoApi.languages.setLanguageConfiguration("builder-jsx", {
-      comments: {
-        lineComment: "//",
-        blockComment: ["/*", "*/"],
-      },
-      brackets: [
-        ["{", "}"],
-        ["[", "]"],
-        ["(", ")"],
-        ["<", ">"],
-      ],
-      autoClosingPairs: [
-        { open: "{", close: "}" },
-        { open: "[", close: "]" },
-        { open: "(", close: ")" },
-        { open: "<", close: ">" },
-        { open: '"', close: '"' },
-        { open: "'", close: "'" },
-        { open: "`", close: "`" },
-      ],
-      surroundingPairs: [
-        { open: "{", close: "}" },
-        { open: "[", close: "]" },
-        { open: "(", close: ")" },
-        { open: "<", close: ">" },
-        { open: '"', close: '"' },
-        { open: "'", close: "'" },
-        { open: "`", close: "`" },
-      ],
-    });
-
-    monacoApi.languages.setMonarchTokensProvider("builder-jsx", {
-      defaultToken: "",
-      tokenPostfix: ".jsx",
-
-      keywords: [
-        "import",
-        "from",
-        "export",
-        "default",
-        "function",
-        "return",
-        "const",
-        "let",
-        "var",
-        "if",
-        "else",
-        "for",
-        "while",
-        "switch",
-        "case",
-        "break",
-        "continue",
-        "try",
-        "catch",
-        "finally",
-        "throw",
-        "new",
-        "class",
-        "extends",
-        "super",
-        "this",
-        "typeof",
-        "instanceof",
-        "async",
-        "await",
-        "true",
-        "false",
-        "null",
-        "undefined",
-      ],
-
-      reactNames: [
-        "React",
-        "ReactDOM",
-        "StrictMode",
-        "Fragment",
-        "useState",
-        "useEffect",
-        "useMemo",
-        "useCallback",
-        "useRef",
-        "createRoot",
-      ],
-
-      operators: [
-        "=",
-        ">",
-        "<",
-        "!",
-        "~",
-        "?",
-        ":",
-        "==",
-        "<=",
-        ">=",
-        "!=",
-        "&&",
-        "||",
-        "++",
-        "--",
-        "+",
-        "-",
-        "*",
-        "/",
-        "&",
-        "|",
-        "^",
-        "%",
-        "<<",
-        ">>",
-        ">>>",
-        "+=",
-        "-=",
-        "*=",
-        "/=",
-        "&=",
-        "|=",
-        "^=",
-        "%=",
-        "<<=",
-        ">>=",
-        ">>>=",
-        "=>",
-      ],
-
-      symbols: /[=><!~?:&|+\-*\/\^%]+/,
-
-      tokenizer: {
-        root: [
-          // JSX component tags: <App />, <React.StrictMode>
-          [/(<\/?)([A-Z][\w.]*)/, ["delimiter.angle", "tag.react"]],
-
-          // JSX html tags: <div>, <main>, <h1>
-          [/(<\/?)([a-z][\w-]*)/, ["delimiter.angle", "tag.html"]],
-
-          // JSX tag close
-          [/\/?>/, "delimiter.angle"],
-
-          // JSX attributes
-          [/\b(className|htmlFor|onClick|onChange|onSubmit|onMouseEnter|onMouseLeave|style|key|ref|id|src|href|alt|type|value|placeholder|disabled|checked)\b(?=\s*=)/, "attribute.name"],
-          [/\b([a-zA-Z_$][\w$-]*)\b(?=\s*=)/, "attribute.name"],
-
-          // import/export
-          [/\b(import|from|export|default)\b/, "keyword.import"],
-
-          // React names/hooks
-          [/[a-zA-Z_$][\w$]*/, {
-            cases: {
-              "@keywords": "keyword",
-              "@reactNames": "type.react",
-              "@default": "identifier",
-            },
-          }],
-
-          // Component/function calls
-          [/\b([A-Z][A-Za-z0-9_$]*)\b(?=\s*\()/, "function.component"],
-          [/\b([a-zA-Z_$][\w$]*)\b(?=\s*\()/, "function"],
-
-          // numbers
-          [/\d*\.\d+([eE][\-+]?\d+)?/, "number.float"],
-          [/0[xX][0-9a-fA-F]+/, "number.hex"],
-          [/\d+/, "number"],
-
-          // strings
-          [/"([^"\\]|\\.)*$/, "string.invalid"],
-          [/'([^'\\]|\\.)*$/, "string.invalid"],
-          [/"/, "string", "@stringDouble"],
-          [/'/, "string", "@stringSingle"],
-          [/`/, "string.template", "@stringBacktick"],
-
-          // comments
-          [/\/\*/, "comment", "@comment"],
-          [/\/\/.*$/, "comment"],
-
-          // brackets and operators
-          [/[{}]/, "delimiter.bracket"],
-          [/[()[\]]/, "delimiter.parenthesis"],
-          [/@symbols/, {
-            cases: {
-              "@operators": "operator",
-              "@default": "",
-            },
-          }],
-
-          [/[;,.]/, "delimiter"],
-          [/\s+/, "white"],
+        id: "builder-jsx",
+        extensions: [".jsx", ".tsx"],
+        aliases: ["Builder JSX", "React JSX", "JSX", "TSX"],
+        mimetypes: ["text/jsx"],
+      });
+  
+      monacoApi.languages.setLanguageConfiguration("builder-jsx", {
+        comments: {
+          lineComment: "//",
+          blockComment: ["/*", "*/"],
+        },
+        brackets: [
+          ["{", "}"],
+          ["[", "]"],
+          ["(", ")"],
+          ["<", ">"],
         ],
-
-        stringDouble: [
-          [/[^\\"]+/, "string"],
-          [/\\./, "string.escape"],
-          [/"/, "string", "@pop"],
+        autoClosingPairs: [
+          { open: "{", close: "}" },
+          { open: "[", close: "]" },
+          { open: "(", close: ")" },
+          { open: "<", close: ">" },
+          { open: '"', close: '"' },
+          { open: "'", close: "'" },
+          { open: "`", close: "`" },
         ],
-
-        stringSingle: [
-          [/[^\\']+/, "string"],
-          [/\\./, "string.escape"],
-          [/'/, "string", "@pop"],
+      });
+  
+      monacoApi.languages.setMonarchTokensProvider("builder-jsx", {
+        defaultToken: "",
+        tokenPostfix: ".jsx",
+  
+        keywords: [
+          "import",
+          "from",
+          "export",
+          "default",
+          "function",
+          "return",
+          "const",
+          "let",
+          "var",
+          "if",
+          "else",
+          "for",
+          "while",
+          "true",
+          "false",
+          "null",
+          "undefined",
+          "async",
+          "await",
         ],
-
-        stringBacktick: [
-          [/\$\{/, "delimiter.bracket", "@bracketCounting"],
-          [/[^\\`$]+/, "string.template"],
-          [/\\./, "string.escape"],
-          [/`/, "string.template", "@pop"],
+  
+        reactNames: [
+          "React",
+          "ReactDOM",
+          "StrictMode",
+          "Fragment",
+          "useState",
+          "useEffect",
+          "useMemo",
+          "useCallback",
+          "useRef",
+          "createRoot",
         ],
-
-        bracketCounting: [
-          [/\{/, "delimiter.bracket", "@bracketCounting"],
-          [/\}/, "delimiter.bracket", "@pop"],
-          { include: "root" },
+  
+        operators: [
+          "=",
+          ">",
+          "<",
+          "!",
+          "~",
+          "?",
+          ":",
+          "==",
+          "<=",
+          ">=",
+          "!=",
+          "&&",
+          "||",
+          "++",
+          "--",
+          "+",
+          "-",
+          "*",
+          "/",
+          "&",
+          "|",
+          "^",
+          "%",
+          "=>",
         ],
-
-        comment: [
-          [/[^\/*]+/, "comment"],
-          [/\*\//, "comment", "@pop"],
-          [/[\/*]/, "comment"],
-        ],
-      },
-    });
+  
+        symbols: /[=><!~?:&|+\-*\/\^%]+/,
+  
+        tokenizer: {
+          root: [
+            [/(<\/?)([A-Z][\w.]*)/, ["delimiter.angle", "tag.react"]],
+            [/(<\/?)([a-z][\w-]*)/, ["delimiter.angle", "tag.html"]],
+            [/\/?>/, "delimiter.angle"],
+  
+            [
+              /\b(className|htmlFor|onClick|onChange|onSubmit|style|key|ref|id|src|href|alt|type|value|placeholder|disabled|checked)\b(?=\s*=)/,
+              "attribute.name",
+            ],
+            [/\b([a-zA-Z_$][\w$-]*)\b(?=\s*=)/, "attribute.name"],
+  
+            [/\b(import|from|export|default)\b/, "keyword.import"],
+  
+            [
+              /[a-zA-Z_$][\w$]*/,
+              {
+                cases: {
+                  "@keywords": "keyword",
+                  "@reactNames": "type.react",
+                  "@default": "identifier",
+                },
+              },
+            ],
+  
+            [/\b([A-Z][A-Za-z0-9_$]*)\b(?=\s*\()/, "function.component"],
+            [/\b([a-zA-Z_$][\w$]*)\b(?=\s*\()/, "function"],
+  
+            [/\d*\.\d+([eE][\-+]?\d+)?/, "number.float"],
+            [/0[xX][0-9a-fA-F]+/, "number.hex"],
+            [/\d+/, "number"],
+  
+            [/"([^"\\]|\\.)*$/, "string.invalid"],
+            [/'([^'\\]|\\.)*$/, "string.invalid"],
+            [/"/, "string", "@stringDouble"],
+            [/'/, "string", "@stringSingle"],
+            [/`/, "string.template", "@stringBacktick"],
+  
+            [/\/\*/, "comment", "@comment"],
+            [/\/\/.*$/, "comment"],
+  
+            [/[{}]/, "delimiter.bracket"],
+            [/[()[\]]/, "delimiter.parenthesis"],
+  
+            [
+              /@symbols/,
+              {
+                cases: {
+                  "@operators": "operator",
+                  "@default": "",
+                },
+              },
+            ],
+  
+            [/[;,.]/, "delimiter"],
+            [/\s+/, "white"],
+          ],
+  
+          stringDouble: [
+            [/[^\\"]+/, "string"],
+            [/\\./, "string.escape"],
+            [/"/, "string", "@pop"],
+          ],
+  
+          stringSingle: [
+            [/[^\\']+/, "string"],
+            [/\\./, "string.escape"],
+            [/'/, "string", "@pop"],
+          ],
+  
+          stringBacktick: [
+            [/\$\{/, "delimiter.bracket", "@bracketCounting"],
+            [/[^\\`$]+/, "string.template"],
+            [/\\./, "string.escape"],
+            [/`/, "string.template", "@pop"],
+          ],
+  
+          bracketCounting: [
+            [/\{/, "delimiter.bracket", "@bracketCounting"],
+            [/\}/, "delimiter.bracket", "@pop"],
+            { include: "root" },
+          ],
+  
+          comment: [
+            [/[^\/*]+/, "comment"],
+            [/\*\//, "comment", "@pop"],
+            [/[\/*]/, "comment"],
+          ],
+        },
+      });
+    }
   }
-}
-
-async function setupMonacoEditor() {
-  if (!editorHostEl) return;
-
-  try {
-    const [
-      monacoModule,
-      editorWorkerModule,
-      cssWorkerModule,
-      htmlWorkerModule,
-      jsonWorkerModule,
-      tsWorkerModule,
-    ] = await Promise.all([
-      import("monaco-editor/esm/vs/editor/editor.api"),
-      import("monaco-editor/esm/vs/editor/editor.worker?worker"),
-      import("monaco-editor/esm/vs/language/css/css.worker?worker"),
-      import("monaco-editor/esm/vs/language/html/html.worker?worker"),
-      import("monaco-editor/esm/vs/language/json/json.worker?worker"),
-      import("monaco-editor/esm/vs/language/typescript/ts.worker?worker"),
-      import("monaco-editor/min/vs/editor/editor.main.css"),
-    ]);
-
-    await Promise.all([
-      import("monaco-editor/esm/vs/language/css/monaco.contribution"),
-      import("monaco-editor/esm/vs/language/html/monaco.contribution"),
-      import("monaco-editor/esm/vs/language/json/monaco.contribution"),
-      import("monaco-editor/esm/vs/language/typescript/monaco.contribution"),
-      import("monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution"),
-      import("monaco-editor/esm/vs/basic-languages/xml/xml.contribution"),
+  
+  async function setupMonacoEditor() {
+    if (!editorHostEl) return;
+  
+    try {
+      const [
+        monacoModule,
+        editorWorkerModule,
+        cssWorkerModule,
+        htmlWorkerModule,
+        jsonWorkerModule,
+        tsWorkerModule,
+      ] = await Promise.all([
+        import("monaco-editor/esm/vs/editor/editor.api"),
+        import("monaco-editor/esm/vs/editor/editor.worker?worker"),
+        import("monaco-editor/esm/vs/language/css/css.worker?worker"),
+        import("monaco-editor/esm/vs/language/html/html.worker?worker"),
+        import("monaco-editor/esm/vs/language/json/json.worker?worker"),
+        import("monaco-editor/esm/vs/language/typescript/ts.worker?worker"),
+        import("monaco-editor/min/vs/editor/editor.main.css"),
+      ]);
+  
+      await Promise.all([
+        import("monaco-editor/esm/vs/language/css/monaco.contribution"),
+        import("monaco-editor/esm/vs/language/html/monaco.contribution"),
+        import("monaco-editor/esm/vs/language/json/monaco.contribution"),
+        import("monaco-editor/esm/vs/language/typescript/monaco.contribution"),
+        import("monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution"),
+        import("monaco-editor/esm/vs/basic-languages/xml/xml.contribution"),
       import("monaco-editor/esm/vs/basic-languages/php/php.contribution"),
       import("monaco-editor/esm/vs/basic-languages/python/python.contribution"),
       import("monaco-editor/esm/vs/basic-languages/shell/shell.contribution"),
@@ -1541,6 +1728,12 @@ async function setupMonacoEditor() {
         { token: "function", foreground: "DCDCAA" },
         { token: "property", foreground: "9CDCFE" },
         { token: "identifier", foreground: "D4D4D4" },
+
+        // Vue
+        { token: "vue.section", foreground: "42B883", fontStyle: "bold" },
+        { token: "tag.vue.component", foreground: "4EC9B0", fontStyle: "bold" },
+        { token: "vue.directive", foreground: "C586C0", fontStyle: "bold" },
+        { token: "type.vue", foreground: "42B883" },
     
         // JS / React
         { token: "identifier", foreground: "D4D4D4" },

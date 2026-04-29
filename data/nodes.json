@@ -234,6 +234,336 @@
     "updatedAt": "2026-04-24T17:00:19.050Z"
   },
   {
+    "path": "my-react-project",
+    "name": "my-react-project",
+    "parentPath": "",
+    "kind": "folder",
+    "createdAt": "2026-04-29T08:16:51.043Z",
+    "updatedAt": "2026-04-29T08:16:51.043Z"
+  },
+  {
+    "path": "my-react-project/public",
+    "name": "public",
+    "parentPath": "my-react-project",
+    "kind": "folder",
+    "createdAt": "2026-04-29T08:16:51.067Z",
+    "updatedAt": "2026-04-29T08:16:51.067Z"
+  },
+  {
+    "path": "my-react-project/src",
+    "name": "src",
+    "parentPath": "my-react-project",
+    "kind": "folder",
+    "createdAt": "2026-04-29T08:16:51.067Z",
+    "updatedAt": "2026-04-29T08:16:51.067Z"
+  },
+  {
+    "path": "my-react-project/index.html",
+    "name": "index.html",
+    "parentPath": "my-react-project",
+    "kind": "file",
+    "fileType": "html",
+    "content": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>CMNexa React Project</title>\n  </head>\n  <body>\n    <div id=\"root\"></div>\n    <script type=\"module\" src=\"/src/main.jsx\"></script>\n  </body>\n</html>",
+    "createdAt": "2026-04-29T08:16:51.067Z",
+    "updatedAt": "2026-04-29T08:17:20.441Z"
+  },
+  {
+    "path": "my-react-project/package.json",
+    "name": "package.json",
+    "parentPath": "my-react-project",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "{\n  \"name\": \"cmnexa-react-project\",\n  \"private\": true,\n  \"version\": \"1.0.0\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"vite build\",\n    \"preview\": \"vite preview\"\n  },\n  \"dependencies\": {\n    \"@vitejs/plugin-react\": \"^5.2.0\",\n    \"vite\": \"^6.4.1\",\n    \"react\": \"^19.2.5\",\n    \"react-dom\": \"^19.2.5\",\n    \"framer-motion\": \"^12.38.0\",\n    \"lucide-react\": \"^1.11.0\",\n    \"axios\": \"^1.15.2\"\n  },\n  \"devDependencies\": {}\n}",
+    "createdAt": "2026-04-29T08:16:51.067Z",
+    "updatedAt": "2026-04-29T08:17:36.913Z"
+  },
+  {
+    "path": "my-react-project/src/components",
+    "name": "components",
+    "parentPath": "my-react-project/src",
+    "kind": "folder",
+    "createdAt": "2026-04-29T08:27:59.961Z",
+    "updatedAt": "2026-04-29T08:27:59.961Z"
+  },
+  {
+    "path": "my-react-project/src/components/contact.jsx",
+    "name": "contact.jsx",
+    "parentPath": "my-react-project/src/components",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "import { Mail, Send } from \"lucide-react\";\n\nexport default function Contact() {\n  return (\n    <section id=\"contact\" className=\"contact-section\">\n      <div>\n        <span className=\"section-kicker\">Contact</span>\n        <h2>Ready to build something professional?</h2>\n        <p>\n          This section can later connect to EmailJS, Formspree, or your own API\n          endpoint.\n        </p>\n      </div>\n\n      <form className=\"contact-form\">\n        <label>\n          Name\n          <input type=\"text\" placeholder=\"Your name\" />\n        </label>\n\n        <label>\n          Email\n          <input type=\"email\" placeholder=\"you@example.com\" />\n        </label>\n\n        <label>\n          Message\n          <textarea placeholder=\"Tell me about your project\"></textarea>\n        </label>\n\n        <button type=\"button\">\n          <Send size={18} />\n          Send Message\n        </button>\n      </form>\n\n      <div className=\"contact-note\">\n        <Mail size={18} />\n        <span>Professional contact workflow can be connected next.</span>\n      </div>\n    </section>\n  );\n}",
+    "createdAt": "2026-04-29T08:29:52.073Z",
+    "updatedAt": "2026-04-29T08:30:05.373Z"
+  },
+  {
+    "path": "my-react-project/src/components/hero.jsx",
+    "name": "hero.jsx",
+    "parentPath": "my-react-project/src/components",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "import { motion } from \"framer-motion\";\nimport { ArrowRight, Sparkles } from \"lucide-react\";\n\nexport default function Hero() {\n  return (\n    <section className=\"hero-section\">\n      <div className=\"hero-bg hero-bg-one\"></div>\n      <div className=\"hero-bg hero-bg-two\"></div>\n\n      <motion.div\n        className=\"hero-content\"\n        initial={{ opacity: 0, y: 28 }}\n        animate={{ opacity: 1, y: 0 }}\n        transition={{ duration: 0.7, ease: \"easeOut\" }}\n      >\n        <div className=\"hero-badge\">\n          <Sparkles size={16} />\n          <span>Professional React + Vite Project</span>\n        </div>\n\n        <h1>\n          Build modern digital products with clean code and beautiful UI.\n        </h1>\n\n        <p>\n          A premium React landing page created inside Dynamic Page Builder using\n          component-based architecture, Framer Motion animations, and Lucide\n          icons.\n        </p>\n\n        <div className=\"hero-actions\">\n          <a href=\"#projects\" className=\"primary-btn\">\n            View Projects\n            <ArrowRight size={18} />\n          </a>\n\n          <a href=\"#contact\" className=\"secondary-btn\">\n            Start a Project\n          </a>\n        </div>\n      </motion.div>\n\n      <motion.div\n        className=\"hero-card\"\n        initial={{ opacity: 0, scale: 0.92, rotate: -2 }}\n        animate={{ opacity: 1, scale: 1, rotate: 0 }}\n        transition={{ delay: 0.25, duration: 0.7, ease: \"easeOut\" }}\n      >\n        <div className=\"code-window-header\">\n          <span></span>\n          <span></span>\n          <span></span>\n        </div>\n\n        <pre>\n{`function Project() {\n  return (\n    <Experience\n      design=\"premium\"\n      preview=\"live\"\n      framework=\"React\"\n    />\n  );\n}`}\n        </pre>\n      </motion.div>\n    </section>\n  );\n}",
+    "createdAt": "2026-04-29T08:28:40.316Z",
+    "updatedAt": "2026-04-29T08:28:49.929Z"
+  },
+  {
+    "path": "my-react-project/src/components/navbar.jsx",
+    "name": "navbar.jsx",
+    "parentPath": "my-react-project/src/components",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "import { Code2, Menu } from \"lucide-react\";\n\nexport default function Navbar() {\n  return (\n    <header className=\"navbar\">\n      <a href=\"#\" className=\"brand\">\n        <span className=\"brand-icon\">\n          <Code2 size={20} />\n        </span>\n        <span>CMNexa</span>\n      </a>\n\n      <nav className=\"nav-links\">\n        <a href=\"#services\">Services</a>\n        <a href=\"#projects\">Projects</a>\n        <a href=\"#contact\">Contact</a>\n      </nav>\n\n      <button className=\"nav-button\">\n        <Menu size={18} />\n        <span>Menu</span>\n      </button>\n    </header>\n  );\n}",
+    "createdAt": "2026-04-29T08:28:13.767Z",
+    "updatedAt": "2026-04-29T08:28:25.774Z"
+  },
+  {
+    "path": "my-react-project/src/components/services.jsx",
+    "name": "services.jsx",
+    "parentPath": "my-react-project/src/components",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "import { motion } from \"framer-motion\";\nimport { Globe2, LayoutDashboard, Rocket } from \"lucide-react\";\n\nconst services = [\n  {\n    icon: Globe2,\n    title: \"Web Applications\",\n    description:\n      \"Responsive, fast, and scalable web applications built with modern frontend tools.\",\n  },\n  {\n    icon: LayoutDashboard,\n    title: \"Dashboards\",\n    description:\n      \"Clean admin dashboards and business systems with professional UI/UX patterns.\",\n  },\n  {\n    icon: Rocket,\n    title: \"Startup MVPs\",\n    description:\n      \"From idea to launch-ready product using React, APIs, and modern deployment workflows.\",\n  },\n];\n\nexport default function Services() {\n  return (\n    <section id=\"services\" className=\"section\">\n      <div className=\"section-head\">\n        <span className=\"section-kicker\">Services</span>\n        <h2>What this React project demonstrates</h2>\n      </div>\n\n      <div className=\"service-grid\">\n        {services.map((service, index) => {\n          const Icon = service.icon;\n\n          return (\n            <motion.article\n              className=\"service-card\"\n              key={service.title}\n              initial={{ opacity: 0, y: 24 }}\n              whileInView={{ opacity: 1, y: 0 }}\n              viewport={{ once: true }}\n              transition={{ delay: index * 0.1, duration: 0.55 }}\n            >\n              <div className=\"service-icon\">\n                <Icon size={24} />\n              </div>\n\n              <h3>{service.title}</h3>\n              <p>{service.description}</p>\n            </motion.article>\n          );\n        })}\n      </div>\n    </section>\n  );\n}",
+    "createdAt": "2026-04-29T08:29:05.205Z",
+    "updatedAt": "2026-04-29T08:29:14.810Z"
+  },
+  {
+    "path": "my-react-project/src/data",
+    "name": "data",
+    "parentPath": "my-react-project/src",
+    "kind": "folder",
+    "createdAt": "2026-04-29T08:27:21.396Z",
+    "updatedAt": "2026-04-29T08:27:21.396Z"
+  },
+  {
+    "path": "my-react-project/src/app.jsx",
+    "name": "app.jsx",
+    "parentPath": "my-react-project/src",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "import Navbar from \"./components/Navbar.jsx\";\nimport Hero from \"./components/Hero.jsx\";\nimport Services from \"./components/Services.jsx\";\nimport Projects from \"./components/Projects.jsx\";\nimport Contact from \"./components/Contact.jsx\";\n\nexport default function App() {\n  return (\n    <div className=\"app\">\n      <Navbar />\n      <main>\n        <Hero />\n        <Services />\n        <Projects />\n        <Contact />\n      </main>\n    </div>\n  );\n}",
+    "createdAt": "2026-04-29T08:16:51.067Z",
+    "updatedAt": "2026-04-29T08:27:45.911Z"
+  },
+  {
+    "path": "my-react-project/src/components/projects.jsx",
+    "name": "projects.jsx",
+    "parentPath": "my-react-project/src/components",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "import { motion } from \"framer-motion\";\nimport { projects } from \"../data/projects.js\";\n\nexport default function Projects() {\n  return (\n    <section id=\"projects\" className=\"section projects-section\">\n      <div className=\"section-head\">\n        <span className=\"section-kicker\">Projects</span>\n        <h2>Real project-style component composition</h2>\n      </div>\n\n      <div className=\"project-grid\">\n        {projects.map((project, index) => (\n          <motion.article\n            className=\"project-card\"\n            key={project.title}\n            initial={{ opacity: 0, y: 24 }}\n            whileInView={{ opacity: 1, y: 0 }}\n            viewport={{ once: true }}\n            transition={{ delay: index * 0.1, duration: 0.55 }}\n          >\n            <span className=\"project-category\">{project.category}</span>\n            <h3>{project.title}</h3>\n            <p>{project.description}</p>\n\n            <div className=\"stack-list\">\n              {project.stack.map((item) => (\n                <span key={item}>{item}</span>\n              ))}\n            </div>\n          </motion.article>\n        ))}\n      </div>\n    </section>\n  );\n}",
+    "createdAt": "2026-04-29T08:29:29.116Z",
+    "updatedAt": "2026-04-29T08:29:38.430Z"
+  },
+  {
+    "path": "my-react-project/src/data/projects.js",
+    "name": "projects.js",
+    "parentPath": "my-react-project/src/data",
+    "kind": "file",
+    "fileType": "js",
+    "content": "export const projects = [\n  {\n    title: \"MediForecast\",\n    category: \"AI Healthcare Platform\",\n    description:\n      \"AI-powered drug demand forecasting and digital prescription management system for pharmacy operations.\",\n    stack: [\"React\", \"Python\", \"PostgreSQL\", \"AI\"],\n  },\n  {\n    title: \"Cake Shop Web App\",\n    category: \"Full-stack E-commerce\",\n    description:\n      \"Modern cake shop platform with product browsing, order management, and responsive customer experience.\",\n    stack: [\"React\", \"Node.js\", \"MongoDB\", \"JavaScript\"],\n  },\n  {\n    title: \"Dynamic Page Builder\",\n    category: \"Multi-framework Builder\",\n    description:\n      \"Browser-based page builder with Monaco Editor, React/Vue/HTML project support, and live preview workflow.\",\n    stack: [\"Astro\", \"Vite\", \"React\", \"Vue\"],\n  },\n];",
+    "createdAt": "2026-04-29T08:27:31.494Z",
+    "updatedAt": "2026-04-29T08:27:41.660Z"
+  },
+  {
+    "path": "my-react-project/src/index.css",
+    "name": "index.css",
+    "parentPath": "my-react-project/src",
+    "kind": "file",
+    "fileType": "css",
+    "content": ":root {\n  --bg: #070a12;\n  --surface: #0f172a;\n  --surface-soft: #111827;\n  --card: rgba(255, 255, 255, 0.08);\n  --border: rgba(255, 255, 255, 0.12);\n  --text: #f8fafc;\n  --muted: #94a3b8;\n  --primary: #38bdf8;\n  --primary-dark: #0284c7;\n  --accent: #a78bfa;\n  --success: #34d399;\n  --shadow: 0 28px 90px rgba(0, 0, 0, 0.35);\n  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,\n    \"Segoe UI\", sans-serif;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  scroll-behavior: smooth;\n}\n\nbody {\n  margin: 0;\n  background:\n    radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 32%),\n    radial-gradient(circle at top right, rgba(167, 139, 250, 0.14), transparent 28%),\n    var(--bg);\n  color: var(--text);\n}\n\na {\n  color: inherit;\n  text-decoration: none;\n}\n\nbutton,\ninput,\ntextarea {\n  font: inherit;\n}\n\n.app {\n  min-height: 100vh;\n  overflow-x: hidden;\n}\n\n.navbar {\n  position: sticky;\n  top: 0;\n  z-index: 20;\n  height: 72px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 24px;\n  padding: 0 7vw;\n  border-bottom: 1px solid var(--border);\n  background: rgba(7, 10, 18, 0.72);\n  backdrop-filter: blur(18px);\n}\n\n.brand {\n  display: inline-flex;\n  align-items: center;\n  gap: 10px;\n  font-weight: 900;\n  letter-spacing: -0.03em;\n}\n\n.brand-icon {\n  width: 38px;\n  height: 38px;\n  display: grid;\n  place-items: center;\n  border-radius: 12px;\n  background: linear-gradient(135deg, var(--primary), var(--accent));\n  color: white;\n  box-shadow: 0 14px 40px rgba(56, 189, 248, 0.26);\n}\n\n.nav-links {\n  display: flex;\n  align-items: center;\n  gap: 26px;\n  color: var(--muted);\n  font-weight: 700;\n  font-size: 14px;\n}\n\n.nav-links a:hover {\n  color: var(--text);\n}\n\n.nav-button {\n  display: none;\n  align-items: center;\n  gap: 8px;\n  border: 1px solid var(--border);\n  border-radius: 999px;\n  background: var(--card);\n  color: var(--text);\n  padding: 10px 14px;\n}\n\n.hero-section {\n  position: relative;\n  min-height: calc(100vh - 72px);\n  display: grid;\n  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);\n  align-items: center;\n  gap: 60px;\n  padding: 90px 7vw;\n}\n\n.hero-bg {\n  position: absolute;\n  border-radius: 999px;\n  filter: blur(28px);\n  opacity: 0.5;\n  pointer-events: none;\n}\n\n.hero-bg-one {\n  width: 240px;\n  height: 240px;\n  left: 5%;\n  top: 12%;\n  background: rgba(56, 189, 248, 0.25);\n}\n\n.hero-bg-two {\n  width: 280px;\n  height: 280px;\n  right: 12%;\n  bottom: 10%;\n  background: rgba(167, 139, 250, 0.22);\n}\n\n.hero-content,\n.hero-card {\n  position: relative;\n  z-index: 1;\n}\n\n.hero-badge,\n.section-kicker {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 18px;\n  padding: 8px 12px;\n  border: 1px solid rgba(56, 189, 248, 0.3);\n  border-radius: 999px;\n  background: rgba(56, 189, 248, 0.1);\n  color: #7dd3fc;\n  font-size: 13px;\n  font-weight: 900;\n  letter-spacing: 0.05em;\n  text-transform: uppercase;\n}\n\n.hero-content h1 {\n  max-width: 780px;\n  margin: 0;\n  font-size: clamp(42px, 6vw, 82px);\n  line-height: 0.94;\n  letter-spacing: -0.075em;\n}\n\n.hero-content p {\n  max-width: 650px;\n  margin: 26px 0 0;\n  color: var(--muted);\n  font-size: 18px;\n  line-height: 1.75;\n}\n\n.hero-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 14px;\n  margin-top: 34px;\n}\n\n.primary-btn,\n.secondary-btn {\n  min-height: 50px;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 10px;\n  border-radius: 16px;\n  padding: 0 18px;\n  font-weight: 900;\n}\n\n.primary-btn {\n  background: linear-gradient(135deg, var(--primary), var(--accent));\n  color: white;\n  box-shadow: 0 18px 50px rgba(56, 189, 248, 0.25);\n}\n\n.secondary-btn {\n  border: 1px solid var(--border);\n  background: var(--card);\n  color: var(--text);\n}\n\n.hero-card {\n  border: 1px solid var(--border);\n  border-radius: 28px;\n  background: rgba(15, 23, 42, 0.72);\n  box-shadow: var(--shadow);\n  overflow: hidden;\n  backdrop-filter: blur(18px);\n}\n\n.code-window-header {\n  display: flex;\n  gap: 8px;\n  padding: 18px;\n  border-bottom: 1px solid var(--border);\n  background: rgba(255, 255, 255, 0.05);\n}\n\n.code-window-header span {\n  width: 12px;\n  height: 12px;\n  border-radius: 999px;\n  background: var(--primary);\n}\n\n.code-window-header span:nth-child(2) {\n  background: var(--accent);\n}\n\n.code-window-header span:nth-child(3) {\n  background: var(--success);\n}\n\n.hero-card pre {\n  margin: 0;\n  padding: 28px;\n  color: #dbeafe;\n  font-size: 15px;\n  line-height: 1.8;\n  overflow: auto;\n}\n\n.section {\n  padding: 90px 7vw;\n}\n\n.section-head {\n  max-width: 760px;\n  margin-bottom: 36px;\n}\n\n.section-head h2,\n.contact-section h2 {\n  margin: 0;\n  font-size: clamp(32px, 4vw, 56px);\n  line-height: 1;\n  letter-spacing: -0.055em;\n}\n\n.service-grid,\n.project-grid {\n  display: grid;\n  gap: 18px;\n}\n\n.service-grid {\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n}\n\n.project-grid {\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n}\n\n.service-card,\n.project-card,\n.contact-section {\n  border: 1px solid var(--border);\n  border-radius: 26px;\n  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.04));\n  box-shadow: 0 20px 65px rgba(0, 0, 0, 0.18);\n}\n\n.service-card,\n.project-card {\n  padding: 28px;\n}\n\n.service-icon {\n  width: 52px;\n  height: 52px;\n  display: grid;\n  place-items: center;\n  margin-bottom: 24px;\n  border-radius: 16px;\n  background: rgba(56, 189, 248, 0.12);\n  color: var(--primary);\n}\n\n.service-card h3,\n.project-card h3 {\n  margin: 0;\n  font-size: 22px;\n  letter-spacing: -0.03em;\n}\n\n.service-card p,\n.project-card p,\n.contact-section p {\n  color: var(--muted);\n  line-height: 1.7;\n}\n\n.project-category {\n  display: inline-flex;\n  margin-bottom: 16px;\n  color: var(--primary);\n  font-size: 13px;\n  font-weight: 900;\n  text-transform: uppercase;\n  letter-spacing: 0.08em;\n}\n\n.stack-list {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n  margin-top: 20px;\n}\n\n.stack-list span {\n  border: 1px solid var(--border);\n  border-radius: 999px;\n  background: rgba(255, 255, 255, 0.07);\n  color: #cbd5e1;\n  padding: 7px 10px;\n  font-size: 12px;\n  font-weight: 800;\n}\n\n.contact-section {\n  margin: 90px 7vw;\n  padding: 42px;\n  display: grid;\n  grid-template-columns: minmax(0, 0.85fr) minmax(320px, 1fr);\n  gap: 30px;\n  align-items: start;\n}\n\n.contact-form {\n  display: grid;\n  gap: 14px;\n}\n\n.contact-form label {\n  display: grid;\n  gap: 8px;\n  color: #cbd5e1;\n  font-size: 13px;\n  font-weight: 800;\n}\n\n.contact-form input,\n.contact-form textarea {\n  width: 100%;\n  border: 1px solid var(--border);\n  border-radius: 16px;\n  background: rgba(7, 10, 18, 0.55);\n  color: var(--text);\n  padding: 14px 16px;\n  outline: none;\n}\n\n.contact-form textarea {\n  min-height: 120px;\n  resize: vertical;\n}\n\n.contact-form input:focus,\n.contact-form textarea:focus {\n  border-color: rgba(56, 189, 248, 0.7);\n  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12);\n}\n\n.contact-form button {\n  min-height: 50px;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 10px;\n  border: 0;\n  border-radius: 16px;\n  background: linear-gradient(135deg, var(--primary), var(--accent));\n  color: white;\n  font-weight: 900;\n  cursor: pointer;\n}\n\n.contact-note {\n  grid-column: 1 / -1;\n  display: inline-flex;\n  align-items: center;\n  gap: 10px;\n  color: var(--muted);\n}\n\n@media (max-width: 980px) {\n  .hero-section,\n  .contact-section {\n    grid-template-columns: 1fr;\n  }\n\n  .service-grid,\n  .project-grid {\n    grid-template-columns: 1fr;\n  }\n\n  .nav-links {\n    display: none;\n  }\n\n  .nav-button {\n    display: inline-flex;\n  }\n}\n\n@media (max-width: 640px) {\n  .navbar {\n    padding: 0 20px;\n  }\n\n  .hero-section,\n  .section {\n    padding: 64px 20px;\n  }\n\n  .contact-section {\n    margin: 64px 20px;\n    padding: 24px;\n  }\n}",
+    "createdAt": "2026-04-29T08:16:51.067Z",
+    "updatedAt": "2026-04-29T08:30:23.427Z"
+  },
+  {
+    "path": "my-react-project/src/main.jsx",
+    "name": "main.jsx",
+    "parentPath": "my-react-project/src",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "import React from \"react\";\nimport ReactDOM from \"react-dom/client\";\nimport App from \"./app.jsx\";\nimport \"./index.css\";\n\nReactDOM.createRoot(document.getElementById(\"root\")).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);",
+    "createdAt": "2026-04-29T08:16:51.067Z",
+    "updatedAt": "2026-04-29T08:26:46.463Z"
+  },
+  {
+    "path": "my-react-project/vite.config.js",
+    "name": "vite.config.js",
+    "parentPath": "my-react-project",
+    "kind": "file",
+    "fileType": "js",
+    "content": "import { defineConfig } from \"vite\";\nimport react from \"@vitejs/plugin-react\";\n\nexport default defineConfig({\n  plugins: [react()],\n});",
+    "createdAt": "2026-04-29T08:16:51.067Z",
+    "updatedAt": "2026-04-29T08:26:34.964Z"
+  },
+  {
+    "path": "my-vue-project",
+    "name": "my-vue-project",
+    "parentPath": "",
+    "kind": "folder",
+    "createdAt": "2026-04-29T08:38:23.447Z",
+    "updatedAt": "2026-04-29T08:38:23.447Z"
+  },
+  {
+    "path": "my-vue-project/public",
+    "name": "public",
+    "parentPath": "my-vue-project",
+    "kind": "folder",
+    "createdAt": "2026-04-29T08:38:23.506Z",
+    "updatedAt": "2026-04-29T08:38:23.506Z"
+  },
+  {
+    "path": "my-vue-project/src",
+    "name": "src",
+    "parentPath": "my-vue-project",
+    "kind": "folder",
+    "createdAt": "2026-04-29T08:38:23.506Z",
+    "updatedAt": "2026-04-29T08:38:23.506Z"
+  },
+  {
+    "path": "my-vue-project/index.html",
+    "name": "index.html",
+    "parentPath": "my-vue-project",
+    "kind": "file",
+    "fileType": "html",
+    "content": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>CMNexa Vue Project</title>\n  </head>\n  <body>\n    <div id=\"app\"></div>\n    <script type=\"module\" src=\"/src/main.js\"></script>\n  </body>\n</html>",
+    "createdAt": "2026-04-29T08:38:23.506Z",
+    "updatedAt": "2026-04-29T08:39:01.397Z"
+  },
+  {
+    "path": "my-vue-project/package.json",
+    "name": "package.json",
+    "parentPath": "my-vue-project",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "{\n  \"name\": \"cmnexa-vue-project\",\n  \"private\": true,\n  \"version\": \"1.0.0\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"vite build\",\n    \"preview\": \"vite preview\"\n  },\n  \"dependencies\": {\n    \"@vitejs/plugin-vue\": \"^5.2.4\",\n    \"vite\": \"^6.4.1\",\n    \"vue\": \"^3.5.33\",\n    \"axios\": \"^1.15.2\",\n    \"gsap\": \"^3.15.0\",\n    \"three\": \"^0.184.0\"\n  },\n  \"devDependencies\": {}\n}",
+    "createdAt": "2026-04-29T08:38:23.506Z",
+    "updatedAt": "2026-04-29T08:39:12.816Z"
+  },
+  {
+    "path": "my-vue-project/src/components",
+    "name": "components",
+    "parentPath": "my-vue-project/src",
+    "kind": "folder",
+    "createdAt": "2026-04-29T08:40:32.403Z",
+    "updatedAt": "2026-04-29T08:40:37.636Z"
+  },
+  {
+    "path": "my-vue-project/src/data",
+    "name": "data",
+    "parentPath": "my-vue-project/src",
+    "kind": "folder",
+    "createdAt": "2026-04-29T08:40:03.603Z",
+    "updatedAt": "2026-04-29T08:40:03.603Z"
+  },
+  {
+    "path": "my-vue-project/src/app.vue",
+    "name": "app.vue",
+    "parentPath": "my-vue-project/src",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "<template>\n  <div class=\"app\">\n    <Navbar />\n\n    <main>\n      <Hero />\n      <Services />\n      <Projects />\n      <Contact />\n    </main>\n  </div>\n</template>\n\n<script setup>\nimport Navbar from \"./components/navbar.vue\";\nimport Hero from \"./components/hero.vue\";\nimport Services from \"./components/services.vue\";\nimport Projects from \"./components/projects.vue\";\nimport Contact from \"./components/contact.vue\";\n</script>",
+    "createdAt": "2026-04-29T08:38:23.506Z",
+    "updatedAt": "2026-04-29T08:39:46.298Z"
+  },
+  {
+    "path": "my-vue-project/src/components/contact.vue",
+    "name": "contact.vue",
+    "parentPath": "my-vue-project/src/components",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "<template>\n  <section id=\"contact\" class=\"contact-section\">\n    <div>\n      <span class=\"section-kicker\">Contact</span>\n      <h2>Ready to build a Vue-powered product?</h2>\n      <p>\n        This form is frontend-ready. Next, it can connect to EmailJS, Formspree,\n        Firebase, or your own API endpoint.\n      </p>\n\n      <div v-if=\"statusMessage\" class=\"contact-status\">\n        {{ statusMessage }}\n      </div>\n    </div>\n\n    <form class=\"contact-form\" @submit.prevent=\"handleSubmit\">\n      <label>\n        Name\n        <input v-model=\"form.name\" type=\"text\" placeholder=\"Your name\" />\n      </label>\n\n      <label>\n        Email\n        <input v-model=\"form.email\" type=\"email\" placeholder=\"you@example.com\" />\n      </label>\n\n      <label>\n        Message\n        <textarea v-model=\"form.message\" placeholder=\"Tell me about your project\"></textarea>\n      </label>\n\n      <button type=\"submit\">\n        Send Message\n        <span>→</span>\n      </button>\n    </form>\n  </section>\n</template>\n\n<script setup>\nimport { reactive, ref } from \"vue\";\n\nconst statusMessage = ref(\"\");\n\nconst form = reactive({\n  name: \"\",\n  email: \"\",\n  message: \"\",\n});\n\nfunction handleSubmit() {\n  if (!form.name || !form.email || !form.message) {\n    statusMessage.value = \"Please fill all fields before sending.\";\n    return;\n  }\n\n  statusMessage.value =\n    \"Message captured successfully. Backend connection can be added next.\";\n\n  form.name = \"\";\n  form.email = \"\";\n  form.message = \"\";\n}\n</script>",
+    "createdAt": "2026-04-29T08:42:36.630Z",
+    "updatedAt": "2026-04-29T08:42:46.537Z"
+  },
+  {
+    "path": "my-vue-project/src/components/hero.vue",
+    "name": "hero.vue",
+    "parentPath": "my-vue-project/src/components",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "<template>\n  <section class=\"hero-section\">\n    <div class=\"hero-glow hero-glow-one\"></div>\n    <div class=\"hero-glow hero-glow-two\"></div>\n\n    <div ref=\"contentRef\" class=\"hero-content\">\n      <div class=\"hero-badge\">\n        <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\">\n          <path d=\"M12 3l1.7 5.2L19 10l-5.3 1.8L12 17l-1.7-5.2L5 10l5.3-1.8L12 3z\" />\n          <path d=\"M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z\" />\n        </svg>\n        <span>Professional Vue + Vite Project</span>\n      </div>\n\n      <h1>Build elegant Vue interfaces with real component architecture.</h1>\n\n      <p>\n        This Vue project is created inside Dynamic Page Builder using Single\n        File Components, props, reusable sections, GSAP animation, and real Vite\n        preview support.\n      </p>\n\n      <div class=\"hero-actions\">\n        <a href=\"#projects\" class=\"primary-btn\">\n          View Projects\n          <span>→</span>\n        </a>\n\n        <a href=\"#contact\" class=\"secondary-btn\">\n          Start a Project\n        </a>\n      </div>\n    </div>\n\n    <div ref=\"cardRef\" class=\"hero-card\">\n      <div class=\"code-window-header\">\n        <span></span>\n        <span></span>\n        <span></span>\n      </div>\n\n      <pre>{{ codePreview }}</pre>\n    </div>\n  </section>\n</template>\n\n<script setup>\nimport { onMounted, ref } from \"vue\";\nimport gsap from \"gsap\";\n\nconst contentRef = ref(null);\nconst cardRef = ref(null);\n\nconst codePreview = `<template>\n  <Experience\n    framework=\"Vue\"\n    preview=\"Live\"\n    quality=\"Professional\"\n  />\n</template>`;\n\nonMounted(() => {\n  gsap.from(contentRef.value, {\n    opacity: 0,\n    y: 28,\n    duration: 0.8,\n    ease: \"power3.out\",\n  });\n\n  gsap.from(cardRef.value, {\n    opacity: 0,\n    scale: 0.92,\n    rotate: -2,\n    duration: 0.8,\n    delay: 0.18,\n    ease: \"power3.out\",\n  });\n});\n</script>",
+    "createdAt": "2026-04-29T08:41:16.395Z",
+    "updatedAt": "2026-04-29T08:41:20.526Z"
+  },
+  {
+    "path": "my-vue-project/src/components/navbar.vue",
+    "name": "navbar.vue",
+    "parentPath": "my-vue-project/src/components",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "<template>\n  <header class=\"navbar\">\n    <a href=\"#\" class=\"brand\">\n      <span class=\"brand-icon\">\n        <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\">\n          <path d=\"M8 9L4 12l4 3\" />\n          <path d=\"M16 9l4 3-4 3\" />\n          <path d=\"M14 5l-4 14\" />\n        </svg>\n      </span>\n      <span>CMNexa Vue</span>\n    </a>\n\n    <nav class=\"nav-links\">\n      <a href=\"#services\">Services</a>\n      <a href=\"#projects\">Projects</a>\n      <a href=\"#contact\">Contact</a>\n    </nav>\n\n    <button class=\"nav-button\" type=\"button\">\n      <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\">\n        <path d=\"M4 7h16\" />\n        <path d=\"M4 12h16\" />\n        <path d=\"M4 17h16\" />\n      </svg>\n      <span>Menu</span>\n    </button>\n  </header>\n</template>",
+    "createdAt": "2026-04-29T08:40:53.520Z",
+    "updatedAt": "2026-04-29T08:40:58.705Z"
+  },
+  {
+    "path": "my-vue-project/src/components/project-card.vue",
+    "name": "project-card.vue",
+    "parentPath": "my-vue-project/src/components",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "<template>\n  <article class=\"project-card\">\n    <span class=\"project-category\">{{ project.category }}</span>\n\n    <h3>{{ project.title }}</h3>\n\n    <p>{{ project.description }}</p>\n\n    <div class=\"stack-list\">\n      <span v-for=\"item in project.stack\" :key=\"item\">\n        {{ item }}\n      </span>\n    </div>\n  </article>\n</template>\n\n<script setup>\ndefineProps({\n  project: {\n    type: Object,\n    required: true,\n  },\n});\n</script>",
+    "createdAt": "2026-04-29T08:42:00.290Z",
+    "updatedAt": "2026-04-29T08:42:08.138Z"
+  },
+  {
+    "path": "my-vue-project/src/components/projects.vue",
+    "name": "projects.vue",
+    "parentPath": "my-vue-project/src/components",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "<template>\n  <section id=\"projects\" class=\"section projects-section\">\n    <div class=\"section-head\">\n      <span class=\"section-kicker\">Projects</span>\n      <h2>Reusable project cards with Vue props</h2>\n    </div>\n\n    <div class=\"project-grid\">\n      <ProjectCard\n        v-for=\"project in projects\"\n        :key=\"project.title\"\n        :project=\"project\"\n      />\n    </div>\n  </section>\n</template>\n\n<script setup>\nimport ProjectCard from \"./project-card.vue\";\nimport { projects } from \"../data/projects.js\";\n</script>",
+    "createdAt": "2026-04-29T08:42:18.205Z",
+    "updatedAt": "2026-04-29T08:42:26.007Z"
+  },
+  {
+    "path": "my-vue-project/src/components/services.vue",
+    "name": "services.vue",
+    "parentPath": "my-vue-project/src/components",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "<template>\n  <section id=\"services\" class=\"section\">\n    <div class=\"section-head\">\n      <span class=\"section-kicker\">Services</span>\n      <h2>Vue features demonstrated in this project</h2>\n    </div>\n\n    <div class=\"service-grid\">\n      <article\n        v-for=\"service in services\"\n        :key=\"service.title\"\n        class=\"service-card\"\n      >\n        <div class=\"service-icon\">\n          {{ service.icon }}\n        </div>\n\n        <h3>{{ service.title }}</h3>\n        <p>{{ service.description }}</p>\n      </article>\n    </div>\n  </section>\n</template>\n\n<script setup>\nconst services = [\n  {\n    icon: \"⚡\",\n    title: \"Vue Components\",\n    description:\n      \"Reusable Vue Single File Components with clean template and script setup structure.\",\n  },\n  {\n    icon: \"🎯\",\n    title: \"Props & Data Flow\",\n    description:\n      \"Project cards use props to pass data cleanly from parent components.\",\n  },\n  {\n    icon: \"🚀\",\n    title: \"Real Vite Preview\",\n    description:\n      \"The builder preview runs through real Vite, so Vue logic and external packages can work properly.\",\n  },\n];\n</script>",
+    "createdAt": "2026-04-29T08:41:35.646Z",
+    "updatedAt": "2026-04-29T08:41:44.187Z"
+  },
+  {
+    "path": "my-vue-project/src/data/projects.js",
+    "name": "projects.js",
+    "parentPath": "my-vue-project/src/data",
+    "kind": "file",
+    "fileType": "js",
+    "content": "export const projects = [\n  {\n    title: \"Dynamic Page Builder\",\n    category: \"Developer Tool\",\n    description:\n      \"A multi-framework browser-based builder with Monaco Editor, live preview, React, Vue, and HTML project support.\",\n    stack: [\"Astro\", \"Vite\", \"Vue\", \"Monaco\"],\n  },\n  {\n    title: \"SaveSmart Mobile App\",\n    category: \"Finance App\",\n    description:\n      \"A smart personal finance app concept with transaction tracking, profile management, and future AI insights.\",\n    stack: [\"Expo\", \"React Native\", \"TypeScript\"],\n  },\n  {\n    title: \"MediForecast\",\n    category: \"AI Healthcare\",\n    description:\n      \"AI-powered demand forecasting and digital prescription management system for pharmacy operations.\",\n    stack: [\"React\", \"Python\", \"PostgreSQL\", \"AI\"],\n  },\n];",
+    "createdAt": "2026-04-29T08:40:06.360Z",
+    "updatedAt": "2026-04-29T08:40:15.811Z"
+  },
+  {
+    "path": "my-vue-project/src/main.js",
+    "name": "main.js",
+    "parentPath": "my-vue-project/src",
+    "kind": "file",
+    "fileType": "js",
+    "content": "import { createApp } from \"vue\";\nimport App from \"./app.vue\";\nimport \"./style.css\";\n\ncreateApp(App).mount(\"#app\");",
+    "createdAt": "2026-04-29T08:38:23.506Z",
+    "updatedAt": "2026-04-29T08:39:32.254Z"
+  },
+  {
+    "path": "my-vue-project/src/style.css",
+    "name": "style.css",
+    "parentPath": "my-vue-project/src",
+    "kind": "file",
+    "fileType": "css",
+    "content": ":root {\n  --bg: #070a12;\n  --surface: #0f172a;\n  --card: rgba(255, 255, 255, 0.08);\n  --border: rgba(255, 255, 255, 0.12);\n  --text: #f8fafc;\n  --muted: #94a3b8;\n  --primary: #42b883;\n  --primary-blue: #38bdf8;\n  --accent: #8b5cf6;\n  --shadow: 0 28px 90px rgba(0, 0, 0, 0.35);\n  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,\n    \"Segoe UI\", sans-serif;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  scroll-behavior: smooth;\n}\n\nbody {\n  margin: 0;\n  background:\n    radial-gradient(circle at top left, rgba(66, 184, 131, 0.18), transparent 32%),\n    radial-gradient(circle at top right, rgba(56, 189, 248, 0.14), transparent 28%),\n    var(--bg);\n  color: var(--text);\n}\n\na {\n  color: inherit;\n  text-decoration: none;\n}\n\nbutton,\ninput,\ntextarea {\n  font: inherit;\n}\n\n.app {\n  min-height: 100vh;\n  overflow-x: hidden;\n}\n\n.navbar {\n  position: sticky;\n  top: 0;\n  z-index: 20;\n  height: 72px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 24px;\n  padding: 0 7vw;\n  border-bottom: 1px solid var(--border);\n  background: rgba(7, 10, 18, 0.72);\n  backdrop-filter: blur(18px);\n}\n\n.brand {\n  display: inline-flex;\n  align-items: center;\n  gap: 10px;\n  font-weight: 900;\n  letter-spacing: -0.03em;\n}\n\n.brand-icon {\n  width: 38px;\n  height: 38px;\n  display: grid;\n  place-items: center;\n  border-radius: 12px;\n  background: linear-gradient(135deg, var(--primary), var(--primary-blue));\n  color: white;\n  box-shadow: 0 14px 40px rgba(66, 184, 131, 0.26);\n}\n\n.brand-icon svg,\n.nav-button svg,\n.hero-badge svg {\n  width: 20px;\n  height: 20px;\n  fill: none;\n  stroke: currentColor;\n  stroke-width: 2;\n  stroke-linecap: round;\n  stroke-linejoin: round;\n}\n\n.nav-links {\n  display: flex;\n  align-items: center;\n  gap: 26px;\n  color: var(--muted);\n  font-weight: 700;\n  font-size: 14px;\n}\n\n.nav-links a:hover {\n  color: var(--text);\n}\n\n.nav-button {\n  display: none;\n  align-items: center;\n  gap: 8px;\n  border: 1px solid var(--border);\n  border-radius: 999px;\n  background: var(--card);\n  color: var(--text);\n  padding: 10px 14px;\n}\n\n.hero-section {\n  position: relative;\n  min-height: calc(100vh - 72px);\n  display: grid;\n  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);\n  align-items: center;\n  gap: 60px;\n  padding: 90px 7vw;\n}\n\n.hero-glow {\n  position: absolute;\n  border-radius: 999px;\n  filter: blur(30px);\n  opacity: 0.5;\n  pointer-events: none;\n}\n\n.hero-glow-one {\n  width: 240px;\n  height: 240px;\n  left: 5%;\n  top: 12%;\n  background: rgba(66, 184, 131, 0.25);\n}\n\n.hero-glow-two {\n  width: 280px;\n  height: 280px;\n  right: 12%;\n  bottom: 10%;\n  background: rgba(56, 189, 248, 0.2);\n}\n\n.hero-content,\n.hero-card {\n  position: relative;\n  z-index: 1;\n}\n\n.hero-badge,\n.section-kicker {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 18px;\n  padding: 8px 12px;\n  border: 1px solid rgba(66, 184, 131, 0.3);\n  border-radius: 999px;\n  background: rgba(66, 184, 131, 0.1);\n  color: #86efac;\n  font-size: 13px;\n  font-weight: 900;\n  letter-spacing: 0.05em;\n  text-transform: uppercase;\n}\n\n.hero-content h1 {\n  max-width: 780px;\n  margin: 0;\n  font-size: clamp(42px, 6vw, 82px);\n  line-height: 0.94;\n  letter-spacing: -0.075em;\n}\n\n.hero-content p {\n  max-width: 650px;\n  margin: 26px 0 0;\n  color: var(--muted);\n  font-size: 18px;\n  line-height: 1.75;\n}\n\n.hero-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 14px;\n  margin-top: 34px;\n}\n\n.primary-btn,\n.secondary-btn {\n  min-height: 50px;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 10px;\n  border-radius: 16px;\n  padding: 0 18px;\n  font-weight: 900;\n}\n\n.primary-btn {\n  background: linear-gradient(135deg, var(--primary), var(--primary-blue));\n  color: white;\n  box-shadow: 0 18px 50px rgba(66, 184, 131, 0.25);\n}\n\n.secondary-btn {\n  border: 1px solid var(--border);\n  background: var(--card);\n  color: var(--text);\n}\n\n.hero-card {\n  border: 1px solid var(--border);\n  border-radius: 28px;\n  background: rgba(15, 23, 42, 0.72);\n  box-shadow: var(--shadow);\n  overflow: hidden;\n  backdrop-filter: blur(18px);\n}\n\n.code-window-header {\n  display: flex;\n  gap: 8px;\n  padding: 18px;\n  border-bottom: 1px solid var(--border);\n  background: rgba(255, 255, 255, 0.05);\n}\n\n.code-window-header span {\n  width: 12px;\n  height: 12px;\n  border-radius: 999px;\n  background: var(--primary);\n}\n\n.code-window-header span:nth-child(2) {\n  background: var(--primary-blue);\n}\n\n.code-window-header span:nth-child(3) {\n  background: var(--accent);\n}\n\n.hero-card pre {\n  margin: 0;\n  padding: 28px;\n  color: #dbeafe;\n  font-size: 15px;\n  line-height: 1.8;\n  overflow: auto;\n}\n\n.section {\n  padding: 90px 7vw;\n}\n\n.section-head {\n  max-width: 760px;\n  margin-bottom: 36px;\n}\n\n.section-head h2,\n.contact-section h2 {\n  margin: 0;\n  font-size: clamp(32px, 4vw, 56px);\n  line-height: 1;\n  letter-spacing: -0.055em;\n}\n\n.service-grid,\n.project-grid {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 18px;\n}\n\n.service-card,\n.project-card,\n.contact-section {\n  border: 1px solid var(--border);\n  border-radius: 26px;\n  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.04));\n  box-shadow: 0 20px 65px rgba(0, 0, 0, 0.18);\n}\n\n.service-card,\n.project-card {\n  padding: 28px;\n}\n\n.service-icon {\n  width: 52px;\n  height: 52px;\n  display: grid;\n  place-items: center;\n  margin-bottom: 24px;\n  border-radius: 16px;\n  background: rgba(66, 184, 131, 0.12);\n  color: var(--primary);\n  font-size: 26px;\n}\n\n.service-card h3,\n.project-card h3 {\n  margin: 0;\n  font-size: 22px;\n  letter-spacing: -0.03em;\n}\n\n.service-card p,\n.project-card p,\n.contact-section p {\n  color: var(--muted);\n  line-height: 1.7;\n}\n\n.project-category {\n  display: inline-flex;\n  margin-bottom: 16px;\n  color: var(--primary);\n  font-size: 13px;\n  font-weight: 900;\n  text-transform: uppercase;\n  letter-spacing: 0.08em;\n}\n\n.stack-list {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n  margin-top: 20px;\n}\n\n.stack-list span {\n  border: 1px solid var(--border);\n  border-radius: 999px;\n  background: rgba(255, 255, 255, 0.07);\n  color: #cbd5e1;\n  padding: 7px 10px;\n  font-size: 12px;\n  font-weight: 800;\n}\n\n.contact-section {\n  margin: 90px 7vw;\n  padding: 42px;\n  display: grid;\n  grid-template-columns: minmax(0, 0.85fr) minmax(320px, 1fr);\n  gap: 30px;\n  align-items: start;\n}\n\n.contact-status {\n  margin-top: 18px;\n  padding: 14px 16px;\n  border: 1px solid rgba(66, 184, 131, 0.32);\n  border-radius: 14px;\n  background: rgba(66, 184, 131, 0.1);\n  color: #bbf7d0;\n  font-weight: 700;\n}\n\n.contact-form {\n  display: grid;\n  gap: 14px;\n}\n\n.contact-form label {\n  display: grid;\n  gap: 8px;\n  color: #cbd5e1;\n  font-size: 13px;\n  font-weight: 800;\n}\n\n.contact-form input,\n.contact-form textarea {\n  width: 100%;\n  border: 1px solid var(--border);\n  border-radius: 16px;\n  background: rgba(7, 10, 18, 0.55);\n  color: var(--text);\n  padding: 14px 16px;\n  outline: none;\n}\n\n.contact-form textarea {\n  min-height: 120px;\n  resize: vertical;\n}\n\n.contact-form input:focus,\n.contact-form textarea:focus {\n  border-color: rgba(66, 184, 131, 0.7);\n  box-shadow: 0 0 0 4px rgba(66, 184, 131, 0.12);\n}\n\n.contact-form button {\n  min-height: 50px;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 10px;\n  border: 0;\n  border-radius: 16px;\n  background: linear-gradient(135deg, var(--primary), var(--primary-blue));\n  color: white;\n  font-weight: 900;\n  cursor: pointer;\n}\n\n@media (max-width: 980px) {\n  .hero-section,\n  .contact-section {\n    grid-template-columns: 1fr;\n  }\n\n  .service-grid,\n  .project-grid {\n    grid-template-columns: 1fr;\n  }\n\n  .nav-links {\n    display: none;\n  }\n\n  .nav-button {\n    display: inline-flex;\n  }\n}\n\n@media (max-width: 640px) {\n  .navbar {\n    padding: 0 20px;\n  }\n\n  .hero-section,\n  .section {\n    padding: 64px 20px;\n  }\n\n  .contact-section {\n    margin: 64px 20px;\n    padding: 24px;\n  }\n}",
+    "createdAt": "2026-04-29T08:38:23.506Z",
+    "updatedAt": "2026-04-29T08:43:12.367Z"
+  },
+  {
+    "path": "my-vue-project/vite.config.js",
+    "name": "vite.config.js",
+    "parentPath": "my-vue-project",
+    "kind": "file",
+    "fileType": "js",
+    "content": "import { defineConfig } from \"vite\";\nimport vue from \"@vitejs/plugin-vue\";\n\nexport default defineConfig({\n  plugins: [vue()],\n});",
+    "createdAt": "2026-04-29T08:38:23.506Z",
+    "updatedAt": "2026-04-29T08:39:21.350Z"
+  },
+  {
     "path": "nova-digital",
     "name": "nova-digital",
     "parentPath": "",
