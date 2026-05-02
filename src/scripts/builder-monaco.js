@@ -84,7 +84,15 @@ const PROJECT_TYPE_OPTIONS = [
     title: "React + Vite",
     subtitle: "React project with real Vite preview support.",
     accentClass: "react",
-    structure: ["index.html", "src/", "  main.jsx", "  app.jsx", "  index.css"],
+    structure: [
+      "index.html",
+      "package.json",
+      "vite.config.js",
+      "src/",
+      "  main.jsx",
+      "  app.jsx",
+      "  index.css",
+    ],
   },
   {
     type: "vue-vite",
@@ -92,7 +100,31 @@ const PROJECT_TYPE_OPTIONS = [
     title: "Vue + Vite",
     subtitle: "Vue SFC project with real Vite preview support.",
     accentClass: "vue",
-    structure: ["index.html", "src/", "  main.js", "  app.vue", "  style.css"],
+    structure: [
+      "index.html",
+      "package.json",
+      "vite.config.js",
+      "src/",
+      "  main.js",
+      "  app.vue",
+      "  style.css",
+    ],
+  },
+  {
+    type: "svelte-vite",
+    icon: "S",
+    title: "Svelte + Vite",
+    subtitle: "Svelte project with real Vite preview support.",
+    accentClass: "svelte",
+    structure: [
+      "index.html",
+      "package.json",
+      "vite.config.js",
+      "src/",
+      "  main.js",
+      "  app.svelte",
+      "  style.css",
+    ],
   },
 ];
 
@@ -133,6 +165,7 @@ function detectFileType(fileName, fallback) {
   if (ext === "ts") return "ts";
   if (ext === "tsx") return "tsx";
   if (ext === "vue") return "vue";
+  if (ext === "svelte") return "svelte";
   if (ext === "json") return "json";
   if (ext === "md" || ext === "mdx") return "md";
   if (ext === "astro") return "astro";
@@ -145,6 +178,7 @@ function detectFileType(fileName, fallback) {
     "ts",
     "tsx",
     "vue",
+    "svelte",
     "json",
     "md",
     "astro",
@@ -160,10 +194,11 @@ function getMonacoLanguage(fileName, fallback) {
   if (fileType === "html") return "builder-html";
   if (fileType === "css") return "builder-css";
   if (fileType === "js") return "builder-js";
-  if (fileType === "jsx" || fileType === "tsx") return "builder-jsx";
+  if (fileType === "jsx") return "builder-jsx";
   if (fileType === "ts") return "builder-js";
-
+  if (fileType === "tsx") return "builder-jsx";
   if (fileType === "vue") return "builder-vue-lite";
+  if (fileType === "svelte") return "builder-svelte-lite";
 
   if (fileType === "json") return "json";
   if (fileType === "md") return "markdown";
@@ -190,6 +225,7 @@ function getFileTypeLabel(fileName, fallback) {
   if (type === "ts") return "TypeScript";
   if (type === "tsx") return "React TSX";
   if (type === "vue") return "Vue";
+  if (type === "svelte") return "Svelte";
   if (type === "json") return "JSON";
   if (type === "md") return "Markdown";
   if (type === "astro") return "Astro";
@@ -200,23 +236,30 @@ function getFileTypeLabel(fileName, fallback) {
 function getProjectTypeLabel(type) {
   if (type === "react-vite") return "React + Vite";
   if (type === "vue-vite") return "Vue + Vite";
+  if (type === "svelte-vite") return "Svelte + Vite";
   return "HTML Site";
 }
 
 function getProjectTypeClass(type) {
   if (type === "react-vite") return "react";
   if (type === "vue-vite") return "vue";
+  if (type === "svelte-vite") return "svelte";
   return "html";
 }
 
 function getProjectIconText(type) {
   if (type === "react-vite") return "R";
   if (type === "vue-vite") return "V";
+  if (type === "svelte-vite") return "S";
   return "H";
 }
 
 function isFrameworkProject(project) {
-  return project?.type === "react-vite" || project?.type === "vue-vite";
+  return (
+    project?.type === "react-vite" ||
+    project?.type === "vue-vite" ||
+    project?.type === "svelte-vite"
+  );
 }
 
 function getSelectedProject() {
@@ -350,9 +393,10 @@ function getNodeIconInfo(node) {
   if (ext === "css" || ext === "scss" || ext === "less") return { className: "vscode-icon icon-css", text: "#" };
   if (ext === "js" || ext === "mjs" || ext === "cjs") return { className: "vscode-icon icon-js", text: "JS" };
   if (ext === "jsx") return { className: "vscode-icon icon-react", text: "⚛" };
-  if (ext === "ts") return { className: "vscode-icon icon-css", text: "TS" };
+  if (ext === "ts") return { className: "vscode-icon icon-ts", text: "TS" };
   if (ext === "tsx") return { className: "vscode-icon icon-react", text: "TSX" };
   if (ext === "vue") return { className: "vscode-icon icon-vue", text: "V" };
+  if (ext === "svelte") return { className: "vscode-icon icon-svelte", text: "S" };
   if (ext === "json") return { className: "vscode-icon icon-json", text: "{}" };
   if (ext === "md" || ext === "mdx") return { className: "vscode-icon icon-md", text: "MD" };
   if (ext === "astro") return { className: "vscode-icon icon-astro", text: "A" };
@@ -638,12 +682,19 @@ function injectVsCodePolishStyles() {
       background: rgba(66, 184, 131, 0.13) !important;
     }
 
+    .project-icon.svelte {
+      color: #ff3e00 !important;
+      background: rgba(255, 62, 0, 0.13) !important;
+    }
+
     .icon-folder { color: #dcb67a !important; font-size: 15px !important; }
     .icon-html { color: #e44d26 !important; }
     .icon-css { color: #42a5f5 !important; }
     .icon-js { color: #f7df1e !important; }
+    .icon-ts { color: #3178c6 !important; }
     .icon-react { color: #61dafb !important; font-size: 13px !important; }
     .icon-vue { color: #42b883 !important; }
+    .icon-svelte { color: #ff3e00 !important; }
     .icon-json { color: #f2c94c !important; }
     .icon-md { color: #9cdcfe !important; }
     .icon-astro { color: #ff5d01 !important; }
@@ -765,12 +816,16 @@ function setupBuilderCustomLanguages() {
     (language) => language.id === "builder-js"
   );
 
-  const hasBuilderJsx = existingLanguages.some(
-    (language) => language.id === "builder-jsx"
-  );
-
   const hasBuilderVueLite = existingLanguages.some(
     (language) => language.id === "builder-vue-lite"
+  );
+
+  const hasBuilderSvelteLite = existingLanguages.some(
+    (language) => language.id === "builder-svelte-lite"
+  );
+
+  const hasBuilderJsx = existingLanguages.some(
+    (language) => language.id === "builder-jsx"
   );
 
   if (!hasBuilderHtml) {
@@ -1005,6 +1060,14 @@ function setupBuilderCustomLanguages() {
         { open: "'", close: "'" },
         { open: "`", close: "`" },
       ],
+      surroundingPairs: [
+        { open: "{", close: "}" },
+        { open: "[", close: "]" },
+        { open: "(", close: ")" },
+        { open: '"', close: '"' },
+        { open: "'", close: "'" },
+        { open: "`", close: "`" },
+      ],
     });
 
     monacoApi.languages.setMonarchTokensProvider("builder-js", {
@@ -1056,6 +1119,8 @@ function setupBuilderCustomLanguages() {
         "defineConfig",
         "react",
         "vue",
+        "svelte",
+        "mount",
         "createApp",
         "createRoot",
         "React",
@@ -1105,20 +1170,20 @@ function setupBuilderCustomLanguages() {
         root: [
           [/\b(import|from|export|default)\b/, "keyword.import"],
 
+          [/\b([A-Z][A-Za-z0-9_$]*)\b(?=\s*\()/, "function.component"],
+          [/\b([a-zA-Z_$][\w$]*)\b(?=\s*\()/, "function"],
+          [/\b([a-zA-Z_$][\w$]*)\b(?=\s*:)/, "property"],
+
           [
             /[a-zA-Z_$][\w$]*/,
             {
               cases: {
                 "@keywords": "keyword",
-                "@frameworkNames": "type.react",
+                "@frameworkNames": "type.framework",
                 "@default": "identifier",
               },
             },
           ],
-
-          [/\b([A-Z][A-Za-z0-9_$]*)\b(?=\s*\()/, "function.component"],
-          [/\b([a-zA-Z_$][\w$]*)\b(?=\s*\()/, "function"],
-          [/\b([a-zA-Z_$][\w$]*)\b(?=\s*:)/, "property"],
 
           [/\d*\.\d+([eE][\-+]?\d+)?/, "number.float"],
           [/0[xX][0-9a-fA-F]+/, "number.hex"],
@@ -1191,7 +1256,7 @@ function setupBuilderCustomLanguages() {
       aliases: ["Builder Vue Lite", "Vue"],
       mimetypes: ["text/x-vue"],
     });
-  
+
     monacoApi.languages.setLanguageConfiguration("builder-vue-lite", {
       comments: {
         lineComment: "//",
@@ -1213,11 +1278,11 @@ function setupBuilderCustomLanguages() {
         { open: "`", close: "`" },
       ],
     });
-  
+
     monacoApi.languages.setMonarchTokensProvider("builder-vue-lite", {
       defaultToken: "",
       tokenPostfix: ".vue",
-  
+
       keywords: [
         "import",
         "from",
@@ -1245,7 +1310,7 @@ function setupBuilderCustomLanguages() {
         "onMounted",
         "onUnmounted",
       ],
-  
+
       vueGlobals: [
         "template",
         "script",
@@ -1258,7 +1323,7 @@ function setupBuilderCustomLanguages() {
         "v-for",
         "v-model",
       ],
-  
+
       operators: [
         "=",
         ">",
@@ -1278,52 +1343,37 @@ function setupBuilderCustomLanguages() {
         "/",
         "=>",
       ],
-  
+
       symbols: /[=><!?:&|+\-*\/]+/,
-  
+
       tokenizer: {
         root: [
           [/<!--/, "comment", "@htmlComment"],
-  
-          // Vue SFC main blocks
+
           [/(<\/?)(template|script|style)\b/, ["delimiter.angle", "vue.section"]],
-  
-          // Vue component tags
           [/(<\/?)([A-Z][\w-]*)/, ["delimiter.angle", "tag.vue.component"]],
-  
-          // HTML tags
           [/(<\/?)([a-z][\w-]*)/, ["delimiter.angle", "tag.html"]],
-  
-          // Tag close
           [/\/?>/, "delimiter.angle"],
-  
-          // Vue directives: v-if, v-for, v-model
+
           [
             /\b(v-if|v-else|v-else-if|v-for|v-show|v-model|v-bind|v-on|v-slot|v-html|v-text)\b/,
             "vue.directive",
           ],
-  
-          // Vue shorthand directives: :key, :project, @click, @submit.prevent
           [/[:@][a-zA-Z][\w:.-]*/, "vue.directive"],
-  
-          // HTML/Vue attributes
+
           [
             /\b(class|id|src|href|alt|type|name|value|placeholder|style|ref|key|setup|scoped)\b(?=\s*=|\s|>|$)/,
             "attribute.name",
           ],
           [/\b([a-zA-Z_$][\w$-]*)\b(?=\s*=)/, "attribute.name"],
-  
-          // Vue mustache: {{ value }}
+
           [/\{\{/, "delimiter.bracket", "@mustache"],
-  
-          // JS import/export
+
           [/\b(import|from|export|default)\b/, "keyword.import"],
-  
-          // Function calls
+
           [/\b([A-Z][A-Za-z0-9_$]*)\b(?=\s*\()/, "function.component"],
           [/\b([a-zA-Z_$][\w$]*)\b(?=\s*\()/, "function"],
-  
-          // JS identifiers
+
           [
             /[a-zA-Z_$][\w$]*/,
             {
@@ -1334,33 +1384,29 @@ function setupBuilderCustomLanguages() {
               },
             },
           ],
-  
-          // CSS inside style block
+
           [/[.#][a-zA-Z_][\w-]*/, "css.selector"],
           [/--[a-zA-Z0-9-_]+(?=\s*:)/, "css.variable"],
           [/[a-zA-Z-]+(?=\s*:)/, "css.property"],
           [/#([0-9a-fA-F]{3,8})\b/, "css.hex"],
           [/\b\d+(\.\d+)?(px|rem|em|vh|vw|%|s|ms|deg)?\b/, "css.number"],
-  
-          // Numbers
+
           [/\d*\.\d+([eE][\-+]?\d+)?/, "number.float"],
           [/0[xX][0-9a-fA-F]+/, "number.hex"],
           [/\d+/, "number"],
-  
-          // Strings
+
           [/"([^"\\]|\\.)*$/, "string.invalid"],
           [/'([^'\\]|\\.)*$/, "string.invalid"],
           [/"/, "string", "@stringDouble"],
           [/'/, "string", "@stringSingle"],
           [/`/, "string.template", "@stringBacktick"],
-  
-          // JS comments
+
           [/\/\*/, "comment", "@comment"],
           [/\/\/.*$/, "comment"],
-  
-          // Brackets/operators
+
           [/[{}]/, "delimiter.bracket"],
           [/[()[\]]/, "delimiter.parenthesis"],
+
           [
             /@symbols/,
             {
@@ -1370,11 +1416,11 @@ function setupBuilderCustomLanguages() {
               },
             },
           ],
-  
+
           [/[;,.]/, "delimiter"],
           [/\s+/, "white"],
         ],
-  
+
         mustache: [
           [/\}\}/, "delimiter.bracket", "@pop"],
           [
@@ -1393,38 +1439,38 @@ function setupBuilderCustomLanguages() {
           [/[;,.]/, "delimiter"],
           [/\s+/, "white"],
         ],
-  
+
         stringDouble: [
           [/[^\\"]+/, "string"],
           [/\\./, "string.escape"],
           [/"/, "string", "@pop"],
         ],
-  
+
         stringSingle: [
           [/[^\\']+/, "string"],
           [/\\./, "string.escape"],
           [/'/, "string", "@pop"],
         ],
-  
+
         stringBacktick: [
           [/\$\{/, "delimiter.bracket", "@bracketCounting"],
           [/[^\\`$]+/, "string.template"],
           [/\\./, "string.escape"],
           [/`/, "string.template", "@pop"],
         ],
-  
+
         bracketCounting: [
           [/\{/, "delimiter.bracket", "@bracketCounting"],
           [/\}/, "delimiter.bracket", "@pop"],
           { include: "root" },
         ],
-  
+
         htmlComment: [
           [/[^-]+/, "comment"],
           [/-->/, "comment", "@pop"],
           [/-/, "comment"],
         ],
-  
+
         comment: [
           [/[^\/*]+/, "comment"],
           [/\*\//, "comment", "@pop"],
@@ -1433,226 +1479,461 @@ function setupBuilderCustomLanguages() {
       },
     });
   }
-  
-    if (!hasBuilderJsx) {
-      monacoApi.languages.register({
-        id: "builder-jsx",
-        extensions: [".jsx", ".tsx"],
-        aliases: ["Builder JSX", "React JSX", "JSX", "TSX"],
-        mimetypes: ["text/jsx"],
-      });
-  
-      monacoApi.languages.setLanguageConfiguration("builder-jsx", {
-        comments: {
-          lineComment: "//",
-          blockComment: ["/*", "*/"],
-        },
-        brackets: [
-          ["{", "}"],
-          ["[", "]"],
-          ["(", ")"],
-          ["<", ">"],
-        ],
-        autoClosingPairs: [
-          { open: "{", close: "}" },
-          { open: "[", close: "]" },
-          { open: "(", close: ")" },
-          { open: "<", close: ">" },
-          { open: '"', close: '"' },
-          { open: "'", close: "'" },
-          { open: "`", close: "`" },
-        ],
-      });
-  
-      monacoApi.languages.setMonarchTokensProvider("builder-jsx", {
-        defaultToken: "",
-        tokenPostfix: ".jsx",
-  
-        keywords: [
-          "import",
-          "from",
-          "export",
-          "default",
-          "function",
-          "return",
-          "const",
-          "let",
-          "var",
-          "if",
-          "else",
-          "for",
-          "while",
-          "true",
-          "false",
-          "null",
-          "undefined",
-          "async",
-          "await",
-        ],
-  
-        reactNames: [
-          "React",
-          "ReactDOM",
-          "StrictMode",
-          "Fragment",
-          "useState",
-          "useEffect",
-          "useMemo",
-          "useCallback",
-          "useRef",
-          "createRoot",
-        ],
-  
-        operators: [
-          "=",
-          ">",
-          "<",
-          "!",
-          "~",
-          "?",
-          ":",
-          "==",
-          "<=",
-          ">=",
-          "!=",
-          "&&",
-          "||",
-          "++",
-          "--",
-          "+",
-          "-",
-          "*",
-          "/",
-          "&",
-          "|",
-          "^",
-          "%",
-          "=>",
-        ],
-  
-        symbols: /[=><!~?:&|+\-*\/\^%]+/,
-  
-        tokenizer: {
-          root: [
-            [/(<\/?)([A-Z][\w.]*)/, ["delimiter.angle", "tag.react"]],
-            [/(<\/?)([a-z][\w-]*)/, ["delimiter.angle", "tag.html"]],
-            [/\/?>/, "delimiter.angle"],
-  
-            [
-              /\b(className|htmlFor|onClick|onChange|onSubmit|style|key|ref|id|src|href|alt|type|value|placeholder|disabled|checked)\b(?=\s*=)/,
-              "attribute.name",
-            ],
-            [/\b([a-zA-Z_$][\w$-]*)\b(?=\s*=)/, "attribute.name"],
-  
-            [/\b(import|from|export|default)\b/, "keyword.import"],
-  
-            [
-              /[a-zA-Z_$][\w$]*/,
-              {
-                cases: {
-                  "@keywords": "keyword",
-                  "@reactNames": "type.react",
-                  "@default": "identifier",
-                },
+
+  if (!hasBuilderSvelteLite) {
+    monacoApi.languages.register({
+      id: "builder-svelte-lite",
+      extensions: [".svelte"],
+      aliases: ["Builder Svelte Lite", "Svelte"],
+      mimetypes: ["text/x-svelte"],
+    });
+
+    monacoApi.languages.setLanguageConfiguration("builder-svelte-lite", {
+      comments: {
+        lineComment: "//",
+        blockComment: ["/*", "*/"],
+      },
+      brackets: [
+        ["<", ">"],
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+      ],
+      autoClosingPairs: [
+        { open: "<", close: ">" },
+        { open: "{", close: "}" },
+        { open: "[", close: "]" },
+        { open: "(", close: ")" },
+        { open: '"', close: '"' },
+        { open: "'", close: "'" },
+        { open: "`", close: "`" },
+      ],
+    });
+
+    monacoApi.languages.setMonarchTokensProvider("builder-svelte-lite", {
+      defaultToken: "",
+      tokenPostfix: ".svelte",
+
+      keywords: [
+        "import",
+        "from",
+        "export",
+        "default",
+        "const",
+        "let",
+        "var",
+        "function",
+        "return",
+        "if",
+        "else",
+        "for",
+        "while",
+        "true",
+        "false",
+        "null",
+        "undefined",
+      ],
+
+      svelteGlobals: [
+        "script",
+        "style",
+        "each",
+        "if",
+        "else",
+        "await",
+        "then",
+        "catch",
+        "key",
+        "html",
+        "debug",
+      ],
+
+      operators: [
+        "=",
+        ">",
+        "<",
+        "!",
+        "?",
+        ":",
+        "==",
+        "===",
+        "!=",
+        "!==",
+        "&&",
+        "||",
+        "+",
+        "-",
+        "*",
+        "/",
+        "=>",
+      ],
+
+      symbols: /[=><!?:&|+\-*\/]+/,
+
+      tokenizer: {
+        root: [
+          [/<!--/, "comment", "@htmlComment"],
+
+          [/(<\/?)(script|style)\b/, ["delimiter.angle", "svelte.section"]],
+          [/(<\/?)([A-Z][\w-]*)/, ["delimiter.angle", "tag.svelte.component"]],
+          [/(<\/?)([a-z][\w-]*)/, ["delimiter.angle", "tag.html"]],
+          [/\/?>/, "delimiter.angle"],
+
+          [/\{#(if|each|await|key)\b/, "svelte.block"],
+          [/\{\/(if|each|await|key)\}/, "svelte.block"],
+          [/\{:else\b/, "svelte.block"],
+          [/\{:then\b/, "svelte.block"],
+          [/\{:catch\b/, "svelte.block"],
+          [/\{[@]html\b/, "svelte.block"],
+          [/\{[@]debug\b/, "svelte.block"],    
+
+          [/on:[a-zA-Z][\w-]*/, "svelte.directive"],
+          [/bind:[a-zA-Z][\w-]*/, "svelte.directive"],
+          [/class:[a-zA-Z][\w-]*/, "svelte.directive"],
+          [/use:[a-zA-Z][\w-]*/, "svelte.directive"],
+          [/transition:[a-zA-Z][\w-]*/, "svelte.directive"],
+          [/in:[a-zA-Z][\w-]*/, "svelte.directive"],
+          [/out:[a-zA-Z][\w-]*/, "svelte.directive"],
+
+          [
+            /\b(class|id|src|href|alt|type|name|value|placeholder|style|key)\b(?=\s*=|\s|>|$)/,
+            "attribute.name",
+          ],
+          [/\b([a-zA-Z_$][\w$-]*)\b(?=\s*=)/, "attribute.name"],
+
+          [/\{/, "delimiter.bracket", "@svelteExpression"],
+
+          [/\b(import|from|export|default)\b/, "keyword.import"],
+
+          [/\b([A-Z][A-Za-z0-9_$]*)\b(?=\s*\()/, "function.component"],
+          [/\b([a-zA-Z_$][\w$]*)\b(?=\s*\()/, "function"],
+
+          [
+            /[a-zA-Z_$][\w$]*/,
+            {
+              cases: {
+                "@keywords": "keyword",
+                "@svelteGlobals": "type.svelte",
+                "@default": "identifier",
               },
-            ],
-  
-            [/\b([A-Z][A-Za-z0-9_$]*)\b(?=\s*\()/, "function.component"],
-            [/\b([a-zA-Z_$][\w$]*)\b(?=\s*\()/, "function"],
-  
-            [/\d*\.\d+([eE][\-+]?\d+)?/, "number.float"],
-            [/0[xX][0-9a-fA-F]+/, "number.hex"],
-            [/\d+/, "number"],
-  
-            [/"([^"\\]|\\.)*$/, "string.invalid"],
-            [/'([^'\\]|\\.)*$/, "string.invalid"],
-            [/"/, "string", "@stringDouble"],
-            [/'/, "string", "@stringSingle"],
-            [/`/, "string.template", "@stringBacktick"],
-  
-            [/\/\*/, "comment", "@comment"],
-            [/\/\/.*$/, "comment"],
-  
-            [/[{}]/, "delimiter.bracket"],
-            [/[()[\]]/, "delimiter.parenthesis"],
-  
-            [
-              /@symbols/,
-              {
-                cases: {
-                  "@operators": "operator",
-                  "@default": "",
-                },
+            },
+          ],
+
+          [/[.#][a-zA-Z_][\w-]*/, "css.selector"],
+          [/--[a-zA-Z0-9-_]+(?=\s*:)/, "css.variable"],
+          [/[a-zA-Z-]+(?=\s*:)/, "css.property"],
+          [/#([0-9a-fA-F]{3,8})\b/, "css.hex"],
+          [/\b\d+(\.\d+)?(px|rem|em|vh|vw|%|s|ms|deg)?\b/, "css.number"],
+
+          [/\d*\.\d+([eE][\-+]?\d+)?/, "number.float"],
+          [/0[xX][0-9a-fA-F]+/, "number.hex"],
+          [/\d+/, "number"],
+
+          [/"([^"\\]|\\.)*$/, "string.invalid"],
+          [/'([^'\\]|\\.)*$/, "string.invalid"],
+          [/"/, "string", "@stringDouble"],
+          [/'/, "string", "@stringSingle"],
+          [/`/, "string.template", "@stringBacktick"],
+
+          [/\/\*/, "comment", "@comment"],
+          [/\/\/.*$/, "comment"],
+
+          [/[()[\]]/, "delimiter.parenthesis"],
+
+          [
+            /@symbols/,
+            {
+              cases: {
+                "@operators": "operator",
+                "@default": "",
               },
-            ],
-  
-            [/[;,.]/, "delimiter"],
-            [/\s+/, "white"],
+            },
           ],
-  
-          stringDouble: [
-            [/[^\\"]+/, "string"],
-            [/\\./, "string.escape"],
-            [/"/, "string", "@pop"],
+
+          [/[;,.]/, "delimiter"],
+          [/\s+/, "white"],
+        ],
+
+        svelteExpression: [
+          [/\}/, "delimiter.bracket", "@pop"],
+          [
+            /[a-zA-Z_$][\w$]*/,
+            {
+              cases: {
+                "@keywords": "keyword",
+                "@default": "identifier",
+              },
+            },
           ],
-  
-          stringSingle: [
-            [/[^\\']+/, "string"],
-            [/\\./, "string.escape"],
-            [/'/, "string", "@pop"],
-          ],
-  
-          stringBacktick: [
-            [/\$\{/, "delimiter.bracket", "@bracketCounting"],
-            [/[^\\`$]+/, "string.template"],
-            [/\\./, "string.escape"],
-            [/`/, "string.template", "@pop"],
-          ],
-  
-          bracketCounting: [
-            [/\{/, "delimiter.bracket", "@bracketCounting"],
-            [/\}/, "delimiter.bracket", "@pop"],
-            { include: "root" },
-          ],
-  
-          comment: [
-            [/[^\/*]+/, "comment"],
-            [/\*\//, "comment", "@pop"],
-            [/[\/*]/, "comment"],
-          ],
-        },
-      });
-    }
+          [/"([^"\\]|\\.)*"/, "string"],
+          [/'([^'\\]|\\.)*'/, "string"],
+          [/\d+/, "number"],
+          [/[{}()[\]]/, "delimiter.bracket"],
+          [/[;,.]/, "delimiter"],
+          [/\s+/, "white"],
+        ],
+
+        stringDouble: [
+          [/[^\\"]+/, "string"],
+          [/\\./, "string.escape"],
+          [/"/, "string", "@pop"],
+        ],
+
+        stringSingle: [
+          [/[^\\']+/, "string"],
+          [/\\./, "string.escape"],
+          [/'/, "string", "@pop"],
+        ],
+
+        stringBacktick: [
+          [/\$\{/, "delimiter.bracket", "@bracketCounting"],
+          [/[^\\`$]+/, "string.template"],
+          [/\\./, "string.escape"],
+          [/`/, "string.template", "@pop"],
+        ],
+
+        bracketCounting: [
+          [/\{/, "delimiter.bracket", "@bracketCounting"],
+          [/\}/, "delimiter.bracket", "@pop"],
+          { include: "root" },
+        ],
+
+        htmlComment: [
+          [/[^-]+/, "comment"],
+          [/-->/, "comment", "@pop"],
+          [/-/, "comment"],
+        ],
+
+        comment: [
+          [/[^\/*]+/, "comment"],
+          [/\*\//, "comment", "@pop"],
+          [/[\/*]/, "comment"],
+        ],
+      },
+    });
   }
-  
-  async function setupMonacoEditor() {
-    if (!editorHostEl) return;
-  
-    try {
-      const [
-        monacoModule,
-        editorWorkerModule,
-        cssWorkerModule,
-        htmlWorkerModule,
-        jsonWorkerModule,
-        tsWorkerModule,
-      ] = await Promise.all([
-        import("monaco-editor/esm/vs/editor/editor.api"),
-        import("monaco-editor/esm/vs/editor/editor.worker?worker"),
-        import("monaco-editor/esm/vs/language/css/css.worker?worker"),
-        import("monaco-editor/esm/vs/language/html/html.worker?worker"),
-        import("monaco-editor/esm/vs/language/json/json.worker?worker"),
-        import("monaco-editor/esm/vs/language/typescript/ts.worker?worker"),
-        import("monaco-editor/min/vs/editor/editor.main.css"),
-      ]);
-  
-      await Promise.all([
-        import("monaco-editor/esm/vs/language/css/monaco.contribution"),
-        import("monaco-editor/esm/vs/language/html/monaco.contribution"),
-        import("monaco-editor/esm/vs/language/json/monaco.contribution"),
-        import("monaco-editor/esm/vs/language/typescript/monaco.contribution"),
-        import("monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution"),
-        import("monaco-editor/esm/vs/basic-languages/xml/xml.contribution"),
+
+  if (!hasBuilderJsx) {
+    monacoApi.languages.register({
+      id: "builder-jsx",
+      extensions: [".jsx", ".tsx"],
+      aliases: ["Builder JSX", "React JSX", "JSX", "TSX"],
+      mimetypes: ["text/jsx"],
+    });
+
+    monacoApi.languages.setLanguageConfiguration("builder-jsx", {
+      comments: {
+        lineComment: "//",
+        blockComment: ["/*", "*/"],
+      },
+      brackets: [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+        ["<", ">"],
+      ],
+      autoClosingPairs: [
+        { open: "{", close: "}" },
+        { open: "[", close: "]" },
+        { open: "(", close: ")" },
+        { open: "<", close: ">" },
+        { open: '"', close: '"' },
+        { open: "'", close: "'" },
+        { open: "`", close: "`" },
+      ],
+    });
+
+    monacoApi.languages.setMonarchTokensProvider("builder-jsx", {
+      defaultToken: "",
+      tokenPostfix: ".jsx",
+
+      keywords: [
+        "import",
+        "from",
+        "export",
+        "default",
+        "function",
+        "return",
+        "const",
+        "let",
+        "var",
+        "if",
+        "else",
+        "for",
+        "while",
+        "true",
+        "false",
+        "null",
+        "undefined",
+        "async",
+        "await",
+      ],
+
+      reactNames: [
+        "React",
+        "ReactDOM",
+        "StrictMode",
+        "Fragment",
+        "useState",
+        "useEffect",
+        "useMemo",
+        "useCallback",
+        "useRef",
+        "createRoot",
+      ],
+
+      operators: [
+        "=",
+        ">",
+        "<",
+        "!",
+        "~",
+        "?",
+        ":",
+        "==",
+        "<=",
+        ">=",
+        "!=",
+        "&&",
+        "||",
+        "++",
+        "--",
+        "+",
+        "-",
+        "*",
+        "/",
+        "&",
+        "|",
+        "^",
+        "%",
+        "=>",
+      ],
+
+      symbols: /[=><!~?:&|+\-*\/\^%]+/,
+
+      tokenizer: {
+        root: [
+          [/(<\/?)([A-Z][\w.]*)/, ["delimiter.angle", "tag.react"]],
+          [/(<\/?)([a-z][\w-]*)/, ["delimiter.angle", "tag.html"]],
+          [/\/?>/, "delimiter.angle"],
+
+          [
+            /\b(className|htmlFor|onClick|onChange|onSubmit|style|key|ref|id|src|href|alt|type|value|placeholder|disabled|checked)\b(?=\s*=)/,
+            "attribute.name",
+          ],
+          [/\b([a-zA-Z_$][\w$-]*)\b(?=\s*=)/, "attribute.name"],
+
+          [/\b(import|from|export|default)\b/, "keyword.import"],
+
+          [/\b([A-Z][A-Za-z0-9_$]*)\b(?=\s*\()/, "function.component"],
+          [/\b([a-zA-Z_$][\w$]*)\b(?=\s*\()/, "function"],
+
+          [
+            /[a-zA-Z_$][\w$]*/,
+            {
+              cases: {
+                "@keywords": "keyword",
+                "@reactNames": "type.framework",
+                "@default": "identifier",
+              },
+            },
+          ],
+
+          [/\d*\.\d+([eE][\-+]?\d+)?/, "number.float"],
+          [/0[xX][0-9a-fA-F]+/, "number.hex"],
+          [/\d+/, "number"],
+
+          [/"([^"\\]|\\.)*$/, "string.invalid"],
+          [/'([^'\\]|\\.)*$/, "string.invalid"],
+          [/"/, "string", "@stringDouble"],
+          [/'/, "string", "@stringSingle"],
+          [/`/, "string.template", "@stringBacktick"],
+
+          [/\/\*/, "comment", "@comment"],
+          [/\/\/.*$/, "comment"],
+
+          [/[{}]/, "delimiter.bracket"],
+          [/[()[\]]/, "delimiter.parenthesis"],
+
+          [
+            /@symbols/,
+            {
+              cases: {
+                "@operators": "operator",
+                "@default": "",
+              },
+            },
+          ],
+
+          [/[;,.]/, "delimiter"],
+          [/\s+/, "white"],
+        ],
+
+        stringDouble: [
+          [/[^\\"]+/, "string"],
+          [/\\./, "string.escape"],
+          [/"/, "string", "@pop"],
+        ],
+
+        stringSingle: [
+          [/[^\\']+/, "string"],
+          [/\\./, "string.escape"],
+          [/'/, "string", "@pop"],
+        ],
+
+        stringBacktick: [
+          [/\$\{/, "delimiter.bracket", "@bracketCounting"],
+          [/[^\\`$]+/, "string.template"],
+          [/\\./, "string.escape"],
+          [/`/, "string.template", "@pop"],
+        ],
+
+        bracketCounting: [
+          [/\{/, "delimiter.bracket", "@bracketCounting"],
+          [/\}/, "delimiter.bracket", "@pop"],
+          { include: "root" },
+        ],
+
+        comment: [
+          [/[^\/*]+/, "comment"],
+          [/\*\//, "comment", "@pop"],
+          [/[\/*]/, "comment"],
+        ],
+      },
+    });
+  }
+}
+
+async function setupMonacoEditor() {
+  if (!editorHostEl) return;
+
+  try {
+    const [
+      monacoModule,
+      editorWorkerModule,
+      cssWorkerModule,
+      htmlWorkerModule,
+      jsonWorkerModule,
+      tsWorkerModule,
+    ] = await Promise.all([
+      import("monaco-editor/esm/vs/editor/editor.api"),
+      import("monaco-editor/esm/vs/editor/editor.worker?worker"),
+      import("monaco-editor/esm/vs/language/css/css.worker?worker"),
+      import("monaco-editor/esm/vs/language/html/html.worker?worker"),
+      import("monaco-editor/esm/vs/language/json/json.worker?worker"),
+      import("monaco-editor/esm/vs/language/typescript/ts.worker?worker"),
+      import("monaco-editor/min/vs/editor/editor.main.css"),
+    ]);
+
+    await Promise.all([
+      import("monaco-editor/esm/vs/language/css/monaco.contribution"),
+      import("monaco-editor/esm/vs/language/html/monaco.contribution"),
+      import("monaco-editor/esm/vs/language/json/monaco.contribution"),
+      import("monaco-editor/esm/vs/language/typescript/monaco.contribution"),
+      import("monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution"),
+      import("monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution"),
+      import("monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution"),
+      import("monaco-editor/esm/vs/basic-languages/xml/xml.contribution"),
       import("monaco-editor/esm/vs/basic-languages/php/php.contribution"),
       import("monaco-editor/esm/vs/basic-languages/python/python.contribution"),
       import("monaco-editor/esm/vs/basic-languages/shell/shell.contribution"),
@@ -1660,22 +1941,39 @@ function setupBuilderCustomLanguages() {
     ]);
 
     monacoApi = monacoModule;
-    
+
     setupBuilderCustomLanguages();
 
     globalThis.MonacoEnvironment = {
       getWorker(_workerId, label) {
         if (label === "json") return new jsonWorkerModule.default();
 
-        if (label === "css" || label === "scss" || label === "less") {
+        if (
+          label === "css" ||
+          label === "scss" ||
+          label === "less" ||
+          label === "builder-css"
+        ) {
           return new cssWorkerModule.default();
         }
 
-        if (label === "html" || label === "handlebars" || label === "razor") {
+        if (
+          label === "html" ||
+          label === "handlebars" ||
+          label === "razor" ||
+          label === "builder-html" ||
+          label === "builder-vue-lite" ||
+          label === "builder-svelte-lite"
+        ) {
           return new htmlWorkerModule.default();
         }
 
-        if (label === "typescript" || label === "javascript") {
+        if (
+          label === "typescript" ||
+          label === "javascript" ||
+          label === "builder-js" ||
+          label === "builder-jsx"
+        ) {
           return new tsWorkerModule.default();
         }
 
@@ -1687,7 +1985,7 @@ function setupBuilderCustomLanguages() {
       base: "vs-dark",
       inherit: true,
       rules: [
-        { token: "", foreground: "D4D4D4", background: "1E1E1E" },
+        { token: "", foreground: "D4D4D4" },
     
         { token: "comment", foreground: "6A9955", fontStyle: "italic" },
     
@@ -1697,21 +1995,31 @@ function setupBuilderCustomLanguages() {
         { token: "string", foreground: "CE9178" },
         { token: "string.template", foreground: "CE9178" },
         { token: "string.escape", foreground: "D7BA7D" },
-        { token: "string.invalid", foreground: "F48771" },
     
         { token: "number", foreground: "B5CEA8" },
         { token: "number.float", foreground: "B5CEA8" },
         { token: "number.hex", foreground: "B5CEA8" },
     
-        // HTML / JSX tags
-        { token: "metatag", foreground: "569CD6" },
+        { token: "operator", foreground: "D4D4D4" },
+        { token: "delimiter", foreground: "D4D4D4" },
+        { token: "delimiter.bracket", foreground: "FFD700" },
+        { token: "delimiter.parenthesis", foreground: "D4D4D4" },
         { token: "delimiter.angle", foreground: "808080" },
+    
+        { token: "identifier", foreground: "D4D4D4" },
+        { token: "function", foreground: "DCDCAA" },
+        { token: "function.component", foreground: "4EC9B0" },
+        { token: "property", foreground: "9CDCFE" },
+        { token: "type.framework", foreground: "4EC9B0" },
+    
         { token: "tag.html", foreground: "569CD6" },
-        { token: "tag.react", foreground: "4EC9B0", fontStyle: "bold" },
+        { token: "tag.react", foreground: "4EC9B0" },
+        { token: "tag.vue.component", foreground: "42B883" },
+        { token: "tag.svelte.component", foreground: "FF6B35" },
         { token: "attribute.name", foreground: "9CDCFE" },
         { token: "attribute.value", foreground: "CE9178" },
-
-        // CSS
+        { token: "metatag", foreground: "569CD6" },
+    
         { token: "css.selector", foreground: "D7BA7D" },
         { token: "css.property", foreground: "9CDCFE" },
         { token: "css.variable", foreground: "4FC1FF" },
@@ -1719,69 +2027,43 @@ function setupBuilderCustomLanguages() {
         { token: "css.number", foreground: "B5CEA8" },
         { token: "css.function", foreground: "DCDCAA" },
         { token: "css.keyword", foreground: "C586C0" },
-        { token: "css.important", foreground: "F48771", fontStyle: "bold" },
-
-        // JavaScript
-        { token: "keyword.import", foreground: "C586C0" },
-        { token: "type.react", foreground: "4EC9B0" },
-        { token: "function.component", foreground: "4FC1FF", fontStyle: "bold" },
-        { token: "function", foreground: "DCDCAA" },
-        { token: "property", foreground: "9CDCFE" },
-        { token: "identifier", foreground: "D4D4D4" },
-
-        // Vue
+        { token: "css.important", foreground: "C586C0", fontStyle: "bold" },
+    
         { token: "vue.section", foreground: "42B883", fontStyle: "bold" },
-        { token: "tag.vue.component", foreground: "4EC9B0", fontStyle: "bold" },
-        { token: "vue.directive", foreground: "C586C0", fontStyle: "bold" },
+        { token: "vue.directive", foreground: "C586C0" },
         { token: "type.vue", foreground: "42B883" },
     
-        // JS / React
-        { token: "identifier", foreground: "D4D4D4" },
-        { token: "type.react", foreground: "4EC9B0" },
-        { token: "function", foreground: "DCDCAA" },
-        { token: "function.component", foreground: "4FC1FF", fontStyle: "bold" },
-    
-        // brackets/operators
-        { token: "operator", foreground: "D4D4D4" },
-        { token: "delimiter", foreground: "D4D4D4" },
-        { token: "delimiter.bracket", foreground: "FFD700" },
-        { token: "delimiter.parenthesis", foreground: "D4D4D4" },
-    
-        // fallback Monaco built-in tokens
-        { token: "tag", foreground: "569CD6" },
-        { token: "attribute.name.html", foreground: "9CDCFE" },
-        { token: "attribute.value.html", foreground: "CE9178" },
-        { token: "type", foreground: "4EC9B0" },
-        { token: "variable", foreground: "9CDCFE" },
-        { token: "property", foreground: "9CDCFE" },
+        { token: "svelte.section", foreground: "FF6B35", fontStyle: "bold" },
+        { token: "svelte.block", foreground: "C586C0", fontStyle: "bold" },
+        { token: "svelte.directive", foreground: "FFB86C" },
+        { token: "type.svelte", foreground: "FF6B35" },
       ],
       colors: {
         "editor.background": "#1E1E1E",
         "editor.foreground": "#D4D4D4",
+    
         "editorLineNumber.foreground": "#858585",
         "editorLineNumber.activeForeground": "#C6C6C6",
+    
         "editorCursor.foreground": "#FFFFFF",
         "editor.selectionBackground": "#264F78",
         "editor.inactiveSelectionBackground": "#3A3D41",
+    
         "editor.lineHighlightBackground": "#2A2D2E",
         "editor.lineHighlightBorder": "#00000000",
+    
         "editorGutter.background": "#1E1E1E",
+    
         "editorIndentGuide.background1": "#404040",
         "editorIndentGuide.activeBackground1": "#707070",
+    
         "editorBracketMatch.background": "#0064001A",
         "editorBracketMatch.border": "#888888",
-        "editorWidget.background": "#252526",
-        "editorWidget.border": "#454545",
-        "editorSuggestWidget.background": "#252526",
-        "editorSuggestWidget.border": "#454545",
-        "editorSuggestWidget.foreground": "#D4D4D4",
-        "editorSuggestWidget.selectedBackground": "#04395E",
-        "editorSuggestWidget.highlightForeground": "#18A3FF",
-        "editorHoverWidget.background": "#252526",
-        "editorHoverWidget.border": "#454545",
+    
         "scrollbarSlider.background": "#79797966",
         "scrollbarSlider.hoverBackground": "#646464B3",
         "scrollbarSlider.activeBackground": "#BFBFBF66",
+    
         "minimap.background": "#1E1E1E",
       },
       semanticHighlighting: false,
@@ -1905,29 +2187,68 @@ function setEditorContent(value, language, modelPath, readOnly) {
 
   if (!monacoApi || !monacoEditor) return;
 
-  const uri = monacoApi.Uri.parse(
-    `inmemory://dynamic-page-builder/${encodeURIComponent(activeEditorPath)}`
-  );
+  try {
+    const safeLanguage = activeEditorLanguage || "plaintext";
 
-  let model = monacoApi.editor.getModel(uri);
+    const uri = monacoApi.Uri.parse(
+      `inmemory://dynamic-page-builder/${encodeURIComponent(activeEditorPath)}`
+    );
 
-  if (!model) {
-    model = monacoApi.editor.createModel(activeEditorValue, activeEditorLanguage, uri);
-  } else {
-    monacoApi.editor.setModelLanguage(model, activeEditorLanguage);
+    let model = monacoApi.editor.getModel(uri);
 
-    if (model.getValue() !== activeEditorValue) {
-      model.setValue(activeEditorValue);
+    if (!model) {
+      model = monacoApi.editor.createModel(activeEditorValue, safeLanguage, uri);
+    } else {
+      if (model.getValue() !== activeEditorValue) {
+        model.setValue(activeEditorValue);
+      }
     }
-  }
 
-  monacoEditor.setModel(model);
-  monacoApi.editor.setModelLanguage(model, activeEditorLanguage);
-  monacoApi.editor.setTheme("builderDarkPlus");
-  monacoEditor.updateOptions({
-    theme: "builderDarkPlus",
-    readOnly: activeEditorReadOnly,
-  });
+    monacoEditor.setModel(model);
+
+    if (model.getLanguageId && model.getLanguageId() !== safeLanguage) {
+      monacoApi.editor.setModelLanguage(model, safeLanguage);
+    } else {
+      monacoApi.editor.setModelLanguage(model, safeLanguage);
+    }
+
+    monacoApi.editor.setTheme("builderDarkPlus");
+
+    monacoEditor.updateOptions({
+      theme: "builderDarkPlus",
+      readOnly: activeEditorReadOnly,
+    });
+
+    requestAnimationFrame(() => {
+      if (monacoEditor) {
+        monacoEditor.layout();
+      }
+    });
+  } catch (error) {
+    console.error("Failed to update Monaco model.", error);
+
+    const fallbackModel = monacoApi.editor.createModel(
+      activeEditorValue,
+      "plaintext",
+      monacoApi.Uri.parse(
+        `inmemory://dynamic-page-builder/fallback-${Date.now()}.txt`
+      )
+    );
+
+    monacoEditor.setModel(fallbackModel);
+    monacoApi.editor.setTheme("builderDarkPlus");
+
+    monacoEditor.updateOptions({
+      theme: "builderDarkPlus",
+      readOnly: activeEditorReadOnly,
+    });
+
+    requestAnimationFrame(() => {
+      if (monacoEditor) {
+        monacoEditor.layout();
+      }
+    });
+  }
 }
 
 function getEditorValue() {
@@ -2080,6 +2401,7 @@ function focusInlineRenameInput() {
 
 function getDefaultFolderNameForCurrentContext() {
   const baseFolder = selectedFolderPath || selectedProjectRoot;
+
   const existingNames = new Set(
     cachedNodes
       .filter((node) => node.kind === "folder" && node.parentPath === baseFolder)
@@ -2102,6 +2424,7 @@ function getDefaultFolderNameForCurrentContext() {
 
 function getSuggestedFilesForCurrentContext() {
   const selectedProject = getSelectedProject();
+
   const baseFolder = selectedFolderPath || selectedProjectRoot || "";
   const relativeFolder =
     selectedProjectRoot && baseFolder.startsWith(selectedProjectRoot)
@@ -2117,7 +2440,7 @@ function getSuggestedFilesForCurrentContext() {
       return ["Header.jsx", "Card.jsx", "Button.jsx"];
     }
 
-    return ["index.html", "README.md"];
+    return ["index.html", "package.json", "vite.config.js", "README.md"];
   }
 
   if (selectedProject?.type === "vue-vite") {
@@ -2129,7 +2452,19 @@ function getSuggestedFilesForCurrentContext() {
       return ["Header.vue", "Card.vue", "Button.vue"];
     }
 
-    return ["index.html", "README.md"];
+    return ["index.html", "package.json", "vite.config.js", "README.md"];
+  }
+
+  if (selectedProject?.type === "svelte-vite") {
+    if (relativeFolder === "src") {
+      return ["app.svelte", "main.js", "style.css", "Hero.svelte"];
+    }
+
+    if (relativeFolder === "src/components") {
+      return ["Header.svelte", "Card.svelte", "Button.svelte"];
+    }
+
+    return ["index.html", "package.json", "vite.config.js", "README.md"];
   }
 
   return ["index.html", "about.html", "style.css", "script.js", "README.md"];
@@ -2137,9 +2472,14 @@ function getSuggestedFilesForCurrentContext() {
 
 function getDefaultFileNameForCurrentContext() {
   const suggestions = getSuggestedFilesForCurrentContext();
+
   const existingNames = new Set(
     cachedNodes
-      .filter((node) => node.kind === "file" && node.parentPath === (selectedFolderPath || selectedProjectRoot))
+      .filter(
+        (node) =>
+          node.kind === "file" &&
+          node.parentPath === (selectedFolderPath || selectedProjectRoot)
+      )
       .map((node) => String(node.name || "").toLowerCase())
   );
 
@@ -2300,6 +2640,7 @@ function renderExplorer() {
 
   const visibleNodes = getVisibleNodes();
   const projectChildren = visibleNodes.filter((node) => node.parentPath === selectedProjectRoot);
+
   const hasInlineCreateAtRoot = Boolean(
     inlineCreateMode && inlineCreateParentPath === selectedProjectRoot
   );
@@ -2378,7 +2719,7 @@ function openFile(node) {
   fileTypeBadgeEl.textContent = fileTypeLabel;
   fileTypeBadgeEl.style.display = "inline-flex";
 
-  languageBadgeEl.textContent = language;
+  languageBadgeEl.textContent = getFileTypeLabel(node.name, node.fileType);
   languageBadgeEl.style.display = "inline-flex";
 
   if (editorEmptyEl) {
@@ -2524,10 +2865,6 @@ function collectAssetNodesForPreview(previewFolderPath) {
   return { cssNodes, jsNodes };
 }
 
-function removeHtmlScripts(html) {
-  return String(html || "").replace(/<script[\s\S]*?<\/script>/gi, "");
-}
-
 function injectIntoHead(html, content) {
   const source = String(html || "");
 
@@ -2559,15 +2896,6 @@ function injectBeforeBodyEnd(html, content) {
   }
 
   return `${source}\n${content}`;
-}
-
-function ensureMountElement(html, mountId) {
-  const source = String(html || "");
-  const mountRegex = new RegExp(`id=(['"])${mountId}\\1`, "i");
-
-  if (mountRegex.test(source)) return source;
-
-  return injectBeforeBodyEnd(source, `<div id="${mountId}"></div>`);
 }
 
 function buildHtmlPreviewDocument() {
@@ -2679,7 +3007,10 @@ ${safeScriptContent(jsContent)}
 }
 
 function buildPreviewLoadingDocument(project) {
-  const label = project?.type === "vue-vite" ? "Vue + Vite" : "React + Vite";
+  let label = "React + Vite";
+
+  if (project?.type === "vue-vite") label = "Vue + Vite";
+  if (project?.type === "svelte-vite") label = "Svelte + Vite";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -3120,8 +3451,8 @@ function injectProjectModalStyles() {
     }
 
     .project-modal {
-      width: min(940px, 96vw);
-      max-height: min(760px, 92vh);
+      width: min(1040px, 96vw);
+      max-height: min(780px, 92vh);
       display: grid;
       grid-template-rows: auto minmax(0, 1fr) auto;
       overflow: hidden;
@@ -3165,7 +3496,7 @@ function injectProjectModalStyles() {
       color: #9da3ad;
       font-size: 13px;
       line-height: 1.55;
-      max-width: 680px;
+      max-width: 720px;
     }
 
     .project-modal-close {
@@ -3192,7 +3523,7 @@ function injectProjectModalStyles() {
     .project-modal-body {
       min-height: 0;
       display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
       gap: 18px;
       padding: 20px 22px;
       overflow: auto;
@@ -3242,12 +3573,12 @@ function injectProjectModalStyles() {
 
     .project-type-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
     }
 
     .project-type-card {
-      min-height: 148px;
+      min-height: 156px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -3259,11 +3590,13 @@ function injectProjectModalStyles() {
       padding: 14px;
       text-align: left;
       cursor: pointer;
+      transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
     }
 
     .project-type-card:hover {
       background: #2a2d2e;
       border-color: #4a4a4a;
+      transform: translateY(-1px);
     }
 
     .project-type-card.selected {
@@ -3299,6 +3632,12 @@ function injectProjectModalStyles() {
       color: #80d8ae;
       background: rgba(65, 184, 131, 0.13);
       border: 1px solid rgba(65, 184, 131, 0.22);
+    }
+
+    .project-type-icon.svelte {
+      color: #ff8a65;
+      background: rgba(255, 62, 0, 0.13);
+      border: 1px solid rgba(255, 62, 0, 0.24);
     }
 
     .project-type-title {
@@ -3405,6 +3744,12 @@ function injectProjectModalStyles() {
     .project-modal-secondary:disabled {
       opacity: 0.55;
       cursor: not-allowed;
+    }
+
+    @media (max-width: 1020px) {
+      .project-type-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 860px) {
@@ -3682,6 +4027,8 @@ async function createProjectFromModal() {
     setStatus(`Project created successfully (${getProjectTypeLabel(selectedModalProjectType)}).`, "ok");
 
     await refreshWorkspace();
+
+    isCreatingProject = false;
     closeProjectCreationModal();
   } catch (error) {
     setProjectModalStatus(error?.message || error, "bad");
@@ -3810,6 +4157,7 @@ function getFileTemplate(fileName) {
   const title = toTitleFromFileName(fileName);
   const componentName = toComponentName(fileName);
   const selectedProject = getSelectedProject();
+  const normalizedName = String(fileName || "").toLowerCase();
 
   if (fileType === "html") {
     return `<!DOCTYPE html>
@@ -3865,7 +4213,35 @@ body {
   }
 
   if (fileType === "js") {
-    const normalizedName = String(fileName || "").toLowerCase();
+    if (normalizedName === "vite.config.js" && selectedProject?.type === "react-vite") {
+      return `import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+});
+`;
+    }
+
+    if (normalizedName === "vite.config.js" && selectedProject?.type === "vue-vite") {
+      return `import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+
+export default defineConfig({
+  plugins: [vue()],
+});
+`;
+    }
+
+    if (normalizedName === "vite.config.js" && selectedProject?.type === "svelte-vite") {
+      return `import { defineConfig } from "vite";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
+
+export default defineConfig({
+  plugins: [svelte()],
+});
+`;
+    }
 
     if (normalizedName === "main.js" && selectedProject?.type === "vue-vite") {
       return `import { createApp } from "vue";
@@ -3876,13 +4252,24 @@ createApp(App).mount("#app");
 `;
     }
 
+    if (normalizedName === "main.js" && selectedProject?.type === "svelte-vite") {
+      return `import { mount } from "svelte";
+import App from "./app.svelte";
+import "./style.css";
+
+const app = mount(App, {
+  target: document.getElementById("app"),
+});
+
+export default app;
+`;
+    }
+
     return `console.log("${title} loaded");
 `;
   }
 
   if (fileType === "jsx" || fileType === "tsx") {
-    const normalizedName = String(fileName || "").toLowerCase();
-
     if (normalizedName === "main.jsx" || normalizedName === "main.tsx") {
       return `import React from "react";
 import { createRoot } from "react-dom/client";
@@ -3918,7 +4305,7 @@ createRoot(document.getElementById("root")).render(
   <main class="page">
     <section class="hero">
       <p class="eyebrow">Vue + Vite</p>
-      <h1>${title}</h1>
+      <h1>{{ title }}</h1>
       <p>Build this Vue component with your own layout and interactions.</p>
     </section>
   </main>
@@ -3955,6 +4342,70 @@ const title = "${title}";
 `;
   }
 
+  if (fileType === "svelte") {
+    const displayName = normalizedName === "app.svelte" ? "Svelte + Vite" : title;
+
+    return `<script>
+  const title = "${displayName}";
+  const features = ["Reactive UI", "Real Vite preview", "Clean component structure"];
+</script>
+
+<main class="page">
+  <section class="hero">
+    <p class="eyebrow">Svelte + Vite</p>
+    <h1>{title}</h1>
+    <p>Build this Svelte component with your own layout and interactions.</p>
+
+    <div class="feature-grid">
+      {#each features as feature}
+        <article class="feature-card">
+          <span>✓</span>
+          <p>{feature}</p>
+        </article>
+      {/each}
+    </div>
+  </section>
+</main>
+
+<style>
+  .page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 48px 20px;
+  }
+
+  .hero {
+    width: min(900px, 100%);
+    padding: 48px;
+    border-radius: 24px;
+    background: #ffffff;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+  }
+
+  .eyebrow {
+    margin: 0 0 12px;
+    color: #ff3e00;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .feature-grid {
+    display: grid;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .feature-card {
+    padding: 14px;
+    border-radius: 16px;
+    background: #fff7ed;
+  }
+</style>
+`;
+  }
+
   if (fileType === "json") {
     return `{
   "name": "${String(title).toLowerCase().replace(/\s+/g, "-")}",
@@ -3985,7 +4436,7 @@ function validateFileName(name) {
     return "Use only letters, numbers, dots, hyphens, and underscores.";
   }
   if (!value.includes(".")) {
-    return "Please include a file extension like .html, .css, .js, .jsx, .vue, .json, or .md.";
+    return "Please include a file extension like .html, .css, .js, .jsx, .vue, .svelte, .json, or .md.";
   }
 
   return "";

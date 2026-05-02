@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 
-export type ProjectType = "html-site" | "react-vite" | "vue-vite";
+export type ProjectType = "html-site" | "react-vite" | "vue-vite" | "svelte-vite";
 
 export type BuilderNode = {
   path: string;
@@ -92,6 +92,7 @@ function detectFileType(fileName: string, fallback?: string) {
   if (ext === "ts") return "ts";
   if (ext === "tsx") return "tsx";
   if (ext === "vue") return "vue";
+  if (ext === "svelte") return "svelte";
   if (ext === "json") return "json";
   if (ext === "md" || ext === "mdx") return "md";
   if (ext === "astro") return "astro";
@@ -104,6 +105,7 @@ function detectFileType(fileName: string, fallback?: string) {
     "ts",
     "tsx",
     "vue",
+    "svelte",
     "json",
     "md",
     "astro",
@@ -144,23 +146,26 @@ function normalizeNode(raw: any): BuilderNode | null {
   };
 }
 
+function normalizeProjectType(input: unknown): ProjectType {
+  const rawType = String(input || "html-site").trim().toLowerCase();
+
+  if (rawType === "react-vite") return "react-vite";
+  if (rawType === "vue-vite") return "vue-vite";
+  if (rawType === "svelte-vite") return "svelte-vite";
+
+  return "html-site";
+}
+
 function normalizeProject(raw: any): ProjectRecord | null {
   const rootPath = sanitizeNodePart(raw?.rootPath || raw?.id || raw?.name || "");
 
   if (!rootPath) return null;
 
-  const rawType = String(raw?.type || "html-site");
-
-  const safeType: ProjectType =
-    rawType === "react-vite" || rawType === "vue-vite" || rawType === "html-site"
-      ? rawType
-      : "html-site";
-
   return {
     id: String(raw?.id || rootPath),
     name: String(raw?.name || rootPath),
     rootPath,
-    type: safeType,
+    type: normalizeProjectType(raw?.type || "html-site"),
     createdAt: raw?.createdAt,
     updatedAt: raw?.updatedAt,
   };
@@ -196,13 +201,18 @@ export async function readProjects(): Promise<ProjectRecord[]> {
 }
 
 export function isFrameworkProject(projectType: ProjectType) {
-  return projectType === "react-vite" || projectType === "vue-vite";
+  return (
+    projectType === "react-vite" ||
+    projectType === "vue-vite" ||
+    projectType === "svelte-vite"
+  );
 }
 
 function inferProjectType(project: ProjectRecord, nodes: BuilderNode[]): ProjectType {
   if (
     project.type === "react-vite" ||
     project.type === "vue-vite" ||
+    project.type === "svelte-vite" ||
     project.type === "html-site"
   ) {
     return project.type;
@@ -226,6 +236,15 @@ function inferProjectType(project: ProjectRecord, nodes: BuilderNode[]): Project
   });
 
   if (hasVueFiles) return "vue-vite";
+
+  const hasSvelteFiles = nodes.some((node) => {
+    if (node.kind !== "file") return false;
+    if (!node.path.startsWith(`${project.rootPath}/`)) return false;
+
+    return detectFileType(node.name, node.fileType) === "svelte";
+  });
+
+  if (hasSvelteFiles) return "svelte-vite";
 
   return "html-site";
 }
@@ -286,6 +305,7 @@ async function writeTextFile(workspaceDir: string, relativePath: string, content
 function getPackageJson(project: ProjectRecord, projectType: ProjectType) {
   const isReact = projectType === "react-vite";
   const isVue = projectType === "vue-vite";
+  const isSvelte = projectType === "svelte-vite";
 
   return JSON.stringify(
     {
@@ -312,15 +332,34 @@ function getPackageJson(project: ProjectRecord, projectType: ProjectType) {
               vue: "^3.5.33",
             }
           : {}),
+        ...(isSvelte
+          ? {
+              svelte: "^5.0.0",
+            }
+          : {}),
         axios: "^1.15.2",
         gsap: "^3.15.0",
         three: "^0.184.0",
       },
       devDependencies: {
         vite: "^6.4.1",
-        "@vitejs/plugin-react": "^5.2.0",
-        "@vitejs/plugin-vue": "^5.2.4",
-        typescript: "^5.9.3",
+        ...(isReact
+          ? {
+              "@vitejs/plugin-react": "^5.2.0",
+              typescript: "^5.9.3",
+            }
+          : {}),
+        ...(isVue
+          ? {
+              "@vitejs/plugin-vue": "^5.2.4",
+              typescript: "^5.9.3",
+            }
+          : {}),
+        ...(isSvelte
+          ? {
+              "@sveltejs/vite-plugin-svelte": "^5.0.3",
+            }
+          : {}),
       },
     },
     null,
@@ -348,6 +387,19 @@ import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
   plugins: [vue()],
+  server: {
+    host: "127.0.0.1"
+  }
+});
+`;
+  }
+
+  if (projectType === "svelte-vite") {
+    return `import { defineConfig } from "vite";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
+
+export default defineConfig({
+  plugins: [svelte()],
   server: {
     host: "127.0.0.1"
   }
@@ -444,7 +496,9 @@ export async function syncProjectPreviewWorkspace(options: {
   const projectType = inferProjectType(project, projectNodes);
 
   if (!isFrameworkProject(projectType)) {
-    throw new Error("Real Vite preview is only used for React + Vite and Vue + Vite projects.");
+    throw new Error(
+      "Real Vite preview is only used for React + Vite, Vue + Vite, and Svelte + Vite projects."
+    );
   }
 
   const workspaceDir = getWorkspaceDir(projectRoot);

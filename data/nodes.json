@@ -641,9 +641,9 @@
     "parentPath": "nova-digital/services",
     "kind": "file",
     "fileType": "html",
-    "content": "<header class=\"site-header\">\n  <div class=\"container nav-wrap\">\n    <a class=\"brand\" href=\"/site/nova-digital\">\n      <div class=\"brand-mark\">N</div>\n      <div class=\"brand-text\">\n        <strong>Nova Digital</strong>\n        <span>Creative Web Studio</span>\n      </div>\n    </a>\n\n    <nav class=\"nav\">\n      <a class=\"nav-link\" href=\"/site/nova-digital\">Home</a>\n      <a class=\"nav-link\" href=\"/site/nova-digital/about\">About</a>\n      <a class=\"nav-link\" href=\"/site/nova-digital/services\">Services</a>\n      <a class=\"nav-link\" href=\"/site/nova-digital/contact\">Contact</a>\n    </nav>\n  </div>\n</header>\n\n<main>\n  <section class=\"hero\">\n    <div class=\"container hero-grid\">\n      <div>\n        <span class=\"badge\">Services</span>\n        <h1>End-to-end services for product-focused teams</h1>\n        <p>\n          From landing pages to scalable frontend experiences, we help teams\n          move from concept to polished delivery with confidence.\n        </p>\n\n        <div class=\"hero-actions\">\n          <button class=\"btn\" data-demo-button>Book a Demo</button>\n          <a class=\"btn-outline\" href=\"/site/nova-digital/contact\">Request a Proposal</a>\n        </div>\n      </div>\n\n      <div class=\"hero-card\">\n        <h3>Delivery areas</h3>\n        <ul class=\"hero-list\">\n          <li>Marketing websites</li>\n          <li>Product interface development</li>\n          <li>Component-based frontend systems</li>\n          <li>Project-based website structuring</li>\n        </ul>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"section\">\n    <div class=\"container\">\n      <div class=\"section-head\">\n        <span class=\"small-tag\">Core Services</span>\n        <h2>What we can build for you</h2>\n      </div>\n\n      <div class=\"service-grid\">\n        <article class=\"service-card\">\n          <h3>Landing Pages</h3>\n          <p>Conversion-focused pages with strong visual presentation and fast loading.</p>\n        </article>\n\n        <article class=\"service-card\">\n          <h3>Business Websites</h3>\n          <p>Structured multi-page websites with reusable shared assets and clean routing.</p>\n        </article>\n\n        <article class=\"service-card\">\n          <h3>Frontend Systems</h3>\n          <p>Maintainable code structure for products that need scale and consistency.</p>\n        </article>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"section\">\n    <div class=\"container split-grid\">\n      <div class=\"story-card\">\n        <span class=\"small-tag\">Why teams choose us</span>\n        <h2>Clean systems, faster demos</h2>\n        <p class=\"quote\">\n          We build with structure in mind, so pages are easier to manage,\n          present, and improve over time.\n        </p>\n      </div>\n\n      <div class=\"info-card\">\n        <span class=\"small-tag\">Highlights</span>\n        <ul class=\"info-list\">\n          <li>Reusable root-level CSS and JS</li>\n          <li>Folder-based project organization</li>\n          <li>Preview and published route alignment</li>\n          <li>Fast updates for stakeholder demos</li>\n        </ul>\n      </div>\n    </div>\n  </section>\n</main>\n\n<footer class=\"footer\">\n  <div class=\"container footer-line\">\n    <div>© <span data-year></span> Nova Digital. All rights reserved.</div>\n    <div>Services page rendered through clean published routes</div>\n  </div>\n</footer>",
+    "content": "<header class=\"site-header\">\n  <div class=\"container nav-wrap\">\n    <a class=\"brand\" href=\"/site/nova-digital\">\n      <div class=\"brand-mark\">N</div>\n      <div class=\"brand-text\">\n        <strong>Novaaaaa Digital</strong>\n        <span>Creative Web Studio</span>\n      </div>\n    </a>\n\n    <nav class=\"nav\">\n      <a class=\"nav-link\" href=\"/site/nova-digital\">Home</a>\n      <a class=\"nav-link\" href=\"/site/nova-digital/about\">About</a>\n      <a class=\"nav-link\" href=\"/site/nova-digital/services\">Services</a>\n      <a class=\"nav-link\" href=\"/site/nova-digital/contact\">Contact</a>\n    </nav>\n  </div>\n</header>\n\n<main>\n  <section class=\"hero\">\n    <div class=\"container hero-grid\">\n      <div>\n        <span class=\"badge\">Services</span>\n        <h1>End-to-end services for product-focused teams</h1>\n        <p>\n          From landing pages to scalable frontend experiences, we help teams\n          move from concept to polished delivery with confidence.\n        </p>\n\n        <div class=\"hero-actions\">\n          <button class=\"btn\" data-demo-button>Book a Demo</button>\n          <a class=\"btn-outline\" href=\"/site/nova-digital/contact\">Request a Proposal</a>\n        </div>\n      </div>\n\n      <div class=\"hero-card\">\n        <h3>Delivery areas</h3>\n        <ul class=\"hero-list\">\n          <li>Marketing websites</li>\n          <li>Product interface development</li>\n          <li>Component-based frontend systems</li>\n          <li>Project-based website structuring</li>\n        </ul>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"section\">\n    <div class=\"container\">\n      <div class=\"section-head\">\n        <span class=\"small-tag\">Core Services</span>\n        <h2>What we can build for you</h2>\n      </div>\n\n      <div class=\"service-grid\">\n        <article class=\"service-card\">\n          <h3>Landing Pages</h3>\n          <p>Conversion-focused pages with strong visual presentation and fast loading.</p>\n        </article>\n\n        <article class=\"service-card\">\n          <h3>Business Websites</h3>\n          <p>Structured multi-page websites with reusable shared assets and clean routing.</p>\n        </article>\n\n        <article class=\"service-card\">\n          <h3>Frontend Systems</h3>\n          <p>Maintainable code structure for products that need scale and consistency.</p>\n        </article>\n      </div>\n    </div>\n  </section>\n\n  <section class=\"section\">\n    <div class=\"container split-grid\">\n      <div class=\"story-card\">\n        <span class=\"small-tag\">Why teams choose us</span>\n        <h2>Clean systems, faster demos</h2>\n        <p class=\"quote\">\n          We build with structure in mind, so pages are easier to manage,\n          present, and improve over time.\n        </p>\n      </div>\n\n      <div class=\"info-card\">\n        <span class=\"small-tag\">Highlights</span>\n        <ul class=\"info-list\">\n          <li>Reusable root-level CSS and JS</li>\n          <li>Folder-based project organization</li>\n          <li>Preview and published route alignment</li>\n          <li>Fast updates for stakeholder demos</li>\n        </ul>\n      </div>\n    </div>\n  </section>\n</main>\n\n<footer class=\"footer\">\n  <div class=\"container footer-line\">\n    <div>© <span data-year></span> Nova Digital. All rights reserved.</div>\n    <div>Services page rendered through clean published routes</div>\n  </div>\n</footer>",
     "createdAt": "2026-04-01T09:21:53.781Z",
-    "updatedAt": "2026-04-01T09:23:23.497Z"
+    "updatedAt": "2026-05-01T04:20:37.959Z"
   },
   {
     "path": "nova-digital/style.css",
@@ -848,6 +848,310 @@
     "kind": "folder",
     "createdAt": "2026-04-01T15:48:04.239Z",
     "updatedAt": "2026-04-01T15:48:04.239Z"
+  },
+  {
+    "path": "test-01",
+    "name": "test-01",
+    "parentPath": "",
+    "kind": "folder",
+    "createdAt": "2026-04-30T06:38:30.096Z",
+    "updatedAt": "2026-04-30T06:38:30.096Z"
+  },
+  {
+    "path": "test-01/public",
+    "name": "public",
+    "parentPath": "test-01",
+    "kind": "folder",
+    "createdAt": "2026-04-30T06:38:30.189Z",
+    "updatedAt": "2026-04-30T06:38:30.189Z"
+  },
+  {
+    "path": "test-01/src",
+    "name": "src",
+    "parentPath": "test-01",
+    "kind": "folder",
+    "createdAt": "2026-04-30T06:38:30.189Z",
+    "updatedAt": "2026-04-30T06:38:30.189Z"
+  },
+  {
+    "path": "test-01/index.html",
+    "name": "index.html",
+    "parentPath": "test-01",
+    "kind": "file",
+    "fileType": "html",
+    "content": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Svelte Vite App</title>\n  </head>\n  <body>\n    <div id=\"app\"></div>\n    <script type=\"module\" src=\"/src/main.js\"></script>\n  </body>\n</html>\n",
+    "createdAt": "2026-04-30T06:38:30.189Z",
+    "updatedAt": "2026-04-30T06:38:30.189Z"
+  },
+  {
+    "path": "test-01/package.json",
+    "name": "package.json",
+    "parentPath": "test-01",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "{\n  \"name\": \"test-01\",\n  \"private\": true,\n  \"version\": \"0.0.0\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"vite build\",\n    \"preview\": \"vite preview\"\n  },\n  \"dependencies\": {\n    \"@sveltejs/vite-plugin-svelte\": \"^5.0.3\",\n    \"vite\": \"^6.4.1\",\n    \"svelte\": \"^5.0.0\",\n    \"gsap\": \"^3.15.0\",\n    \"axios\": \"^1.15.2\"\n  },\n  \"devDependencies\": {}\n}\n",
+    "createdAt": "2026-04-30T06:38:30.189Z",
+    "updatedAt": "2026-04-30T06:38:30.189Z"
+  },
+  {
+    "path": "test-01/src/components",
+    "name": "components",
+    "parentPath": "test-01/src",
+    "kind": "folder",
+    "createdAt": "2026-04-30T06:38:30.189Z",
+    "updatedAt": "2026-04-30T06:38:30.189Z"
+  },
+  {
+    "path": "test-01/src/data",
+    "name": "data",
+    "parentPath": "test-01/src",
+    "kind": "folder",
+    "createdAt": "2026-04-30T06:38:30.189Z",
+    "updatedAt": "2026-04-30T06:38:30.189Z"
+  },
+  {
+    "path": "test-01/src/app.svelte",
+    "name": "app.svelte",
+    "parentPath": "test-01/src",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "<script>\n  import Hero from \"./components/hero.svelte\";\n\n  const features = [\n    \"Svelte components\",\n    \"Real Vite preview\",\n    \"NPM package support\",\n    \"Professional builder workflow\",\n  ];\n</script>\n\n<main class=\"app\">\n  <Hero />\n\n  <section class=\"section\">\n    <span class=\"badge\">Svelte + Vite</span>\n    <h2>Framework-aware Svelte preview is ready.</h2>\n    <p>\n      This starter project was generated by Dynamic Page Builder.\n      You can create Svelte components, use reactive state, and import npm packages.\n    </p>\n\n    <div class=\"feature-grid\">\n      {#each features as feature}\n        <article class=\"feature-card\">\n          <span>✓</span>\n          <p>{feature}</p>\n        </article>\n      {/each}\n    </div>\n  </section>\n</main>\n",
+    "createdAt": "2026-04-30T06:38:30.189Z",
+    "updatedAt": "2026-04-30T06:38:30.189Z"
+  },
+  {
+    "path": "test-01/src/components/hero.svelte",
+    "name": "hero.svelte",
+    "parentPath": "test-01/src/components",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "<script>\n  const title = \"Build fast Svelte interfaces inside your builder.\";\n</script>\n\n<section class=\"hero\">\n  <p class=\"eyebrow\">Svelte Project</p>\n  <h1>{title}</h1>\n  <p>\n    This project supports Svelte components, reactive templates, live preview,\n    and real Vite workflow.\n  </p>\n</section>\n",
+    "createdAt": "2026-04-30T06:38:30.189Z",
+    "updatedAt": "2026-04-30T06:38:30.189Z"
+  },
+  {
+    "path": "test-01/src/main.js",
+    "name": "main.js",
+    "parentPath": "test-01/src",
+    "kind": "file",
+    "fileType": "js",
+    "content": "import { mount } from \"svelte\";\nimport App from \"./app.svelte\";\nimport \"./style.css\";\n\nconst app = mount(App, {\n  target: document.getElementById(\"app\"),\n});\n\nexport default app;\n",
+    "createdAt": "2026-04-30T06:38:30.189Z",
+    "updatedAt": "2026-04-30T06:38:30.189Z"
+  },
+  {
+    "path": "test-01/src/style.css",
+    "name": "style.css",
+    "parentPath": "test-01/src",
+    "kind": "file",
+    "fileType": "css",
+    "content": ":root {\n  font-family: Inter, system-ui, Arial, sans-serif;\n  background: #180a0a;\n  color: #fff7ed;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nbody {\n  margin: 0;\n}\n\n.app {\n  min-height: 100vh;\n  background:\n    radial-gradient(circle at top left, rgba(255, 62, 0, 0.28), transparent 34%),\n    radial-gradient(circle at top right, rgba(251, 146, 60, 0.2), transparent 30%),\n    #180a0a;\n}\n\n.hero,\n.section {\n  width: min(1000px, calc(100% - 40px));\n  margin: 0 auto;\n}\n\n.hero {\n  padding: 120px 0 60px;\n}\n\n.eyebrow,\n.badge {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 18px;\n  padding: 8px 12px;\n  border-radius: 999px;\n  background: rgba(255, 62, 0, 0.18);\n  color: #fed7aa;\n  font-size: 13px;\n  font-weight: 800;\n  text-transform: uppercase;\n  letter-spacing: 0.08em;\n}\n\nh1 {\n  max-width: 820px;\n  margin: 0;\n  font-size: clamp(44px, 7vw, 84px);\n  line-height: 0.95;\n  letter-spacing: -0.07em;\n}\n\nh2 {\n  margin: 0;\n  font-size: clamp(32px, 4vw, 52px);\n  letter-spacing: -0.05em;\n}\n\np {\n  max-width: 720px;\n  color: #ffedd5;\n  font-size: 18px;\n  line-height: 1.7;\n}\n\n.section {\n  padding: 40px;\n  border: 1px solid rgba(255, 255, 255, 0.12);\n  border-radius: 28px;\n  background: rgba(255, 255, 255, 0.08);\n  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.26);\n}\n\n.feature-grid {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));\n  gap: 14px;\n  margin-top: 28px;\n}\n\n.feature-card {\n  padding: 18px;\n  border-radius: 18px;\n  background: rgba(255, 255, 255, 0.08);\n}\n\n.feature-card span {\n  color: #fb923c;\n  font-weight: 900;\n}\n\n.feature-card p {\n  margin: 8px 0 0;\n  font-size: 14px;\n}\n\n@media (max-width: 860px) {\n  .feature-grid {\n    grid-template-columns: 1fr;\n  }\n}\n",
+    "createdAt": "2026-04-30T06:38:30.189Z",
+    "updatedAt": "2026-04-30T06:38:30.189Z"
+  },
+  {
+    "path": "test-01/vite.config.js",
+    "name": "vite.config.js",
+    "parentPath": "test-01",
+    "kind": "file",
+    "fileType": "js",
+    "content": "import { defineConfig } from \"vite\";\nimport { svelte } from \"@sveltejs/vite-plugin-svelte\";\n\nexport default defineConfig({\n  plugins: [svelte()],\n});\n",
+    "createdAt": "2026-04-30T06:38:30.189Z",
+    "updatedAt": "2026-04-30T06:38:30.189Z"
+  },
+  {
+    "path": "test-02",
+    "name": "test-02",
+    "parentPath": "",
+    "kind": "folder",
+    "createdAt": "2026-04-30T07:54:59.655Z",
+    "updatedAt": "2026-04-30T07:54:59.655Z"
+  },
+  {
+    "path": "test-02/public",
+    "name": "public",
+    "parentPath": "test-02",
+    "kind": "folder",
+    "createdAt": "2026-04-30T07:54:59.805Z",
+    "updatedAt": "2026-04-30T07:54:59.805Z"
+  },
+  {
+    "path": "test-02/src",
+    "name": "src",
+    "parentPath": "test-02",
+    "kind": "folder",
+    "createdAt": "2026-04-30T07:54:59.805Z",
+    "updatedAt": "2026-04-30T07:54:59.805Z"
+  },
+  {
+    "path": "test-02/index.html",
+    "name": "index.html",
+    "parentPath": "test-02",
+    "kind": "file",
+    "fileType": "html",
+    "content": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Svelte Vite App</title>\n  </head>\n  <body>\n    <div id=\"app\"></div>\n    <script type=\"module\" src=\"/src/main.js\"></script>\n  </body>\n</html>\n",
+    "createdAt": "2026-04-30T07:54:59.805Z",
+    "updatedAt": "2026-04-30T07:54:59.805Z"
+  },
+  {
+    "path": "test-02/package.json",
+    "name": "package.json",
+    "parentPath": "test-02",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "{\n  \"name\": \"test-02\",\n  \"private\": true,\n  \"version\": \"0.0.0\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"vite build\",\n    \"preview\": \"vite preview\"\n  },\n  \"dependencies\": {\n    \"@sveltejs/vite-plugin-svelte\": \"^5.0.3\",\n    \"vite\": \"^6.4.1\",\n    \"svelte\": \"^5.0.0\",\n    \"gsap\": \"^3.15.0\",\n    \"axios\": \"^1.15.2\"\n  },\n  \"devDependencies\": {}\n}\n",
+    "createdAt": "2026-04-30T07:54:59.805Z",
+    "updatedAt": "2026-04-30T07:54:59.805Z"
+  },
+  {
+    "path": "test-02/src/components",
+    "name": "components",
+    "parentPath": "test-02/src",
+    "kind": "folder",
+    "createdAt": "2026-04-30T07:54:59.805Z",
+    "updatedAt": "2026-04-30T07:54:59.805Z"
+  },
+  {
+    "path": "test-02/src/data",
+    "name": "data",
+    "parentPath": "test-02/src",
+    "kind": "folder",
+    "createdAt": "2026-04-30T07:54:59.805Z",
+    "updatedAt": "2026-04-30T07:54:59.805Z"
+  },
+  {
+    "path": "test-02/src/app.svelte",
+    "name": "app.svelte",
+    "parentPath": "test-02/src",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "<script>\n  import Hero from \"./components/hero.svelte\";\n\n  const features = [\n    \"Svelte components\",\n    \"Real Vite preview\",\n    \"NPM package support\",\n    \"Professional builder workflow\",\n  ];\n</script>\n\n<main class=\"app\">\n  <Hero />\n\n  <section class=\"section\">\n    <span class=\"badge\">Svelte + Vite</span>\n    <h2>Framework-aware Svelte preview is ready.</h2>\n    <p>\n      This starter project was generated by Dynamic Page Builder.\n      You can create Svelte components, use reactive state, and import npm packages.\n    </p>\n\n    <div class=\"feature-grid\">\n      {#each features as feature}\n        <article class=\"feature-card\">\n          <span>✓</span>\n          <p>{feature}</p>\n        </article>\n      {/each}\n    </div>\n  </section>\n</main>\n",
+    "createdAt": "2026-04-30T07:54:59.805Z",
+    "updatedAt": "2026-04-30T07:54:59.805Z"
+  },
+  {
+    "path": "test-02/src/components/hero.svelte",
+    "name": "hero.svelte",
+    "parentPath": "test-02/src/components",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "<script>\n  const title = \"Build fast Svelte interfaces inside your builder.\";\n</script>\n\n<section class=\"hero\">\n  <p class=\"eyebrow\">Svelte Project</p>\n  <h1>{title}</h1>\n  <p>\n    This project supports Svelte components, reactive templates, live preview,\n    and real Vite workflow.\n  </p>\n</section>\n",
+    "createdAt": "2026-04-30T07:54:59.805Z",
+    "updatedAt": "2026-04-30T07:54:59.805Z"
+  },
+  {
+    "path": "test-02/src/main.js",
+    "name": "main.js",
+    "parentPath": "test-02/src",
+    "kind": "file",
+    "fileType": "js",
+    "content": "import { mount } from \"svelte\";\nimport App from \"./app.svelte\";\nimport \"./style.css\";\n\nconst app = mount(App, {\n  target: document.getElementById(\"app\"),\n});\n\nexport default app;\n",
+    "createdAt": "2026-04-30T07:54:59.805Z",
+    "updatedAt": "2026-04-30T07:54:59.805Z"
+  },
+  {
+    "path": "test-02/src/style.css",
+    "name": "style.css",
+    "parentPath": "test-02/src",
+    "kind": "file",
+    "fileType": "css",
+    "content": ":root {\n  font-family: Inter, system-ui, Arial, sans-serif;\n  background: #180a0a;\n  color: #fff7ed;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nbody {\n  margin: 0;\n}\n\n.app {\n  min-height: 100vh;\n  background:\n    radial-gradient(circle at top left, rgba(255, 62, 0, 0.28), transparent 34%),\n    radial-gradient(circle at top right, rgba(251, 146, 60, 0.2), transparent 30%),\n    #180a0a;\n}\n\n.hero,\n.section {\n  width: min(1000px, calc(100% - 40px));\n  margin: 0 auto;\n}\n\n.hero {\n  padding: 120px 0 60px;\n}\n\n.eyebrow,\n.badge {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 18px;\n  padding: 8px 12px;\n  border-radius: 999px;\n  background: rgba(255, 62, 0, 0.18);\n  color: #fed7aa;\n  font-size: 13px;\n  font-weight: 800;\n  text-transform: uppercase;\n  letter-spacing: 0.08em;\n}\n\nh1 {\n  max-width: 820px;\n  margin: 0;\n  font-size: clamp(44px, 7vw, 84px);\n  line-height: 0.95;\n  letter-spacing: -0.07em;\n}\n\nh2 {\n  margin: 0;\n  font-size: clamp(32px, 4vw, 52px);\n  letter-spacing: -0.05em;\n}\n\np {\n  max-width: 720px;\n  color: #ffedd5;\n  font-size: 18px;\n  line-height: 1.7;\n}\n\n.section {\n  padding: 40px;\n  border: 1px solid rgba(255, 255, 255, 0.12);\n  border-radius: 28px;\n  background: rgba(255, 255, 255, 0.08);\n  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.26);\n}\n\n.feature-grid {\n  display: grid;\n  grid-template-columns: repeat(4, minmax(0, 1fr));\n  gap: 14px;\n  margin-top: 28px;\n}\n\n.feature-card {\n  padding: 18px;\n  border-radius: 18px;\n  background: rgba(255, 255, 255, 0.08);\n}\n\n.feature-card span {\n  color: #fb923c;\n  font-weight: 900;\n}\n\n.feature-card p {\n  margin: 8px 0 0;\n  font-size: 14px;\n}\n\n@media (max-width: 860px) {\n  .feature-grid {\n    grid-template-columns: 1fr;\n  }\n}\n",
+    "createdAt": "2026-04-30T07:54:59.805Z",
+    "updatedAt": "2026-04-30T07:54:59.805Z"
+  },
+  {
+    "path": "test-02/vite.config.js",
+    "name": "vite.config.js",
+    "parentPath": "test-02",
+    "kind": "file",
+    "fileType": "js",
+    "content": "import { defineConfig } from \"vite\";\nimport { svelte } from \"@sveltejs/vite-plugin-svelte\";\n\nexport default defineConfig({\n  plugins: [svelte()],\n});\n",
+    "createdAt": "2026-04-30T07:54:59.805Z",
+    "updatedAt": "2026-04-30T07:54:59.805Z"
+  },
+  {
+    "path": "test-03",
+    "name": "test-03",
+    "parentPath": "",
+    "kind": "folder",
+    "createdAt": "2026-04-30T09:18:35.498Z",
+    "updatedAt": "2026-04-30T09:18:35.498Z"
+  },
+  {
+    "path": "test-03/public",
+    "name": "public",
+    "parentPath": "test-03",
+    "kind": "folder",
+    "createdAt": "2026-04-30T09:18:35.586Z",
+    "updatedAt": "2026-04-30T09:18:35.586Z"
+  },
+  {
+    "path": "test-03/src",
+    "name": "src",
+    "parentPath": "test-03",
+    "kind": "folder",
+    "createdAt": "2026-04-30T09:18:35.586Z",
+    "updatedAt": "2026-04-30T09:18:35.586Z"
+  },
+  {
+    "path": "test-03/index.html",
+    "name": "index.html",
+    "parentPath": "test-03",
+    "kind": "file",
+    "fileType": "html",
+    "content": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Svelte Vite App</title>\n  </head>\n  <body>\n    <div id=\"app\"></div>\n    <script type=\"module\" src=\"/src/main.js\"></script>\n  </body>\n</html>\n",
+    "createdAt": "2026-04-30T09:18:35.586Z",
+    "updatedAt": "2026-04-30T09:18:35.586Z"
+  },
+  {
+    "path": "test-03/package.json",
+    "name": "package.json",
+    "parentPath": "test-03",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "{\n  \"name\": \"test-03\",\n  \"private\": true,\n  \"version\": \"0.0.0\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"vite build\",\n    \"preview\": \"vite preview\"\n  },\n  \"dependencies\": {\n    \"svelte\": \"^5.0.0\"\n  },\n  \"devDependencies\": {\n    \"@sveltejs/vite-plugin-svelte\": \"^5.0.3\",\n    \"vite\": \"^6.4.1\"\n  }\n}\n",
+    "createdAt": "2026-04-30T09:18:35.586Z",
+    "updatedAt": "2026-04-30T09:18:35.586Z"
+  },
+  {
+    "path": "test-03/src/app.svelte",
+    "name": "app.svelte",
+    "parentPath": "test-03/src",
+    "kind": "file",
+    "fileType": "txt",
+    "content": "<script>\n  let count = 0;\n</script>\n\n<main class=\"page\">\n  <section class=\"card\">\n    <h1>Svelte + Vite Project</h1>\n    <p>This starter project was generated by the builder.</p>\n\n    <button onclick={() => count += 1}>\n      Count is {count}\n    </button>\n  </section>\n</main>\n",
+    "createdAt": "2026-04-30T09:18:35.586Z",
+    "updatedAt": "2026-04-30T09:18:35.586Z"
+  },
+  {
+    "path": "test-03/src/main.js",
+    "name": "main.js",
+    "parentPath": "test-03/src",
+    "kind": "file",
+    "fileType": "js",
+    "content": "import { mount } from \"svelte\";\nimport App from \"./app.svelte\";\nimport \"./style.css\";\n\nconst app = mount(App, {\n  target: document.getElementById(\"app\"),\n});\n\nexport default app;\n",
+    "createdAt": "2026-04-30T09:18:35.586Z",
+    "updatedAt": "2026-04-30T09:18:35.586Z"
+  },
+  {
+    "path": "test-03/src/style.css",
+    "name": "style.css",
+    "parentPath": "test-03/src",
+    "kind": "file",
+    "fileType": "css",
+    "content": ":root {\n  font-family: Inter, system-ui, Arial, sans-serif;\n  background: #f5f7fb;\n  color: #0f172a;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nbody {\n  margin: 0;\n}\n\n.page {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  padding: 24px;\n}\n\n.card {\n  width: min(720px, 100%);\n  background: #ffffff;\n  padding: 32px;\n  border-radius: 16px;\n  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);\n  text-align: center;\n}\n\nh1 {\n  margin: 0 0 12px;\n  font-size: 36px;\n}\n\np {\n  margin: 0 0 24px;\n  color: #475569;\n  font-size: 18px;\n  line-height: 1.6;\n}\n\nbutton {\n  border: 0;\n  border-radius: 10px;\n  background: #ff3e00;\n  color: white;\n  padding: 12px 18px;\n  font-weight: 700;\n  cursor: pointer;\n}\n\nbutton:hover {\n  background: #d73500;\n}\n",
+    "createdAt": "2026-04-30T09:18:35.586Z",
+    "updatedAt": "2026-04-30T09:18:35.586Z"
+  },
+  {
+    "path": "test-03/vite.config.js",
+    "name": "vite.config.js",
+    "parentPath": "test-03",
+    "kind": "file",
+    "fileType": "js",
+    "content": "import { defineConfig } from \"vite\";\nimport { svelte } from \"@sveltejs/vite-plugin-svelte\";\n\nexport default defineConfig({\n  plugins: [svelte()],\n});\n",
+    "createdAt": "2026-04-30T09:18:35.586Z",
+    "updatedAt": "2026-04-30T09:18:35.586Z"
   },
   {
     "path": "vue-test",

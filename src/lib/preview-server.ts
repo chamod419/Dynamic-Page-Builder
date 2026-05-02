@@ -1,6 +1,7 @@
-import { createServer, type ViteDevServer } from "vite";
+import { createServer, type PluginOption, type ViteDevServer } from "vite";
 import react from "@vitejs/plugin-react";
 import vue from "@vitejs/plugin-vue";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
 import type { ProjectType } from "./preview-workspace.js";
 
 type PreviewServerRecord = {
@@ -25,13 +26,58 @@ function getStore(): PreviewServerStore {
   return globalStore.__DPB_PREVIEW_SERVERS__;
 }
 
-function getPlugins(projectType: ProjectType) {
+function getPlugins(projectType: ProjectType): PluginOption[] {
   if (projectType === "react-vite") {
     return [react()];
   }
 
   if (projectType === "vue-vite") {
     return [vue()];
+  }
+
+  if (projectType === "svelte-vite") {
+    return [svelte()];
+  }
+
+  return [];
+}
+
+function getOptimizeDeps(projectType: ProjectType) {
+  if (projectType === "react-vite") {
+    return [
+      "react",
+      "react-dom",
+      "react-dom/client",
+      "framer-motion",
+      "lucide-react",
+      "axios",
+      "three",
+      "gsap",
+    ];
+  }
+
+  if (projectType === "vue-vite") {
+    return ["vue", "axios", "three", "gsap"];
+  }
+
+  if (projectType === "svelte-vite") {
+    return ["svelte", "axios", "three", "gsap"];
+  }
+
+  return [];
+}
+
+function getDedupePackages(projectType: ProjectType) {
+  if (projectType === "react-vite") {
+    return ["react", "react-dom"];
+  }
+
+  if (projectType === "vue-vite") {
+    return ["vue"];
+  }
+
+  if (projectType === "svelte-vite") {
+    return ["svelte"];
   }
 
   return [];
@@ -105,29 +151,10 @@ export async function startPreviewServer(options: {
     },
     optimizeDeps: {
       force: false,
-      include:
-        options.projectType === "react-vite"
-          ? [
-              "react",
-              "react-dom",
-              "react-dom/client",
-              "framer-motion",
-              "lucide-react",
-              "axios",
-              "three",
-              "gsap",
-            ]
-          : options.projectType === "vue-vite"
-            ? ["vue", "axios", "three", "gsap"]
-            : [],
+      include: getOptimizeDeps(options.projectType),
     },
     resolve: {
-      dedupe:
-        options.projectType === "react-vite"
-          ? ["react", "react-dom"]
-          : options.projectType === "vue-vite"
-            ? ["vue"]
-            : [],
+      dedupe: getDedupePackages(options.projectType),
     },
     clearScreen: false,
   });

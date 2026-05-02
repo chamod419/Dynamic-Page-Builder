@@ -1,35 +1,19 @@
 import type { APIRoute } from "astro";
-import fs from "fs/promises";
-import path from "path";
+import {
+  readNodes,
+  readProjects,
+  sanitizeNodePath,
+  syncProjectPreviewWorkspace,
+  isFrameworkProject,
+  type BuilderNode,
+  type ProjectType,
+} from "../../lib/preview-workspace.js";
 import { startPreviewServer } from "../../lib/preview-server.js";
-import { syncProjectPreviewWorkspace } from "../../lib/preview-workspace.js";
 
 export const prerender = false;
 
-type ProjectType = "html-site" | "react-vite" | "vue-vite";
-
-type BuilderNode = {
-  path: string;
-  name: string;
-  parentPath: string;
-  kind: "folder" | "file";
-  fileType?: string;
-  content?: string;
-};
-
-type ProjectRecord = {
-  id: string;
-  name: string;
-  rootPath: string;
-  type?: ProjectType;
-};
-
-const dataDir = path.join(process.cwd(), "data");
-const nodesPath = path.join(dataDir, "nodes.json");
-const projectsPath = path.join(dataDir, "projects.json");
-
-function htmlResponse(html: string, status = 200) {
-  return new Response(html, {
+function htmlResponse(content: string, status = 200) {
+  return new Response(content, {
     status,
     headers: {
       "Content-Type": "text/html; charset=utf-8",
@@ -39,7 +23,7 @@ function htmlResponse(html: string, status = 200) {
 }
 
 function escapeHtml(value: unknown) {
-  return String(value ?? "")
+  return String(value || "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -48,38 +32,21 @@ function escapeHtml(value: unknown) {
 }
 
 function safeStyleContent(value: unknown) {
-  return String(value ?? "").replace(/<\/style/gi, "<\\/style");
+  return String(value || "").replace(/<\/style/gi, "<\\/style");
 }
 
 function safeScriptContent(value: unknown) {
-  return String(value ?? "").replace(/<\/script/gi, "<\\/script");
+  return String(value || "").replace(/<\/script/gi, "<\\/script");
 }
 
-function sanitizePath(input: string) {
-  return String(input || "")
-    .split("/")
-    .map((part) =>
-      part
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9._-]/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^\.+|\.+$/g, "")
-        .replace(/^[-_]+|[-_]+$/g, "")
-    )
-    .filter((part) => part && part !== "." && part !== "..")
-    .join("/");
-}
-
-function getExtension(fileName: string) {
+function getFileExtension(fileName: string) {
   const name = String(fileName || "").toLowerCase();
   const index = name.lastIndexOf(".");
   return index >= 0 ? name.slice(index + 1) : "";
 }
 
 function detectFileType(fileName: string, fallback?: string) {
-  const ext = getExtension(fileName);
+  const ext = getFileExtension(fileName);
 
   if (ext === "html" || ext === "htm") return "html";
   if (ext === "css" || ext === "scss" || ext === "less") return "css";
@@ -88,54 +55,68 @@ function detectFileType(fileName: string, fallback?: string) {
   if (ext === "ts") return "ts";
   if (ext === "tsx") return "tsx";
   if (ext === "vue") return "vue";
+  if (ext === "svelte") return "svelte";
   if (ext === "json") return "json";
   if (ext === "md" || ext === "mdx") return "md";
+  if (ext === "astro") return "astro";
 
-  if (fallback) return fallback;
-
-  return "txt";
+  return fallback || "txt";
 }
 
-async function readJsonFile<T>(filePath: string, fallback: T): Promise<T> {
-  try {
-    const raw = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
-  }
+function inferProjectType(projectRoot: string, nodes: BuilderNode[]): ProjectType {
+  const projectNodes = nodes.filter(
+    (node) => node.path === projectRoot || node.path.startsWith(`${projectRoot}/`)
+  );
+
+  const hasReactFile = projectNodes.some((node) => {
+    if (node.kind !== "file") return false;
+
+    const type = detectFileType(node.name, node.fileType);
+    return type === "jsx" || type === "tsx";
+  });
+
+  if (hasReactFile) return "react-vite";
+
+  const hasVueFile = projectNodes.some((node) => {
+    if (node.kind !== "file") return false;
+
+    return detectFileType(node.name, node.fileType) === "vue";
+  });
+
+  if (hasVueFile) return "vue-vite";
+
+  const hasSvelteFile = projectNodes.some((node) => {
+    if (node.kind !== "file") return false;
+
+    return detectFileType(node.name, node.fileType) === "svelte";
+  });
+
+  if (hasSvelteFile) return "svelte-vite";
+
+  return "html-site";
 }
 
-async function readProjects() {
-  const projects = await readJsonFile<ProjectRecord[]>(projectsPath, []);
-  return Array.isArray(projects) ? projects : [];
-}
-
-async function readNodes() {
-  const nodes = await readJsonFile<BuilderNode[]>(nodesPath, []);
-  return Array.isArray(nodes) ? nodes : [];
-}
-
-function isFrameworkProject(project?: ProjectRecord | null) {
-  return project?.type === "react-vite" || project?.type === "vue-vite";
-}
-
-function getNodeByPath(nodes: BuilderNode[], nodePath: string) {
-  return nodes.find((node) => node.path === nodePath);
-}
-
-function getFilesInFolder(nodes: BuilderNode[], folderPath: string) {
-  return nodes.filter((node) => node.kind === "file" && node.parentPath === folderPath);
+function getChildrenFiles(nodes: BuilderNode[], folderPath: string) {
+  return nodes.filter(
+    (node) => node.kind === "file" && node.parentPath === folderPath
+  );
 }
 
 function getFolderChain(projectRoot: string, folderPath: string) {
   if (!projectRoot || !folderPath) return [];
 
-  if (!(folderPath === projectRoot || folderPath.startsWith(`${projectRoot}/`))) {
+  const safeProjectRoot = sanitizeNodePath(projectRoot);
+  const safeFolderPath = sanitizeNodePath(folderPath);
+
+  if (
+    safeFolderPath !== safeProjectRoot &&
+    !safeFolderPath.startsWith(`${safeProjectRoot}/`)
+  ) {
     return [];
   }
 
-  const rootParts = projectRoot.split("/").filter(Boolean);
-  const folderParts = folderPath.split("/").filter(Boolean);
+  const rootParts = safeProjectRoot.split("/").filter(Boolean);
+  const folderParts = safeFolderPath.split("/").filter(Boolean);
 
   const chain: string[] = [];
 
@@ -146,23 +127,29 @@ function getFolderChain(projectRoot: string, folderPath: string) {
   return chain;
 }
 
-function collectHtmlAssets(nodes: BuilderNode[], projectRoot: string, previewFolderPath: string) {
-  const chain = getFolderChain(projectRoot, previewFolderPath);
+function collectHtmlAssets(
+  nodes: BuilderNode[],
+  projectRoot: string,
+  folderPath: string
+) {
+  const chain = getFolderChain(projectRoot, folderPath);
   const seen = new Set<string>();
 
   const cssNodes: BuilderNode[] = [];
   const jsNodes: BuilderNode[] = [];
 
-  for (const folderPath of chain) {
-    const folderFiles = getFilesInFolder(nodes, folderPath);
+  for (const currentFolder of chain) {
+    const folderFiles = getChildrenFiles(nodes, currentFolder);
 
     const candidates =
-      folderPath === previewFolderPath
+      currentFolder === folderPath
         ? folderFiles.filter((node) => {
             const type = detectFileType(node.name, node.fileType);
             return type === "css" || type === "js";
           })
-        : folderFiles.filter((node) => node.name === "style.css" || node.name === "script.js");
+        : folderFiles.filter(
+            (node) => node.name === "style.css" || node.name === "script.js"
+          );
 
     for (const node of candidates) {
       if (seen.has(node.path)) continue;
@@ -177,8 +164,8 @@ function collectHtmlAssets(nodes: BuilderNode[], projectRoot: string, previewFol
   }
 
   return {
-    cssNodes,
-    jsNodes,
+    cssContent: cssNodes.map((node) => String(node.content || "")).join("\n\n"),
+    jsContent: jsNodes.map((node) => String(node.content || "")).join("\n\n"),
   };
 }
 
@@ -190,7 +177,10 @@ function injectIntoHead(html: string, content: string) {
   }
 
   if (source.match(/<html[^>]*>/i)) {
-    return source.replace(/<html[^>]*>/i, (match) => `${match}\n<head>\n${content}\n</head>`);
+    return source.replace(
+      /<html[^>]*>/i,
+      (match) => `${match}\n<head>\n${content}\n</head>`
+    );
   }
 
   return `
@@ -215,63 +205,131 @@ function injectBeforeBodyEnd(html: string, content: string) {
   return `${source}\n${content}`;
 }
 
-function buildHtmlProjectDocument(options: {
-  nodes: BuilderNode[];
-  projectRoot: string;
-  requestedPath: string;
-}) {
-  const { nodes, projectRoot } = options;
-  const requestedPath = sanitizePath(options.requestedPath || projectRoot);
+function notFoundShell(path: string) {
+  return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Page not found</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #0f172a;
+        color: #e5e7eb;
+        font-family: system-ui, Arial, sans-serif;
+        padding: 24px;
+      }
 
-  const exactNode = getNodeByPath(nodes, requestedPath);
-  const htmlFileNode = getNodeByPath(nodes, `${requestedPath}.html`);
+      .card {
+        width: min(680px, 100%);
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        border-radius: 18px;
+        background: rgba(15, 23, 42, 0.88);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+        padding: 24px;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        color: #f8fafc;
+      }
+
+      p {
+        margin: 0;
+        color: #94a3b8;
+        line-height: 1.6;
+      }
+
+      code {
+        color: #93c5fd;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Page not found</h1>
+      <p>No HTML page found for <code>/site/${escapeHtml(path)}</code>.</p>
+    </div>
+  </body>
+</html>`;
+}
+
+function buildHtmlSiteResponse(options: {
+  requestedPath: string;
+  projectRoot: string;
+  nodes: BuilderNode[];
+}) {
+  const { requestedPath, projectRoot, nodes } = options;
+
+  const safeRequestedPath = sanitizeNodePath(requestedPath);
+  const projectNodes = nodes.filter(
+    (node) => node.path === projectRoot || node.path.startsWith(`${projectRoot}/`)
+  );
+
+  const directNode = projectNodes.find((node) => node.path === safeRequestedPath);
 
   let htmlNode: BuilderNode | null = null;
-  let previewFolderPath = requestedPath;
+  let folderPath = safeRequestedPath;
 
-  if (exactNode?.kind === "file" && detectFileType(exactNode.name, exactNode.fileType) === "html") {
-    htmlNode = exactNode;
-    previewFolderPath = exactNode.parentPath || projectRoot;
-  } else if (
-    htmlFileNode?.kind === "file" &&
-    detectFileType(htmlFileNode.name, htmlFileNode.fileType) === "html"
-  ) {
-    htmlNode = htmlFileNode;
-    previewFolderPath = htmlFileNode.parentPath || projectRoot;
-  } else {
-    const folderFiles = getFilesInFolder(nodes, requestedPath);
+  if (directNode?.kind === "file") {
+    const type = detectFileType(directNode.name, directNode.fileType);
 
+    if (type === "html") {
+      htmlNode = directNode;
+      folderPath = directNode.parentPath || projectRoot;
+    }
+  }
+
+  if (!htmlNode) {
     htmlNode =
-      folderFiles.find(
-        (node) => detectFileType(node.name, node.fileType) === "html" && node.name === "index.html"
-      ) ||
-      folderFiles.find((node) => detectFileType(node.name, node.fileType) === "html") ||
-      null;
+      projectNodes.find(
+        (node) =>
+          node.kind === "file" &&
+          node.path === `${safeRequestedPath}/index.html`
+      ) || null;
 
-    previewFolderPath = requestedPath;
+    folderPath = safeRequestedPath;
   }
 
-  const title = previewFolderPath || projectRoot || "Published Page";
+  if (!htmlNode) {
+    htmlNode =
+      projectNodes.find(
+        (node) =>
+          node.kind === "file" &&
+          node.path === `${safeRequestedPath}.html`
+      ) || null;
 
-  if (!htmlNode || !String(htmlNode.content || "").trim()) {
-    return buildNotFoundPage(
-      "HTML page not found",
-      `No HTML file was found for: /site/${requestedPath}`
-    );
+    if (htmlNode) {
+      folderPath = htmlNode.parentPath || projectRoot;
+    }
   }
 
-  const { cssNodes, jsNodes } = collectHtmlAssets(nodes, projectRoot, previewFolderPath);
+  if (!htmlNode && safeRequestedPath === projectRoot) {
+    htmlNode =
+      projectNodes.find(
+        (node) =>
+          node.kind === "file" &&
+          node.path === `${projectRoot}/index.html`
+      ) || null;
 
-  const cssContent = cssNodes.map((node) => String(node.content || "")).join("\n\n");
-  const jsContent = jsNodes.map((node) => String(node.content || "")).join("\n\n");
+    folderPath = projectRoot;
+  }
+
+  if (!htmlNode) {
+    return htmlResponse(notFoundShell(safeRequestedPath), 404);
+  }
+
   const htmlContent = String(htmlNode.content || "");
+  const { cssContent, jsContent } = collectHtmlAssets(nodes, projectRoot, folderPath);
 
-  const baseHref = `/site/${previewFolderPath}/`;
+  const baseHref = `/site/${folderPath}/`;
 
   const headAssets = `
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>${escapeHtml(title)}</title>
 <base href="${escapeHtml(baseHref)}" />
 <style>
 ${safeStyleContent(cssContent)}
@@ -280,17 +338,18 @@ ${safeStyleContent(cssContent)}
   const scriptAsset = `
 <script>
 ${safeScriptContent(jsContent)}
-<\/script>`;
+</script>`;
 
   const looksLikeFullDocument =
     /<html[\s>]/i.test(htmlContent) || /<!doctype/i.test(htmlContent);
 
   if (looksLikeFullDocument) {
-    return injectBeforeBodyEnd(injectIntoHead(htmlContent, headAssets), scriptAsset);
+    return htmlResponse(
+      injectBeforeBodyEnd(injectIntoHead(htmlContent, headAssets), scriptAsset)
+    );
   }
 
-  return `
-<!DOCTYPE html>
+  return htmlResponse(`<!DOCTYPE html>
 <html lang="en">
   <head>
     ${headAssets}
@@ -299,128 +358,49 @@ ${safeScriptContent(jsContent)}
     ${htmlContent}
     ${scriptAsset}
   </body>
-</html>`;
+</html>`);
 }
 
-function buildFrameworkPublishedPage(options: {
-  project: ProjectRecord;
-  viteUrl: string;
-}) {
-  const { project, viteUrl } = options;
-  const projectTypeLabel =
-    project.type === "vue-vite" ? "Vue + Vite Published Preview" : "React + Vite Published Preview";
-
-  return `
-<!DOCTYPE html>
+function frameworkShell(url: string, label: string) {
+  return `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${escapeHtml(project.name)} | Published Preview</title>
+    <title>${escapeHtml(label)}</title>
     <style>
-      :root {
-        color-scheme: dark;
-        font-family: Inter, system-ui, Arial, sans-serif;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
       html,
       body {
         width: 100%;
-        min-height: 100%;
+        height: 100%;
         margin: 0;
-        background: #0f172a;
-      }
-
-      body {
+        background: #ffffff;
         overflow: hidden;
-      }
-
-      .published-shell {
-        width: 100vw;
-        height: 100vh;
-        display: grid;
-        grid-template-rows: 44px minmax(0, 1fr);
-        background: #0f172a;
-      }
-
-      .published-bar {
-        height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 0 16px;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-        background: rgba(15, 23, 42, 0.96);
-        color: #e5e7eb;
-      }
-
-      .published-title {
-        min-width: 0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 13px;
-        font-weight: 800;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .published-dot {
-        width: 9px;
-        height: 9px;
-        border-radius: 999px;
-        background: #22c55e;
-        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.14);
-      }
-
-      .published-meta {
-        color: #94a3b8;
-        font-size: 12px;
-        font-weight: 700;
       }
 
       iframe {
-        width: 100%;
-        height: 100%;
+        width: 100vw;
+        height: 100vh;
+        display: block;
         border: 0;
-        background: white;
+        background: #ffffff;
       }
     </style>
   </head>
-
   <body>
-    <main class="published-shell">
-      <header class="published-bar">
-        <div class="published-title">
-          <span class="published-dot"></span>
-          <span>${escapeHtml(project.name)}</span>
-        </div>
-        <div class="published-meta">${escapeHtml(projectTypeLabel)}</div>
-      </header>
-
-      <iframe
-        src="${escapeHtml(viteUrl)}"
-        title="${escapeHtml(project.name)} published preview"
-        allow="cross-origin-isolated"
-      ></iframe>
-    </main>
+    <iframe
+      src="${escapeHtml(url)}"
+      title="${escapeHtml(label)}"
+    ></iframe>
   </body>
 </html>`;
 }
 
-function buildNotFoundPage(title: string, message: string) {
-  return `
-<!DOCTYPE html>
+function errorShell(title: string, message: string) {
+  return `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${escapeHtml(title)}</title>
     <style>
       body {
@@ -428,155 +408,116 @@ function buildNotFoundPage(title: string, message: string) {
         min-height: 100vh;
         display: grid;
         place-items: center;
-        padding: 24px;
         background: #0f172a;
         color: #e5e7eb;
         font-family: system-ui, Arial, sans-serif;
+        padding: 24px;
       }
 
       .card {
-        width: min(760px, 100%);
-        padding: 24px;
-        border: 1px solid rgba(148, 163, 184, 0.24);
+        width: min(900px, 100%);
+        border: 1px solid rgba(248, 113, 113, 0.38);
         border-radius: 18px;
-        background: rgba(15, 23, 42, 0.86);
-        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
-      }
-
-      h1 {
-        margin: 0 0 10px;
-        color: #ffffff;
-        font-size: 24px;
-      }
-
-      p {
-        margin: 0;
-        color: #94a3b8;
-        line-height: 1.6;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="card">
-      <h1>${escapeHtml(title)}</h1>
-      <p>${escapeHtml(message)}</p>
-    </div>
-  </body>
-</html>`;
-}
-
-function buildErrorPage(title: string, error: unknown) {
-  const message = error instanceof Error ? error.stack || error.message : String(error);
-
-  return `
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${escapeHtml(title)}</title>
-    <style>
-      body {
-        margin: 0;
-        min-height: 100vh;
-        padding: 28px;
-        background: #0f172a;
-        color: #fee2e2;
-        font-family: Consolas, Menlo, Monaco, monospace;
-      }
-
-      .error {
-        border: 1px solid rgba(248, 113, 113, 0.45);
-        border-radius: 18px;
-        background: rgba(127, 29, 29, 0.4);
+        background: rgba(127, 29, 29, 0.24);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
         padding: 24px;
       }
 
       h1 {
-        margin: 0 0 18px;
-        font-family: system-ui, Arial, sans-serif;
+        margin: 0 0 12px;
         color: #fecaca;
-        font-size: 22px;
       }
 
       pre {
         margin: 0;
         white-space: pre-wrap;
         word-break: break-word;
-        line-height: 1.55;
+        color: #fee2e2;
+        background: rgba(0, 0, 0, 0.24);
+        border-radius: 12px;
+        padding: 16px;
       }
     </style>
   </head>
   <body>
-    <section class="error">
+    <div class="card">
       <h1>${escapeHtml(title)}</h1>
       <pre>${escapeHtml(message)}</pre>
-    </section>
+    </div>
   </body>
 </html>`;
 }
 
 export const GET: APIRoute = async ({ params }) => {
   try {
-    const requestedPath = sanitizePath(params.path || "");
+    const requestedPath = sanitizeNodePath(String(params.path || ""));
 
     if (!requestedPath) {
       return htmlResponse(
-        buildNotFoundPage("Project not found", "Missing project path."),
-        404
+        errorShell("Missing path", "No site path was provided."),
+        400
       );
     }
 
-    const rootPath = requestedPath.split("/").filter(Boolean)[0];
+    const [nodes, projects] = await Promise.all([readNodes(), readProjects()]);
 
-    if (!rootPath) {
+    const parts = requestedPath.split("/").filter(Boolean);
+    const projectRoot = parts[0];
+
+    if (!projectRoot) {
       return htmlResponse(
-        buildNotFoundPage("Project not found", "Missing project root."),
-        404
+        errorShell("Missing project", "Project root was not found."),
+        400
       );
     }
 
-    const [projects, nodes] = await Promise.all([readProjects(), readNodes()]);
-
-    const project = projects.find(
-      (item) => item.rootPath === rootPath || item.id === rootPath
-    );
+    const project =
+      projects.find(
+        (item) => item.rootPath === projectRoot || item.id === projectRoot
+      ) || null;
 
     if (!project) {
       return htmlResponse(
-        buildNotFoundPage("Project not found", `No project found for: ${rootPath}`),
+        errorShell("Project not found", `Project "${projectRoot}" was not found.`),
         404
       );
     }
 
-    if (isFrameworkProject(project)) {
+    const projectType = project.type || inferProjectType(projectRoot, nodes);
+
+    if (isFrameworkProject(projectType)) {
       const workspace = await syncProjectPreviewWorkspace({
-        projectRoot: project.rootPath,
-        clean: true,
+        projectRoot,
+        clean: false,
       });
 
-      const server = await startPreviewServer({
+      const preview = await startPreviewServer({
         projectRoot: workspace.projectRoot,
         workspaceDir: workspace.workspaceDir,
         projectType: workspace.projectType,
       });
 
+      const extraPath = parts.slice(1).join("/");
+      const basePreviewUrl = preview.url.replace(/\/$/, "");
+
+      const targetUrl = extraPath
+        ? `${basePreviewUrl}/${extraPath}`
+        : basePreviewUrl;
+
       return htmlResponse(
-        buildFrameworkPublishedPage({
-          project,
-          viteUrl: server.url,
-        })
+        frameworkShell(targetUrl, `${project.name || projectRoot} preview`)
       );
     }
 
-    const html = buildHtmlProjectDocument({
-      nodes,
-      projectRoot: project.rootPath,
+    return buildHtmlSiteResponse({
       requestedPath,
+      projectRoot,
+      nodes,
     });
-
-    return htmlResponse(html);
-  } catch (error) {
-    return htmlResponse(buildErrorPage("Published preview error", error), 500);
+  } catch (error: any) {
+    return htmlResponse(
+      errorShell("Published preview error", error?.message || String(error)),
+      500
+    );
   }
 };
