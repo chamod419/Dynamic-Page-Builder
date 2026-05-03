@@ -511,7 +511,7 @@
     "fileType": "txt",
     "content": "<template>\n  <section id=\"projects\" class=\"section projects-section\">\n    <div class=\"section-head\">\n      <span class=\"section-kicker\">Projects</span>\n      <h2>Reusable project cards with Vue props</h2>\n    </div>\n\n    <div class=\"project-grid\">\n      <ProjectCard\n        v-for=\"project in projects\"\n        :key=\"project.title\"\n        :project=\"project\"\n      />\n    </div>\n  </section>\n</template>\n\n<script setup>\nimport ProjectCard from \"./project-card.vue\";\nimport { projects } from \"../data/projects.js\";\n</script>",
     "createdAt": "2026-04-29T08:42:18.205Z",
-    "updatedAt": "2026-04-29T08:42:26.007Z"
+    "updatedAt": "2026-05-03T11:21:23.734Z"
   },
   {
     "path": "my-vue-project/src/components/services.vue",
