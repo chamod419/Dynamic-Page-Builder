@@ -455,13 +455,41 @@ async function writeProjectNodesToWorkspace(
   projectRoot: string,
   projectNodes: BuilderNode[]
 ) {
+  const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "webp", "svg", "ico", "bmp"];
+
   for (const node of projectNodes) {
     if (node.kind !== "file") continue;
 
     const relativePath =
-      node.path === projectRoot ? node.name : node.path.replace(`${projectRoot}/`, "");
+      node.path === projectRoot
+        ? node.name
+        : node.path.replace(`${projectRoot}/`, "");
 
-    await writeTextFile(workspaceDir, relativePath, String(node.content || ""));
+    const ext = getFileExtension(node.name);
+    const content = String(node.content || "");
+
+    // Image file + data URL ෙදී store නම් → binary file ෙදී write කරන්න
+    if (IMAGE_EXTENSIONS.includes(ext) && content.startsWith("data:")) {
+      const match = content.match(/^data:([^;]+);base64,(.+)$/);
+
+      if (match) {
+        const base64Data = match[2];
+        const buffer = Buffer.from(base64Data, "base64");
+
+        const safeRelativePath = sanitizeNodePath(relativePath);
+        if (!safeRelativePath) continue;
+
+        const absolutePath = path.join(workspaceDir, safeRelativePath);
+        assertInsideWorkspace(workspaceDir, absolutePath);
+
+        await fs.mkdir(path.dirname(absolutePath), { recursive: true });
+        await fs.writeFile(absolutePath, buffer); // binary write
+        continue;
+      }
+    }
+
+    // Normal text file
+    await writeTextFile(workspaceDir, relativePath, content);
   }
 }
 

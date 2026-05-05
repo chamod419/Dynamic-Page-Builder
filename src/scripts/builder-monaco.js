@@ -386,8 +386,13 @@ function getNodeIconInfo(node) {
     return { className: "vscode-icon icon-folder", text: "▰" };
   }
 
-  const ext = getFileExtension(node.name);
+  const ext = getFileExtension(node.name);  // ← ext declare කෙරෙන්නෙ මෙතන
   const name = String(node.name || "").toLowerCase();
+
+  // ← image check eka ext declare කිරීමට පස්සේ
+  if (ext === "png" || ext === "jpg" || ext === "jpeg" || ext === "gif" || ext === "webp" || ext === "svg" || ext === "ico") {
+    return { className: "vscode-icon icon-image", text: "🖼" };
+  }
 
   if (ext === "html" || ext === "htm") return { className: "vscode-icon icon-html", text: "<>" };
   if (ext === "css" || ext === "scss" || ext === "less") return { className: "vscode-icon icon-css", text: "#" };
@@ -767,6 +772,36 @@ function injectVsCodePolishStyles() {
       font-size: 9.5px;
       font-weight: 800;
     }
+
+    /* VS Code style drag overlay */
+    .explorer-drop-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      border: 2px dashed #007acc;
+      border-radius: 6px;
+      background: rgba(0, 122, 204, 0.08);
+      display: none;
+      pointer-events: none;
+    }
+
+    .explorer-drop-active .explorer-drop-overlay {
+      display: block;
+    }
+
+    .explorer-drop-status {
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 11px;
+      color: #75beff;
+      pointer-events: none;
+      z-index: 11;
+    }
+
+    .icon-image { color: #c586c0 !important; }
 
     .monaco-editor,
     .monaco-editor-background,
@@ -2725,6 +2760,41 @@ function openFile(node) {
   if (editorEmptyEl) {
     editorEmptyEl.style.display = "none";
   }
+
+  // Image file නම් editor ෙදී preview show කරන්න
+const imageExts = ["png", "jpg", "jpeg", "gif", "webp", "svg", "ico", "bmp"];
+if (imageExts.includes(getFileExtension(node.name).toLowerCase())) {
+  selectedFilePath = node.path;
+  selectedFolderPath = node.parentPath || selectedProjectRoot;
+  expandAncestors(node.path);
+
+  selectedPathInputEl.value = node.path;
+  saveBtn.disabled = true;
+
+  fileTypeBadgeEl.textContent = "Image";
+  fileTypeBadgeEl.style.display = "inline-flex";
+  languageBadgeEl.style.display = "none";
+
+  if (editorEmptyEl) {
+    editorEmptyEl.style.display = "grid";
+    editorEmptyEl.querySelector(".editor-empty-card").innerHTML = `
+      <div style="margin-bottom:10px; color:#858585; font-size:11px; text-transform:uppercase; letter-spacing:0.08em;">Image Preview</div>
+      <img 
+        src="${escapeAttribute(node.content || "")}" 
+        alt="${escapeAttribute(node.name)}"
+        style="max-width:100%; max-height:320px; border-radius:8px; border:1px solid #3c3c3c; object-fit:contain; display:block; margin:0 auto;"
+        onerror="this.style.display='none'; this.nextSibling.style.display='block';"
+      />
+      <div style="display:none; color:#f48771; font-size:12px; margin-top:8px;">Failed to load image</div>
+      <div style="margin-top:10px; color:#858585; font-size:12px;">${escapeHtml(node.name)}</div>
+    `;
+  }
+
+  editorModeEl.innerHTML = `Viewing <span class="badge">${escapeHtml(node.path)}</span>`;
+  statusEl.textContent = "";
+  renderExplorer();
+  return;
+}
 
   setEditorContent(node.content || "", language, node.path, false);
 
@@ -5037,7 +5107,200 @@ async function initBuilder() {
 
   await refreshWorkspace();
 
+  renderImageDropZone();
+
   setupMonacoEditor();
 }
+
+// ===== IMAGE DRAG & DROP =====
+
+function isImageFile(fileName) {
+  const ext = getFileExtension(fileName).toLowerCase();
+  return ["png", "jpg", "jpeg", "gif", "webp", "svg", "ico", "bmp"].includes(ext);
+}
+
+function renderImageDropZone() {
+  // Drop zone box eka ඉවත් - VS Code style panel drop
+  const existingZone = document.getElementById("imageDropZone");
+  if (existingZone) existingZone.remove();
+
+  const explorerSection = nodesTreeEl?.closest(".section-card");
+  if (!explorerSection) return;
+
+  // Already setup නම් skip
+  if (explorerSection.getAttribute("data-drop-setup") === "true") return;
+  explorerSection.setAttribute("data-drop-setup", "true");
+  explorerSection.style.position = "relative";
+
+  // Overlay element
+  const overlay = document.createElement("div");
+  overlay.className = "explorer-drop-overlay";
+  overlay.innerHTML = `<div class="explorer-drop-status">Drop images to upload</div>`;
+  explorerSection.appendChild(overlay);
+
+  let dragCounter = 0;
+
+  explorerSection.addEventListener("dragenter", (e) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer?.items || []);
+    const hasImage = files.some((item) => item.kind === "file" && item.type.startsWith("image/"));
+    if (!hasImage) return;
+    dragCounter++;
+    explorerSection.classList.add("explorer-drop-active");
+  });
+
+  explorerSection.addEventListener("dragleave", (e) => {
+    dragCounter--;
+    if (dragCounter <= 0) {
+      dragCounter = 0;
+      explorerSection.classList.remove("explorer-drop-active");
+    }
+  });
+
+  explorerSection.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
+  });
+
+  explorerSection.addEventListener("drop", async (e) => {
+    e.preventDefault();
+    dragCounter = 0;
+    explorerSection.classList.remove("explorer-drop-active");
+
+    if (!selectedProjectRoot) {
+      setStatus("Select a project first.", "bad");
+      return;
+    }
+
+    const files = Array.from(e.dataTransfer?.files || []).filter((f) =>
+      isImageFile(f.name)
+    );
+
+    if (!files.length) {
+      setStatus("Only image files are supported (PNG, JPG, SVG, GIF, WebP).", "bad");
+      return;
+    }
+
+    await uploadImageFiles(files, explorerSection);
+  });
+}
+
+// async function uploadImageFiles(files, dropZone) {
+//   const targetFolder = selectedFolderPath || selectedProjectRoot;
+
+//   dropZone.classList.add("uploading");
+//   dropZone.querySelector(".image-drop-zone-text").innerHTML = `Uploading ${files.length} file${files.length > 1 ? "s" : ""}...`;
+
+//   let successCount = 0;
+//   let lastUploadedPath = null;
+
+//   for (const file of files) {
+//     if (!isImageFile(file.name)) continue;
+
+//     try {
+//       const formData = new FormData();
+//       formData.append("file", file, file.name);
+//       formData.append("parentPath", targetFolder);
+
+//       const response = await fetch("/api/nodes/upload-image", {
+//         method: "POST",
+//         body: formData,
+//       });
+
+//       const text = await response.text();
+//       let data;
+//       try {
+//         data = JSON.parse(text);
+//       } catch {
+//         throw new Error("Server returned invalid response");
+//       }
+
+//       if (!response.ok) {
+//         throw new Error(data?.error || "Upload failed");
+//       }
+
+//       if (data?.node?.path) {
+//         lastUploadedPath = data.node.path;
+//         successCount++;
+//       }
+//     } catch (error) {
+//       setStatus(`Failed to upload ${file.name}: ${error?.message || error}`, "bad");
+//     }
+//   }
+
+//   dropZone.classList.remove("uploading");
+//   dropZone.querySelector(".image-drop-zone-text").innerHTML = `
+//     Drag &amp; drop images here<br/>
+//     <span style="color:#555; font-size:10px;">PNG · JPG · SVG · GIF · WebP</span>
+//   `;
+
+//   if (successCount > 0) {
+//     setStatus(`${successCount} image${successCount > 1 ? "s" : ""} uploaded successfully.`, "ok");
+//     await loadNodes();
+
+//     if (lastUploadedPath) {
+//       const uploadedNode = getNodeByPath(lastUploadedPath);
+//       if (uploadedNode) {
+//         selectedFolderPath = uploadedNode.parentPath || selectedProjectRoot;
+//         renderExplorer();
+//       }
+//     }
+//   }
+// }
+
+async function uploadImageFiles(files, container) {
+  const targetFolder = selectedFolderPath || selectedProjectRoot;
+
+  setStatus(`Uploading ${files.length} image${files.length > 1 ? "s" : ""}...`);
+
+  let successCount = 0;
+  let lastUploadedPath = null;
+
+  for (const file of files) {
+    if (!isImageFile(file.name)) continue;
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file, file.name);
+      formData.append("parentPath", targetFolder);
+
+      const response = await fetch("/api/nodes/upload-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error("Server returned invalid response");
+      }
+
+      if (!response.ok) throw new Error(data?.error || "Upload failed");
+
+      if (data?.node?.path) {
+        lastUploadedPath = data.node.path;
+        successCount++;
+      }
+    } catch (error) {
+      setStatus(`Failed to upload ${file.name}: ${error?.message || error}`, "bad");
+    }
+  }
+
+  if (successCount > 0) {
+    setStatus(`${successCount} image${successCount > 1 ? "s" : ""} uploaded successfully.`, "ok");
+    await loadNodes();
+
+    if (lastUploadedPath) {
+      const uploadedNode = getNodeByPath(lastUploadedPath);
+      if (uploadedNode) {
+        selectedFolderPath = uploadedNode.parentPath || selectedProjectRoot;
+        renderExplorer();
+      }
+    }
+  }
+}
+
 
 initBuilder();
