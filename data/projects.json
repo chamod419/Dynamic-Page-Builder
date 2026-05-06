@@ -1,5 +1,13 @@
 [
   {
+    "id": "nexaflow",
+    "name": "NexaFlow",
+    "rootPath": "nexaflow",
+    "type": "svelte-vite",
+    "createdAt": "2026-05-05T16:23:55.406Z",
+    "updatedAt": "2026-05-06T00:06:02.811Z"
+  },
+  {
     "id": "test-03",
     "name": "TEST 03",
     "rootPath": "test-03",

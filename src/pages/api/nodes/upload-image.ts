@@ -41,7 +41,7 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // node-store pattern follow කරන්න
+    
     const safeParentPath = sanitizeNodePath(parentPath);
     const safeName = sanitizeNodePart(rawName.replace(/\.[^.]+$/, "")) + "." + ext;
 
@@ -55,7 +55,6 @@ export const POST: APIRoute = async ({ request }) => {
 
     const nodes = await readNodes();
 
-    // Parent folder exist check
     if (safeParentPath) {
       const parent = nodes.find((n) => n.path === safeParentPath);
       if (!parent) {
@@ -66,10 +65,10 @@ export const POST: APIRoute = async ({ request }) => {
       }
     }
 
-    // Duplicate check - same name file already exists නම් overwrite
+    // Duplicate check - same name file already exists  overwrite
     const existingIdx = nodes.findIndex((n) => n.path === safePath);
 
-    // File eka base64 convert කරන්න
+ 
     const arrayBuffer = await file.arrayBuffer();
     const base64 = Buffer.from(arrayBuffer).toString("base64");
     const dataUrl = `data:${file.type || "image/" + ext};base64,${base64}`;
@@ -81,8 +80,8 @@ export const POST: APIRoute = async ({ request }) => {
       name: safeName,
       parentPath: safeParentPath,
       kind: "file" as const,
-      fileType: "txt" as const, // node-store FileType union ek follow කරන්න
-      content: dataUrl,          // data URL eka content eka විදිහට store
+      fileType: "txt" as const, 
+      content: dataUrl,         
       createdAt: existingIdx >= 0 ? nodes[existingIdx].createdAt : now,
       updatedAt: now,
     };

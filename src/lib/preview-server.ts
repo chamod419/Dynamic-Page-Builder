@@ -26,7 +26,23 @@ function getStore(): PreviewServerStore {
   return globalStore.__DPB_PREVIEW_SERVERS__;
 }
 
-function getPlugins(projectType: ProjectType): PluginOption[] {
+// function getPlugins(projectType: ProjectType): PluginOption[] {
+//   if (projectType === "react-vite") {
+//     return [react()];
+//   }
+
+//   if (projectType === "vue-vite") {
+//     return [vue()];
+//   }
+
+//   if (projectType === "svelte-vite") {
+//     return [svelte()];
+//   }
+
+//   return [];
+// }
+
+function getPlugins(projectType: ProjectType) {
   if (projectType === "react-vite") {
     return [react()];
   }
@@ -36,7 +52,15 @@ function getPlugins(projectType: ProjectType): PluginOption[] {
   }
 
   if (projectType === "svelte-vite") {
-    return [svelte()];
+    return [
+      svelte({
+        compilerOptions: {
+          compatibility: {
+            componentApi: 4,
+          },
+        },
+      }),
+    ];
   }
 
   return [];
