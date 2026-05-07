@@ -2761,7 +2761,7 @@ function openFile(node) {
     editorEmptyEl.style.display = "none";
   }
 
-  // Image file නම් editor ෙදී preview show කරන්න
+  // Image file  editor  preview show 
 const imageExts = ["png", "jpg", "jpeg", "gif", "webp", "svg", "ico", "bmp"];
 if (imageExts.includes(getFileExtension(node.name).toLowerCase())) {
   selectedFilePath = node.path;
@@ -5120,14 +5120,14 @@ function isImageFile(fileName) {
 }
 
 function renderImageDropZone() {
-  // Drop zone box eka ඉවත් - VS Code style panel drop
+  // VS Code style panel drop
   const existingZone = document.getElementById("imageDropZone");
   if (existingZone) existingZone.remove();
 
   const explorerSection = nodesTreeEl?.closest(".section-card");
   if (!explorerSection) return;
 
-  // Already setup නම් skip
+  // Already setup skip
   if (explorerSection.getAttribute("data-drop-setup") === "true") return;
   explorerSection.setAttribute("data-drop-setup", "true");
   explorerSection.style.position = "relative";
