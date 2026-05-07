@@ -16,6 +16,7 @@ const json = (obj: any, status = 200) =>
 
 const ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "webp", "svg", "ico", "bmp"];
 
+
 export const POST: APIRoute = async ({ request }) => {
   try {
     const formData = await request.formData();
